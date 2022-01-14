@@ -1,0 +1,12 @@
+@font-face {
+  font-family: "gong-bold";
+  src: url("../fonts/Gong\ Gothic\ Bold.ttf");
+}
+@font-face {
+  font-family: "gong-light";
+  src: url("../fonts/Gong\ Gothic\ Light.ttf");
+}
+@font-face {
+  font-family: "gong-medium";
+  src: url("../fonts/Gong\ Gothic\ Medium.ttf");
+}

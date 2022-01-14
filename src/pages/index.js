@@ -1,3 +1,6 @@
-import Home from "./Home";
+import LoadingPage from "./LoadingPage";
+import LoginPage from "./LoginPage";
+import UserEditPage from "./UserEditPage";
+import InvestDetailPage from "./InvestDetailPage";
 
-export { Home };
+export { LoadingPage, LoginPage, UserEditPage, InvestDetailPage };

@@ -6,6 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 import AppRouter from "AppRouter";
 import * as serviceWorkerRegistration from "utils/serviceWorkerRegistration";
 import reportWebVitals from "utils/reportWebVitals";
+import "assets/styles/font.css";
 import "assets/styles/index.css";
 
 ReactDOM.render(

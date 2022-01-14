@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1280" viewBox="0 0 720 1280">
+    <defs>
+        <linearGradient id="linear-gradient" x1=".5" x2=".5" y2="1" gradientUnits="objectBoundingBox">
+            <stop offset="0" stop-color="#2699fb"/>
+            <stop offset="1" stop-color="#fff"/>
+        </linearGradient>
+        <clipPath id="clip-path">
+            <path id="사각형_1570" data-name="사각형 1570" style="fill:#fff;stroke:#707070" d="M0 0h720v1280H0z"/>
+        </clipPath>
+        <style>
+            .cls-3{opacity:.5;fill:url(#linear-gradient)}
+        </style>
+    </defs>
+    <g id="마스크_그룹_2" data-name="마스크 그룹 2" style="clip-path:url(#clip-path)">
+        <g id="graphs" transform="translate(-27.488 -177.431)">
+            <path id="패스_205" data-name="패스 205" class="cls-3" d="M2524 1054.972c118.356-2.994 137.28 321.805 220.176 321.805s83.908-135.933 160.165-135.933c62.2 0 61.652 82.731 127.563 82.731s51.4-106.273 111.265-106.273 36.145 323.714 36.145 323.714h-768.24s-5.435-483.05 112.926-486.044z" transform="translate(-2402.045 -816.359)"/>
+            <path id="패스_206" data-name="패스 206" class="cls-3" d="M2458.523 1077.806c112.6-42.567 136.646-7.814 198.52 27.073s78.276-36.387 125.058-34.249 33.227 177.679 99.693 188.264 63.192-14.976 127.467 17.511 43.071-149.617 156.758-171.526 94.233 422.5 94.233 422.5l-868.633 10.578z" transform="translate(-2449.5 -751.599)"/>
+        </g>
+    </g>
+</svg>
