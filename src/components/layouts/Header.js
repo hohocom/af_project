@@ -1,13 +1,41 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import img01 from "assets/images/header/01.svg";
 import img02 from "assets/images/header/02.svg";
 import img03 from "assets/images/header/03.svg";
 import img04 from "assets/images/header/04.svg";
 import img05 from "assets/images/header/05.svg";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 function Header({ title = "타이틀" }) {
+  const { pathname } = useLocation();
+
   const [sidebar, setSidebar] = useState(0);
+  const [menus, setMenus] = useState([
+    { title: "투자내역", url: "/invest-detail", seleted: true },
+    { title: "배정현황", url: "/assignment-status", seleted: false },
+    { title: "체결내역", url: "/conclusions", seleted: false },
+    { title: "보유종목", url: "/hold-events", seleted: false },
+    { title: "손익검색", url: "/profit-or-loss", seleted: false },
+  ]);
+
+  useEffect(() => {
+    const newMenus = menus.map((menu) => {
+      if (menu.url === pathname) {
+        return {
+          ...menu,
+          seleted: true,
+        };
+      } else {
+        return {
+          ...menu,
+          seleted: false,
+        };
+      }
+    });
+    setMenus(newMenus);
+  }, [pathname]);
+
   return (
     <>
       <header className="bg-white border-b">
@@ -26,39 +54,31 @@ function Header({ title = "타이틀" }) {
           </div>
         </div>
         <nav className="flex w-full overflow-x-auto overscroll-x-auto whitespace-nowrap">
-          <Link
-            to="/invest-detail"
-            className="inline-block p-2 border-b-4 border-blue-800"
-          >
-            투자내역
-          </Link>
-          <Link to="/invest-detail" className="inline-block p-2">
-            배정현황
-          </Link>
-          <Link to="/invest-detail" className="inline-block p-2">
-            체결내역
-          </Link>
-          <Link to="/invest-detail" className="inline-block p-2">
-            보유종목
-          </Link>
-          <Link to="/invest-detail" className="inline-block p-2">
-            손익검색
-          </Link>
-          <Link to="/invest-detail" className="inline-block p-2">
-            공백채우기
-          </Link>
+          {menus.map((menu, index) => {
+            return (
+              <Link
+                key={index}
+                to={menu.url}
+                className={"inline-block p-2 border-b-4 border-white menu-item ".concat(
+                  menu.seleted && "border-blue-900"
+                )}
+              >
+                {menu.title}
+              </Link>
+            );
+          })}
         </nav>
       </header>
       {sidebar > 0 && (
         <div
-          className="fixed top-0 left-0 w-full h-full bg-black/70"
+          className="fixed top-0 left-0 w-full h-full bg-black/70 z-40"
           onClick={() => setSidebar(0)}
         ></div>
       )}
       <aside
         className={`fixed top-0 ${sidebar > 0 ? "left-0" : "-left-20"} 
         h-full transition-all duration-300 bg-gradient-to-b from-[#5E00B6] to-[#3000FA] rounded-tr-3xl p-4
-        flex flex-col font-gong-light
+        flex flex-col font-gong-light z-50
         `}
         style={{ width: sidebar + "%" }}
       >
