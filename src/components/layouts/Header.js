@@ -71,7 +71,7 @@ function Header({ title = "타이틀" }) {
       </header>
       {sidebar > 0 && (
         <div
-          className="fixed top-0 left-0 w-full h-full bg-black/70 z-40"
+          className="fixed top-0 left-0 z-40 w-full h-full bg-black/70"
           onClick={() => setSidebar(0)}
         ></div>
       )}
@@ -102,39 +102,41 @@ function Header({ title = "타이틀" }) {
                   {/* tracking-[2rem] */}
                   <strong>아이디</strong>
                 </div>
-                <p>afia@afassets.com</p>
+                <p className="font-apple-sb">afia@afassets.com</p>
               </div>
               <div className="flex items-center justify-start">
                 <div className="min-w-[50px]">
                   <strong>생년월일</strong>
                 </div>
-                <p>1968.01.10</p>
+                <p className="font-apple-sb">1968.01.10</p>
               </div>
               <div className="flex items-start justify-start">
                 <div className="min-w-[50px]">
                   <strong>주소</strong>
                 </div>
-                <p>광주광역시 서구 상무중앙로 110(치평동)</p>
+                <p className="font-apple-sb">
+                  광주광역시 서구 상무중앙로 110(치평동)
+                </p>
               </div>
               <div className="flex items-center justify-start">
                 <div className="min-w-[50px]">
                   <strong>휴대전화</strong>
                 </div>
-                <p>010-3884-2540</p>
+                <p className="font-apple-sb">010-3884-2540</p>
               </div>
               <div className="flex items-center justify-start">
                 <div className="min-w-[50px]">
                   <strong>이메일</strong>
                 </div>
-                <p>afia@afassets.com</p>
+                <p className="font-apple-sb">afia@afassets.com</p>
               </div>
             </div>
             <Link
               to="/users/me"
-              className="flex items-center justify-end mt-2 text-white "
+              className="flex items-center justify-end mt-4 text-sm text-white"
             >
               개인 정보 변경
-              <img src={img03} alt="img_03" className="w-[20px]" />
+              <img src={img03} alt="img_03" className="w-[14px] ml-1 mb-0.5" />
             </Link>
             <div className="flex items-end justify-between mt-6 text-white">
               <div className="text-2xl ">투자리스트</div>

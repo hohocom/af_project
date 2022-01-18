@@ -10,11 +10,11 @@ function AssignmentStatusPage() {
   return (
     <div className="bg-[#EEEEEE] h-full font-gong-light">
       <Header title="배정현황" />
-      <div className="relative w-full flex flex-col p-4">
+      <div className="relative flex flex-col w-full p-4">
         <Card
           title="공모주펀딩"
           body={
-            <table className="text-xs w-full table-fixed">
+            <table className="w-full text-xs table-fixed">
               <thead>
                 <tr>
                   <th className="p-2 border-r">날짜/종목명</th>
@@ -22,7 +22,7 @@ function AssignmentStatusPage() {
                   <th>금액/비고</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="font-apple-sb">
                 <tr
                   className="border-t"
                   onClick={() => setModal({ ...modal, isOpen: true })}
@@ -106,9 +106,9 @@ function AssignmentStatusPage() {
             </table>
           }
           bottomOutside={
-            <div className="w-full flex justify-center mt-2">
+            <div className="flex justify-center w-full mt-2">
               <button
-                className="bg-blue-600 p-2 w-1/2 rounded-md text-white"
+                className="w-1/2 p-2 text-white bg-blue-600 rounded-md"
                 // onClick={() => changeState(2)}
               >
                 더보기(1/10)
@@ -117,12 +117,12 @@ function AssignmentStatusPage() {
           }
         />
         {modal.isOpen && (
-          <div className="fixed left-0 top-0 w-full h-full flex justify-center items-center bg-black/80 z-20 p-4">
+          <div className="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full p-4 bg-black/80">
             <Card
               title="배정결과"
               body={
-                <div className="flex text-xs w-full">
-                  <div className="w-4/12 flex flex-col items-end p-4 border-r">
+                <div className="flex w-full text-xs">
+                  <div className="flex flex-col items-end w-4/12 p-4 border-r">
                     <p>계좌번호</p>
                     <p>계좌명</p>
                     <p>참여종목명</p>
@@ -135,7 +135,7 @@ function AssignmentStatusPage() {
                     <p>청약수수료</p>
                     <p>총 납입금액</p>
                   </div>
-                  <div className="w-8/12 flex flex-col items-start p-4">
+                  <div className="flex flex-col items-start w-8/12 p-4 font-apple-sb">
                     <p>664-43-527481</p>
                     <p>(주)에이에프투자자문</p>
                     <p>알비더블유</p>

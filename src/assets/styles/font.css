@@ -10,3 +10,7 @@
   font-family: "gong-medium";
   src: url("../fonts/Gong\ Gothic\ Medium.ttf");
 }
+@font-face {
+  font-family: "apple-sb";
+  src: url("../fonts/AppleSDGothicNeoSB.ttf");
+}

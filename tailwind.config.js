@@ -11,6 +11,7 @@ module.exports = {
         "apple-light": ["apple-l"],
         "apple-regular": ["apple-r"],
         "apple-tiny": ["apple-t"],
+        "apple-sb": ["apple-sb"],
         "gong-bold": ["gong-bold"],
         "gong-light": ["gong-light"],
         "gong-medium": ["gong-medium"],
