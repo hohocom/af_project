@@ -1,5 +1,5 @@
 import { Card } from "components/common";
-import { Header } from "components/layouts";
+import { Header, MobileLayout } from "components/layouts";
 import { useState } from "react";
 
 function AssignmentStatusPage() {
@@ -8,8 +8,7 @@ function AssignmentStatusPage() {
     data: {},
   });
   return (
-    <div className="bg-[#EEEEEE] h-full font-gong-light">
-      <Header title="배정현황" />
+    <MobileLayout>
       <div className="relative flex flex-col w-full p-4">
         <Card
           title="공모주펀딩"
@@ -162,7 +161,7 @@ function AssignmentStatusPage() {
           </div>
         )}
       </div>
-    </div>
+    </MobileLayout>
   );
 }
 

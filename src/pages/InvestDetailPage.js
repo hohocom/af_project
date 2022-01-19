@@ -1,14 +1,13 @@
 // TODO: 투자내역 페이지
 
-import { Header } from "components/layouts";
+import { Header, MobileLayout } from "components/layouts";
 import { Card } from "components/common";
 import { InvestBody, InvestDetail } from "components/layouts/investDetail";
 
 function InvestDetailPage() {
   return (
-    <div className="bg-[#EEEEEE] h-full font-gong-light">
-      <Header title="투자내역" />
-      <div className="w-full flex flex-col p-4">
+    <MobileLayout>
+      <div className="flex flex-col w-full p-4">
         <Card
           title="공모주 펀드A"
           body={<InvestBody />}
@@ -20,7 +19,7 @@ function InvestDetailPage() {
           bottomOutside={<InvestDetail />}
         />
       </div>
-    </div>
+    </MobileLayout>
   );
 }
 

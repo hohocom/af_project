@@ -1,4 +1,5 @@
-import MobileContainer from "./MobileContainer";
+import MobileLayout from "./MobileLayout";
+import AdminLayout from "./AdminLayout";
 import Header from "./Header";
 
-export { MobileContainer, Header };
+export { MobileLayout, Header, AdminLayout };

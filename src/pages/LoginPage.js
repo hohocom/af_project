@@ -1,11 +1,12 @@
 import img01 from "assets/images/login/01.svg";
 import img02 from "assets/images/login/02.svg";
 import img03 from "assets/images/login/03.svg";
+import { MobileLayout } from "components/layouts";
 import { Link } from "react-router-dom";
 
 function LoginPage() {
   return (
-    <div>
+    <MobileLayout hideHeader={true} themeColor="white">
       <img src={img01} alt="img_01" className="absolute top-0 left-0 z-0" />
       <div className="absolute top-0 left-0 w-full h-full font-gong-light">
         <div className="pt-16 pl-6 text-3xl">
@@ -40,7 +41,7 @@ function LoginPage() {
           </Link>
         </div>
       </div>
-    </div>
+    </MobileLayout>
   );
 }
 

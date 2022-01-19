@@ -1,10 +1,9 @@
-import { Header } from "components/layouts";
+import { Header, MobileLayout } from "components/layouts";
 import img01 from "assets/images/conclusion/01.svg";
 
 function ProfitOrLossPage() {
   return (
-    <div className="bg-[#EEEEEE] h-full font-gong-light">
-      <Header title="손익검색" />
+    <MobileLayout>
       <div className="flex flex-col w-full p-4">
         <div className="flex items-center justify-start w-full ">
           <img src={img01} alt="img_01" className="w-[20px] mr-2" />
@@ -80,7 +79,7 @@ function ProfitOrLossPage() {
           </button>
         </div>
       </div>
-    </div>
+    </MobileLayout>
   );
 }
 
