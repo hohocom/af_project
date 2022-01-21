@@ -1,15 +1,19 @@
-.table-type-a thead {
-  background-color: #F2F2F2;
+.table-type-a  {
+  table-layout: fixed;
 }
 .table-type-a tr {
   border-bottom: 1px solid #e6e6e6;
 }
 .table-type-a th {
-  padding: 12px;
+  padding: 4px;
   border-right: 1px solid #e6e6e6;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .table-type-a td {
   text-align: center;
-  padding: 12px;
+  padding: 4px;
   border-right: 1px solid #e6e6e6;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }

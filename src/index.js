@@ -8,6 +8,7 @@ import * as serviceWorkerRegistration from "utils/serviceWorkerRegistration";
 import reportWebVitals from "utils/reportWebVitals";
 import "assets/styles/font.css";
 import "assets/styles/index.css";
+import "utils/firebase";
 
 ReactDOM.render(
   <BrowserRouter>

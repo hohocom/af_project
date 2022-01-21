@@ -3,7 +3,7 @@ import "assets/styles/table.css";
 
 function AdminLayout({ main, step, sub, subMinWidth = 400, subTotal = 1 }) {
   return (
-    <div className="fixed w-full h-full font-gong-light">
+    <div className="fixed w-full h-full font-noto-light">
       <header className="flex items-center justify-start w-full bg-white border-b border-gray-200">
         <figure className="p-4">AF투자자문 관리페이지</figure>
         <ul>

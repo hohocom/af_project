@@ -14,3 +14,15 @@
   font-family: "apple-sb";
   src: url("../fonts/AppleSDGothicNeoSB.ttf");
 }
+@font-face {
+  font-family: "noto-light";
+  src: url("../fonts/NotoSansKR-Light.otf");
+}
+@font-face {
+  font-family: "noto-regular";
+  src: url("../fonts/NotoSansKR-Regular.otf");
+}
+@font-face {
+  font-family: "noto-bold";
+  src: url("../fonts/NotoSansKR-Bold.otf");
+}
