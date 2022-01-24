@@ -1,4 +1,6 @@
 import AdminLoginPage from "./AdminLoginPage";
 import AdminUserPage from "./AdminUserPage";
+import AdminFundPage from "./AdminFundPage";
+import AdminEventPage from "./AdminEventPage";
 
-export { AdminLoginPage, AdminUserPage };
+export { AdminLoginPage, AdminFundPage, AdminUserPage, AdminEventPage };

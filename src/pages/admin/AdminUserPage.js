@@ -3,17 +3,36 @@ import { AdminLayout } from "components/layouts";
 import { useStep } from "core/hooks";
 import { db } from "utils/firebase";
 
-import {
-  CloseButton,
-  UserDetail,
-  UserCreateForm,
-} from "components/layouts/admin";
+import { CloseButton, UserDetail, UserForm } from "components/layouts/admin";
 
 function AdminUserPage() {
   const { step, changeStep } = useStep();
-  const [openCreateForm, setOpenCreateForm] = useState(false);
-  const [userDetail, setUserDetail] = useState(null);
+  const [init, setInit] = useState(false);
   const [users, setUsers] = useState([]);
+  const [userDetail, setUserDetail] = useState(null);
+
+  const [openCreateForm, setOpenCreateForm] = useState(false);
+  const [openUpdateForm, setOpenUpdateForm] = useState(false);
+
+  const openUpdateFormEvent = () => {
+    changeStep({ step: 1 });
+    setOpenUpdateForm(true);
+    setOpenCreateForm(false);
+  };
+
+  const openCreateFormEvent = () => {
+    changeStep({ step: 1 });
+    setOpenCreateForm(true);
+    setOpenUpdateForm(false);
+    setUserDetail(null);
+  };
+
+  const setUserDetailEvent = ({ user }) => {
+    changeStep({ step: 1 });
+    setUserDetail(user);
+    setOpenCreateForm(false);
+    setOpenUpdateForm(false);
+  };
 
   useEffect(() => {
     const unsub = db.collection("users").onSnapshot((snapshot) => {
@@ -24,6 +43,7 @@ function AdminUserPage() {
         };
       });
       setUsers(newUsers);
+      setInit(true);
     });
 
     return () => unsub();
@@ -32,65 +52,21 @@ function AdminUserPage() {
   return (
     <AdminLayout
       step={step}
-      main={
-        <div className="p-4 bg-white border">
-          <div className="flex justify-start items-center">
-            <h2 className="text-3xl mb-2 mr-2 font-noto-regular">회원 목록</h2>
-            <button
-              onClick={() => {
-                changeStep({ step: 1 });
-                setUserDetail(null);
-                setOpenCreateForm(true);
-              }}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md mb-2"
-            >
-              회원 생성
-            </button>
-          </div>
-          <table className="w-full bg-white border table-fixed table-type-a">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>이름</th>
-                <th>ID(email)</th>
-                <th>생년월일</th>
-                <th>주소</th>
-                <th>전화번호</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user, index) => {
-                return (
-                  <tr
-                    key={user.id}
-                    onClick={() => {
-                      changeStep({ step: 1 });
-                      setOpenCreateForm(false);
-                      setUserDetail(user);
-                    }}
-                    className="cursor-pointer"
-                  >
-                    <td>{index + 1}</td>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.birthday}</td>
-                    <td>{user.address}</td>
-                    <td>{user.phone}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      }
-      sub={
+      sidebar={
         <>
           <div className="min-w-[400px] border-l h-full bg-white p-4">
             <CloseButton changeStep={changeStep} />
-            {userDetail && (
-              <UserDetail changeStep={changeStep} userDetail={userDetail} />
+            {openCreateForm && <UserForm changeStep={changeStep} />}
+            {openUpdateForm && (
+              <UserForm user={userDetail} changeStep={changeStep} />
             )}
-            {openCreateForm && <UserCreateForm />}
+            {!openUpdateForm && userDetail && (
+              <UserDetail
+                user={userDetail}
+                changeStep={changeStep}
+                openUpdateFormEvent={openUpdateFormEvent}
+              />
+            )}
           </div>
           <div className="min-w-[400px] border-l h-full bg-white p-4">
             <CloseButton changeStep={changeStep} step={1} />
@@ -133,8 +109,68 @@ function AdminUserPage() {
           </div>
         </>
       }
-      subTotal={2}
-    />
+      sidebarTotal={2}
+    >
+      <div className="p-4 bg-white border">
+        <div className="flex justify-start items-center">
+          <h2 className="text-3xl mb-2 mr-2 font-noto-regular">회원 목록</h2>
+          <button
+            onClick={openCreateFormEvent}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md mb-2"
+          >
+            회원 생성
+          </button>
+        </div>
+        <table className="w-full bg-white border table-fixed table-type-a">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>이름</th>
+              <th>ID(email)</th>
+              <th>생년월일</th>
+              <th>주소</th>
+              <th>전화번호</th>
+            </tr>
+          </thead>
+          <tbody>
+            {init ? (
+              <>
+                {users.length > 0 ? (
+                  users.map((user, index) => {
+                    return (
+                      <tr
+                        key={user.id}
+                        onClick={() => setUserDetailEvent({ user })}
+                        className="cursor-pointer"
+                      >
+                        <td>{index + 1}</td>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.birthday}</td>
+                        <td>{user.address}</td>
+                        <td>{user.phone}</td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td className="p-4" colSpan={6}>
+                      회원 목록이 없습니다.
+                    </td>
+                  </tr>
+                )}
+              </>
+            ) : (
+              <tr>
+                <td className="p-4" colSpan={6}>
+                  로딩중..
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </AdminLayout>
   );
 }
 

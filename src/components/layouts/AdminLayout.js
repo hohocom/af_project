@@ -1,7 +1,13 @@
 import { Link } from "react-router-dom";
 import "assets/styles/table.css";
 
-function AdminLayout({ main, step, sub, subMinWidth = 400, subTotal = 1 }) {
+function AdminLayout({
+  children,
+  step,
+  sidebar,
+  sidebarMinWidth = 400,
+  sidebarTotal = 1,
+}) {
   return (
     <div className="fixed w-full h-full font-noto-light">
       <header className="flex items-center justify-start w-full bg-white border-b border-gray-200">
@@ -14,18 +20,22 @@ function AdminLayout({ main, step, sub, subMinWidth = 400, subTotal = 1 }) {
             <Link to="/admin/funds" className="px-2 py-4">
               펀드관리
             </Link>
+            <Link to="/admin/events" className="px-2 py-4">
+              종목관리
+            </Link>
           </li>
         </ul>
       </header>
       <main id="main" className="flex w-full h-full transition-all bg-gray-100">
-        <section className="w-full h-full p-4">{main}</section>
+        <section className="w-full h-full p-4">{children}</section>
         <aside
           className="flex h-full duration-200"
           style={{
-            marginRight: -subMinWidth * subTotal + subMinWidth * step + "px",
+            marginRight:
+              -sidebarMinWidth * sidebarTotal + sidebarMinWidth * step + "px",
           }}
         >
-          {sub}
+          {sidebar}
         </aside>
       </main>
     </div>
