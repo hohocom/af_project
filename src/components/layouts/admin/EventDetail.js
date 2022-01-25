@@ -1,12 +1,12 @@
 function EventDetail({ event, openUpdateFormEvent }) {
   return (
     <div>
-      <div className="w-full flex justify-between items-center">
+      <div className="flex items-center justify-between w-full">
         <h2 className="text-xl font-noto-regular">종목 상세보기</h2>
         <button
           type="button"
-          className="text-sm py-2 px-4 rounded-md bg-yellow-400 text-white"
-          onClick={openUpdateFormEvent}
+          className="px-4 py-2 text-sm text-white bg-yellow-400 rounded-md"
+          onClick={() => openUpdateFormEvent({ event })}
         >
           수정
         </button>

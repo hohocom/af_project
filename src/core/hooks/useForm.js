@@ -6,6 +6,8 @@ function useForm(formObj) {
   const changeInput = (e) => {
     const name = e.target.name;
     const value = e.target.value;
+    // console.debug(value);
+    // console.debug(name);
     if (!name) throw new Error("name 없음!");
 
     for (let f in form) {

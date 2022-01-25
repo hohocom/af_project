@@ -12,6 +12,7 @@ import {
   UserEditPage,
 } from "pages";
 import {
+  AdminDealPage,
   AdminEventPage,
   AdminFundPage,
   AdminLoginPage,
@@ -34,6 +35,7 @@ function App() {
     { path: "/admin/users", element: <AdminUserPage /> },
     { path: "/admin/funds", element: <AdminFundPage /> },
     { path: "/admin/events", element: <AdminEventPage /> },
+    { path: "/admin/deals", element: <AdminDealPage /> },
   ]);
 
   return route;

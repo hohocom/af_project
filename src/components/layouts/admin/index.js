@@ -5,6 +5,7 @@ import FundForm from "./FundForm";
 import FundDetail from "./FundDetail";
 import EventForm from "./EventForm";
 import EventDetail from "./EventDetail";
+import DealForm from "./DealForm";
 
 export {
   UserForm,
@@ -14,4 +15,5 @@ export {
   FundDetail,
   EventForm,
   EventDetail,
+  DealForm,
 };
