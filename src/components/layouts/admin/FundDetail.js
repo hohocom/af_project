@@ -1,11 +1,11 @@
 function FundDetail({ fund, openUpdateFormEvent }) {
   return (
-    <div className="pt-4">
+    <div className="pt-4 min-w-[350px]">
       <div className="flex items-center justify-between w-full">
         <h2 className="text-xl font-noto-regular">펀드 상세보기</h2>
         <button
           type="button"
-          class="py-2 px-4 bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 text-white transition ease-in 
+          className="py-2 px-4 bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 text-white transition ease-in 
             duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
           onClick={() => {
             openUpdateFormEvent({ fund: fund });

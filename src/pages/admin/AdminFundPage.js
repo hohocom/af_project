@@ -42,7 +42,7 @@ function AdminFundPage() {
   }, []);
 
   return (
-    <AdminLayout title="펀드 관리">
+    <AdminLayout title="펀드관리">
       <div className="p-4">
         <div className="flex items-center justify-between py-4">
           <button
@@ -107,7 +107,7 @@ function AdminFundPage() {
                         onClick={() => openFundDetailEvent({ fund })}
                         className="text-gray-700 border-b cursor-pointer"
                       >
-                        <td className="p-4 border-r dark:border-dark-5">
+                        <td className="p-4 border-r dark:border-dark-5 text-center">
                           {index + 1}
                         </td>
                         <td className="p-4 border-r dark:border-dark-5">

@@ -104,7 +104,7 @@ function FundForm({ fund = null }) {
         />
       </div>
       <div className="flex flex-col mt-2">
-        <label htmlhtmlFor="name-with-label" className="text-gray-700">
+        <label htmlFor="name-with-label" className="text-gray-700">
           거래수수료
         </label>
         <input

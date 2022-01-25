@@ -39,7 +39,7 @@ function EventForm({ event }) {
         종목 {event ? "수정" : "생성"}
       </h2>
       <div className="flex flex-col mt-2">
-        <label htmlhtmlFor="name-with-label" className="text-gray-700">
+        <label htmlFor="name-with-label" className="text-gray-700">
           종목명
         </label>
         <input
@@ -51,7 +51,7 @@ function EventForm({ event }) {
         />
       </div>
       <div className="flex flex-col mt-2">
-        <label htmlhtmlFor="name-with-label" className="text-gray-700">
+        <label htmlFor="name-with-label" className="text-gray-700">
           확정공모가액
         </label>
         <input
@@ -63,7 +63,7 @@ function EventForm({ event }) {
         />
       </div>
       <div className="flex flex-col mt-2">
-        <label htmlhtmlFor="name-with-label" className="text-gray-700">
+        <label htmlFor="name-with-label" className="text-gray-700">
           납입일
         </label>
         <input
@@ -76,7 +76,7 @@ function EventForm({ event }) {
         />
       </div>
       <div className="flex flex-col mt-2">
-        <label htmlhtmlFor="name-with-label" className="text-gray-700">
+        <label htmlFor="name-with-label" className="text-gray-700">
           청약기간
         </label>
         <div className="flex justify-between w-full">

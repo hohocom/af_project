@@ -1,44 +1,29 @@
 import { AdminLayout } from "components/layouts";
-import {
-  CloseButton,
-  DealForm,
-  EventDetail,
-  EventForm,
-} from "components/layouts/admin";
-import { useStep } from "core/hooks";
+import { DealForm } from "components/layouts/admin";
+import { useModal } from "core/hooks";
 import { useEffect } from "react";
 import { useState } from "react/cjs/react.development";
 import { db } from "utils/firebase";
 
 function AdminDealPage() {
-  const { step, changeStep } = useStep();
+  const { open } = useModal();
   const [init, setInit] = useState(false);
   const [deals, setDeals] = useState([]);
-  const [dealDetail, setDealDetail] = useState(null);
-
-  const [openCreateForm, setOpenCreateForm] = useState(false);
-  const [openUpdateForm, setOpenUpdateForm] = useState(false);
 
   const [checkedFundId, setCheckedFundId] = useState(null);
+  const [funds, setFunds] = useState([]);
+  const [events, setEvents] = useState([]);
 
-  const openUpdateFormEvent = () => {
-    changeStep({ step: 1 });
-    setOpenUpdateForm(true);
-    setOpenCreateForm(false);
+  const openUpdateFormEvent = ({ event }) => {
+    open({ setView: <DealForm events={events} funds={funds} /> });
   };
 
   const openCreateFormEvent = () => {
-    changeStep({ step: 1 });
-    setOpenCreateForm(true);
-    setOpenUpdateForm(false);
-    setDealDetail(null);
+    open({ setView: <DealForm events={events} funds={funds} /> });
   };
 
-  const setEventDetailEvent = ({ event }) => {
-    changeStep({ step: 1 });
-    setDealDetail(event);
-    setOpenCreateForm(false);
-    setOpenUpdateForm(false);
+  const openEventDetailEvent = ({ event }) => {
+    open({ setView: <DealForm /> });
   };
 
   useEffect(() => {
@@ -55,7 +40,6 @@ function AdminDealPage() {
     return () => unsub();
   }, []);
 
-  const [funds, setFunds] = useState([]);
   useEffect(() => {
     const unsub = db.collection("funds").onSnapshot((snapshot) => {
       const newFunds = snapshot.docs.map((fund) => {
@@ -69,7 +53,6 @@ function AdminDealPage() {
     return () => unsub();
   }, []);
 
-  const [events, setEvents] = useState([]);
   useEffect(() => {
     const unsub = db.collection("events").onSnapshot((snapshot) => {
       const newEvents = snapshot.docs.map((event) => {
@@ -92,7 +75,7 @@ function AdminDealPage() {
         return (
           <tr
             key={deal.id}
-            onClick={() => setEventDetailEvent({ deal })}
+            onClick={() => openEventDetailEvent({ deal })}
             className="cursor-pointer"
           >
             <td>{index + 1}</td>
@@ -109,36 +92,23 @@ function AdminDealPage() {
   };
 
   return (
-    <AdminLayout
-      step={step}
-      sidebar={
-        <div className="min-w-[400px] border-l h-full bg-white p-4">
-          <CloseButton changeStep={changeStep} />
-          {openCreateForm && (
-            <DealForm changeStep={changeStep} funds={funds} events={events} />
-          )}
-          {openUpdateForm && (
-            <EventForm event={dealDetail} changeStep={changeStep} />
-          )}
-          {!openUpdateForm && dealDetail && (
-            <EventDetail
-              event={dealDetail}
-              openUpdateFormEvent={openUpdateFormEvent}
-            />
-          )}
-        </div>
-      }
-    >
-      <div className="p-4 bg-white border">
+    <AdminLayout title="거래관리">
+      <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex">
-            <h2 className="mb-2 mr-2 text-3xl font-noto-regular">거래 목록</h2>
+            <button
+              onClick={openCreateFormEvent}
+              className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              거래 생성
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center justify-between mt-4 mb-4">
+          <div className="flex">
             <select
-              className="p-2 border rounded-md bg-gray-50"
-              onChange={(e) => {
-                console.debug(e.target.value);
-                setCheckedFundId(e.target.value);
-              }}
+              className="p-2 border rounded-md bg-white mr-6"
+              onChange={(e) => setCheckedFundId(e.target.value)}
             >
               <option className="p-2">펀드선택</option>
               {funds.map((fund) => {
@@ -149,44 +119,62 @@ function AdminDealPage() {
                 );
               })}
             </select>
+            <div class="flex items-center gap-8">
+              <label class="inline-flex items-center">
+                <input type="radio" name="vehicle" class="h-5 w-5" />
+                <span class="ml-2 text-gray-700">전체</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" name="vehicle" class="h-5 w-5" />
+                <span class="ml-2 text-gray-700">매수</span>
+              </label>
+              <label class="inline-flex items-center">
+                <input type="radio" name="vehicle" class="h-5 w-5" />
+                <span class="ml-2 text-gray-700">매도</span>
+              </label>
+            </div>
           </div>
-          <button
-            onClick={openCreateFormEvent}
-            className="px-4 py-2 mb-2 text-white bg-blue-500 rounded-md"
-          >
-            거래 생성
-          </button>
+
+          <div className="text-end">
+            <div className="flex flex-col justify-center w-3/4 max-w-sm space-y-3 md:flex-row md:w-full md:space-x-3 md:space-y-0">
+              <div className="relative">
+                <input
+                  type="text"
+                  id='"form-subscribe-Filter'
+                  className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  placeholder="name"
+                />
+              </div>
+              <button className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">
+                검색
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center justify-start mt-2 mb-2">
-          <button
-            onClick={openCreateFormEvent}
-            className="px-4 py-2 mb-2 mr-4 bg-gray-100 rounded-md"
-          >
-            전체
-          </button>
-          <button
-            onClick={openCreateFormEvent}
-            className="px-4 py-2 mb-2 mr-4 bg-gray-100 rounded-md"
-          >
-            매수
-          </button>
-          <button
-            onClick={openCreateFormEvent}
-            className="px-4 py-2 mb-2 bg-gray-100 rounded-md"
-          >
-            매도
-          </button>
-        </div>
-        <table className="w-full bg-white border table-fixed table-type-a">
+        <table className="table w-full p-4 bg-white rounded-lg shadow">
           <thead>
-            <tr>
-              <th>No</th>
-              <th>거래날짜</th>
-              <th>종목명</th>
-              <th>공모가</th>
-              <th>매도가</th>
-              <th>수량</th>
-              <th>거래잔량</th>
+            <tr className="border-b text-gray-900">
+              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                No
+              </th>
+              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                거래날짜
+              </th>
+              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                종목명
+              </th>
+              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                공모가
+              </th>
+              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                매도가
+              </th>
+              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                수량
+              </th>
+              <th className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
+                거래잔량
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -194,21 +182,34 @@ function AdminDealPage() {
               <>
                 {deals.length > 0 ? (
                   deals.map((deal, index) => {
-                    console.debug(deal);
                     if (deal.fundId === checkedFundId) {
                       return (
                         <tr
                           key={deal.id}
-                          onClick={() => setEventDetailEvent({ deal })}
-                          className="cursor-pointer"
+                          onClick={() => openEventDetailEvent({ deal })}
+                          className="border-b cursor-pointer text-gray-700"
                         >
-                          <td>{index + 1}</td>
-                          <td>{deal.dealDate}</td>
-                          <td>{deal.dealDate}</td>
-                          <td>공모가격</td>
-                          <td>-</td>
-                          <td>{deal.quantity}주</td>
-                          <td>{deal.quantity}주</td>
+                          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap text-center">
+                            {index + 1}
+                          </td>
+                          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                            {deal.dealDate}
+                          </td>
+                          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                            {deal.dealDate}
+                          </td>
+                          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                            공모가격
+                          </td>
+                          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                            -
+                          </td>
+                          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                            {deal.quantity}주
+                          </td>
+                          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                            {deal.quantity}주
+                          </td>
                         </tr>
                       );
                     }
@@ -230,6 +231,64 @@ function AdminDealPage() {
             )}
           </tbody>
         </table>
+        <div className="flex flex-col items-center px-5 py-5 xs:flex-row xs:justify-between">
+          <div className="flex items-center">
+            <button
+              type="button"
+              className="w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
+            >
+              <svg
+                width="9"
+                fill="currentColor"
+                height="8"
+                className=""
+                viewBox="0 0 1792 1792"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 "
+            >
+              1
+            </button>
+            <button
+              type="button"
+              className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
+            >
+              2
+            </button>
+            <button
+              type="button"
+              className="w-full px-4 py-2 text-base text-gray-600 bg-white border-t border-b hover:bg-gray-100"
+            >
+              3
+            </button>
+            <button
+              type="button"
+              className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
+            >
+              4
+            </button>
+            <button
+              type="button"
+              className="w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
+            >
+              <svg
+                width="9"
+                fill="currentColor"
+                height="8"
+                className=""
+                viewBox="0 0 1792 1792"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </AdminLayout>
   );
