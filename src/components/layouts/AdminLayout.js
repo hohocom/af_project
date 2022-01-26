@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "assets/styles/table.css";
 import { Modal } from "components/common";
 

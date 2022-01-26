@@ -1,4 +1,4 @@
-.table-type-a  {
+.table-type-a {
   table-layout: fixed;
 }
 .table-type-a tr {
@@ -16,4 +16,8 @@
   border-right: 1px solid #e6e6e6;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+td {
+  text-align: center;
 }

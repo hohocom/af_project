@@ -1,9 +1,10 @@
 /* eslint-disable array-callback-return */
-import { useForm } from "core/hooks";
+import { useForm, useModal } from "core/hooks";
 import { db } from "utils/firebase";
 
 function DealForm({ deal, funds, events }) {
-  const { form, changeInput, resetForm } = useForm(
+  const { close } = useModal();
+  const { form, changeInput, isCompleted } = useForm(
     deal
       ? deal
       : {
@@ -16,7 +17,20 @@ function DealForm({ deal, funds, events }) {
   );
 
   const create = async () => {
+    const dealRef = await db
+      .collection("deals")
+      .where("fundId", "==", form.fundId)
+      .where("eventId", "==", form.eventId)
+      .get();
+    // dealRef.docs.map((doc) => {
+    //   console.debug(doc.data());
+    // });
+    if (!dealRef.empty) {
+      window.alert("해당 펀드와 종목에 대한 매수내역이 이미 존재합니다.");
+      return;
+    }
     await db.collection("deals").add(form);
+    close();
   };
 
   return (
@@ -56,7 +70,6 @@ function DealForm({ deal, funds, events }) {
           })}
         </select>
       </div>
-
       {events.map((event) => {
         console.debug(form);
         if (event.id === form.eventId) {
@@ -98,10 +111,13 @@ function DealForm({ deal, funds, events }) {
       })}
       <button
         type="button"
-        className="mt-4 w-full px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+        className="mt-4 w-full px-4 py-2 text-base font-semibold text-center text-white transition 
+        duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 
+        focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
         onClick={create}
+        disabled={!isCompleted}
       >
-        생성
+        {isCompleted ? "생성" : "모든 항목을 입력해주세요.."}
       </button>
     </form>
   );

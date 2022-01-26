@@ -1,3 +1,4 @@
+import { withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { FundDetail, FundForm } from "components/layouts/admin";
 import { useModal } from "core/hooks";
@@ -211,4 +212,4 @@ function AdminFundPage() {
   );
 }
 
-export default AdminFundPage;
+export default withPrivate(AdminFundPage);

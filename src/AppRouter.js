@@ -1,4 +1,6 @@
-import React from "react";
+/* eslint-disable jsx-a11y/iframe-has-title */
+/* eslint-disable array-callback-return */
+import React, { useEffect } from "react";
 import { useRoutes } from "react-router-dom";
 
 import {
@@ -18,8 +20,31 @@ import {
   AdminLoginPage,
   AdminUserPage,
 } from "pages/admin";
+import { useState } from "react/cjs/react.development";
+import { auth, db } from "utils/firebase";
+import { Loading } from "components/common";
 
 function App() {
+  const [manager, setManager] = useState(null);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      console.debug("실행되버림!!");
+      if (user) {
+        const managerRef = await db.collection("managers").get();
+        managerRef.docs.forEach((manager) => {
+          if (manager.id === user.uid) {
+            setManager({
+              id: manager.id,
+              ...manager.data(),
+            });
+          }
+        });
+      }
+      setLoading(true);
+    });
+  }, []);
+
   const route = useRoutes([
     // 모바일, 회원 전용 페이지 리스트
     { path: "/", element: <LoadingPage /> },
@@ -31,14 +56,35 @@ function App() {
     { path: "/hold-events", element: <HoldEventPage /> },
     { path: "/profit-or-loss", element: <ProfitOrLossPage /> },
     // 데스크톱, 관리자 전용 페이지 리스트
-    { path: "/admin", element: <AdminLoginPage /> },
-    { path: "/admin/users", element: <AdminUserPage /> },
-    { path: "/admin/funds", element: <AdminFundPage /> },
-    { path: "/admin/events", element: <AdminEventPage /> },
-    { path: "/admin/deals", element: <AdminDealPage /> },
+    {
+      path: "/admin",
+      element: (
+        <AdminLoginPage
+          user={manager}
+          restricted={true}
+          redirectURL="/admin/users"
+        />
+      ),
+    },
+    {
+      path: "/admin/users",
+      element: <AdminUserPage user={manager} redirectURL="/admin" />,
+    },
+    {
+      path: "/admin/funds",
+      element: <AdminFundPage user={manager} redirectURL="/admin" />,
+    },
+    {
+      path: "/admin/events",
+      element: <AdminEventPage user={manager} redirectURL="/admin" />,
+    },
+    {
+      path: "/admin/deals",
+      element: <AdminDealPage user={manager} redirectURL="/admin" />,
+    },
   ]);
 
-  return route;
+  return <Loading isLoading={!loading}>{route}</Loading>;
 }
 
 export default App;

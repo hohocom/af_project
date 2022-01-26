@@ -3,7 +3,7 @@ import { db, auth } from "utils/firebase";
 
 function UserForm({ user }) {
   const { close } = useModal();
-  const { form, changeInput, resetForm } = useForm(
+  const { form, changeInput, resetForm, isCompleted } = useForm(
     user
       ? user
       : {
@@ -17,10 +17,12 @@ function UserForm({ user }) {
   );
 
   const createUser = async () => {
-    const userCredential = await auth.createUserWithEmailAndPassword(
-      form.email,
-      form.password
-    );
+    const userCredential = await auth
+      .createUserWithEmailAndPassword(form.email, form.password)
+      .then(async (user) => {
+        console.debug(user);
+        await auth.signOut();
+      });
     db.collection("users").doc(userCredential.user.uid).set({
       email: form.email,
       name: form.name,
@@ -115,8 +117,9 @@ function UserForm({ user }) {
           type="button"
           className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
           onClick={createUser}
+          disabled={!isCompleted}
         >
-          생성
+          {isCompleted ? "생성" : "모든 항목을 입력해주세요.."}
         </button>
       ) : (
         <>
@@ -124,8 +127,9 @@ function UserForm({ user }) {
             type="button"
             className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
             onClick={updateUser}
+            disabled={!isCompleted}
           >
-            수정
+            {isCompleted ? "수정" : "모든 항목을 입력해주세요.."}
           </button>
           <button
             type="button"

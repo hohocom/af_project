@@ -1,3 +1,4 @@
+import { withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { DealForm } from "components/layouts/admin";
 import { useModal } from "core/hooks";
@@ -119,18 +120,18 @@ function AdminDealPage() {
                 );
               })}
             </select>
-            <div class="flex items-center gap-8">
-              <label class="inline-flex items-center">
-                <input type="radio" name="vehicle" class="h-5 w-5" />
-                <span class="ml-2 text-gray-700">전체</span>
+            <div className="flex items-center gap-8">
+              <label className="inline-flex items-center">
+                <input type="radio" name="vehicle" className="h-5 w-5" />
+                <span className="ml-2 text-gray-700">전체</span>
               </label>
-              <label class="inline-flex items-center">
-                <input type="radio" name="vehicle" class="h-5 w-5" />
-                <span class="ml-2 text-gray-700">매수</span>
+              <label className="inline-flex items-center">
+                <input type="radio" name="vehicle" className="h-5 w-5" />
+                <span className="ml-2 text-gray-700">매수</span>
               </label>
-              <label class="inline-flex items-center">
-                <input type="radio" name="vehicle" class="h-5 w-5" />
-                <span class="ml-2 text-gray-700">매도</span>
+              <label className="inline-flex items-center">
+                <input type="radio" name="vehicle" className="h-5 w-5" />
+                <span className="ml-2 text-gray-700">매도</span>
               </label>
             </div>
           </div>
@@ -164,7 +165,7 @@ function AdminDealPage() {
                 종목명
               </th>
               <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                공모가
+                매수가
               </th>
               <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                 매도가
@@ -294,4 +295,4 @@ function AdminDealPage() {
   );
 }
 
-export default AdminDealPage;
+export default withPrivate(AdminDealPage);

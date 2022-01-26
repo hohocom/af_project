@@ -3,7 +3,7 @@ import { db } from "utils/firebase";
 
 function FundForm({ fund = null }) {
   const { close } = useModal();
-  const { form, changeInput, resetForm } = useForm(
+  const { form, changeInput, resetForm, isCompleted } = useForm(
     fund
       ? fund
       : {
@@ -144,8 +144,9 @@ function FundForm({ fund = null }) {
           type="button"
           className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
           onClick={createFund}
+          disabled={!isCompleted}
         >
-          생성
+          {isCompleted ? "생성" : "모든 항목을 입력해주세요.."}
         </button>
       ) : (
         <>
@@ -153,8 +154,9 @@ function FundForm({ fund = null }) {
             type="button"
             className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
             onClick={updateFund}
+            disabled={!isCompleted}
           >
-            수정
+            {isCompleted ? "수정" : "모든 항목을 입력해주세요.."}
           </button>
           <button
             type="button"

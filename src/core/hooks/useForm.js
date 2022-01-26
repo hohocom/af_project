@@ -1,7 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect } from "react";
 import { useState } from "react/cjs/react.development";
 
 function useForm(formObj) {
   const [form, setForm] = useState(formObj);
+
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const changeInput = (e) => {
     const name = e.target.name;
@@ -27,10 +31,34 @@ function useForm(formObj) {
     setForm(newObj);
   };
 
+  const checkFormData = () => {
+    let result = true;
+    console.debug("폼데이터 감시중..");
+    for (let f in form) {
+      if (
+        form[f] === null ||
+        form[f] === "" ||
+        form[f] === " " ||
+        form[f] === undefined ||
+        form[f] === "undefinded"
+      ) {
+        console.debug(`${f} : ${form[f]}`);
+        result = false;
+      }
+    }
+    console.debug(result);
+    setIsCompleted(result);
+  };
+
+  useEffect(() => {
+    checkFormData();
+  }, [form]);
+
   return {
     form,
     changeInput,
     resetForm,
+    isCompleted,
   };
 }
 

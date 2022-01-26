@@ -4,6 +4,7 @@ import { useModal } from "core/hooks";
 import { db } from "utils/firebase";
 
 import { UserDetail, UserForm } from "components/layouts/admin";
+import { withPrivate } from "components/common";
 
 function AdminUserPage() {
   const { open } = useModal();
@@ -203,4 +204,4 @@ function AdminUserPage() {
   );
 }
 
-export default AdminUserPage;
+export default withPrivate(AdminUserPage);

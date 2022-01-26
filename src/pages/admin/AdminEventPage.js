@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { EventDetail, EventForm } from "components/layouts/admin";
 import { useModal } from "core/hooks";
@@ -200,4 +201,4 @@ function AdminEventPage() {
   );
 }
 
-export default AdminEventPage;
+export default withPrivate(AdminEventPage);
