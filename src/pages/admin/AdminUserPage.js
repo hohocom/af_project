@@ -4,7 +4,7 @@ import { useModal } from "core/hooks";
 import { db } from "utils/firebase";
 
 import { UserDetail, UserForm } from "components/layouts/admin";
-import { withPrivate } from "components/common";
+import { Pager, Table, withPrivate } from "components/common";
 
 function AdminUserPage() {
   const { open } = useModal();
@@ -46,7 +46,7 @@ function AdminUserPage() {
   return (
     <AdminLayout title="회원관리">
       <div className="p-4">
-        <div className="flex justify-between items-center mb-4 mt-4">
+        <div className="flex items-center justify-between mt-4 mb-4">
           <button
             onClick={openCreateFormEvent}
             className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
@@ -69,136 +69,43 @@ function AdminUserPage() {
             </div>
           </div>
         </div>
-        <table className="table w-full p-4 bg-white rounded-lg shadow">
-          <thead>
-            <tr className="border-b text-gray-900">
-              <th className="p-4 font-normal  border-r dark:border-dark-5 whitespace-nowrap">
-                #
-              </th>
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                이름
-              </th>
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                ID(email)
-              </th>
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                생년월일
-              </th>
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                주소
-              </th>
-              <th className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
-                전화번호
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {init ? (
-              <>
-                {users.length > 0 ? (
-                  users.map((user, index) => {
-                    return (
-                      <tr
-                        key={user.id}
-                        onClick={() => openUserDetailEvent({ user })}
-                        className="border-b cursor-pointer text-gray-700"
-                      >
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap text-center">
-                          {index + 1}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {user.name}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {user.email}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {user.birthday}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {user.address}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {user.phone}
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td className="p-4" colSpan={6}>
-                      회원 목록이 없습니다.
-                    </td>
-                  </tr>
-                )}
-              </>
-            ) : (
-              <tr>
-                <td className="p-4" colSpan={6}>
-                  로딩중..
+
+        <Table
+          titles={["이름", "email(id)", "생년월일", "주소", "전화번호"]}
+          itemInit={init}
+          itemLength={users.length}
+          colSpan={6}
+        >
+          {users.map((user, index) => {
+            return (
+              <tr
+                key={user.id}
+                onClick={() => openUserDetailEvent({ user })}
+                className="text-gray-700 border-b cursor-pointer"
+              >
+                <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                  {index + 1}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.name}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.email}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.birthday}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.address}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.phone}
                 </td>
               </tr>
-            )}
-          </tbody>
-        </table>
-        <div className="flex flex-col items-center px-5 py-5 xs:flex-row xs:justify-between">
-          <div className="flex items-center">
-            <button
-              type="button"
-              className="w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
-            >
-              <svg
-                width="9"
-                fill="currentColor"
-                height="8"
-                className=""
-                viewBox="0 0 1792 1792"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
-              </svg>
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 "
-            >
-              1
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
-            >
-              2
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-gray-600 bg-white border-t border-b hover:bg-gray-100"
-            >
-              3
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
-            >
-              4
-            </button>
-            <button
-              type="button"
-              className="w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
-            >
-              <svg
-                width="9"
-                fill="currentColor"
-                height="8"
-                className=""
-                viewBox="0 0 1792 1792"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
+            );
+          })}
+        </Table>
+        <Pager />
       </div>
     </AdminLayout>
   );

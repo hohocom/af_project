@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { withPrivate } from "components/common";
+import { Pager, Table, withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { EventDetail, EventForm } from "components/layouts/admin";
 import { useModal } from "core/hooks";
@@ -11,6 +11,12 @@ function AdminEventPage() {
   const { open } = useModal();
   const [init, setInit] = useState(false);
   const [events, setEvents] = useState([]);
+  const pageLimit = 10; // 페이지당 몇개 보여줄건지
+  const [currentPage, setCurrentPage] = useState(1); //현재 페이지
+
+  // const [totalPageLength, setTotalPageLength] = useState();
+
+  //상태
 
   const openUpdateFormEvent = ({ event }) => {
     open({ setView: <EventForm event={event} /> });
@@ -37,11 +43,44 @@ function AdminEventPage() {
         };
       });
       setEvents(newEvents);
+      //총길이
+      Math.ceil(events.length / pageLimit);
+      // setTotalPageLength(Math.ceil(events.length / pageLimit));
       setInit(true);
     });
     return () => unsub();
   }, []);
 
+  const tableData = (events) => {
+    const totalPage = Math.ceil(events.length / pageLimit); //총 페이지 갯수
+    let result = [];
+    for (let i = currentPage; i < currentPage * 10 + 1; i++) {
+      result.push(
+        <tr
+          key={events[i].id}
+          onClick={() => openEventDetailEvent({ events })}
+          className="text-gray-700 border-b cursor-pointer"
+        >
+          <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+            {i + 1}
+          </td>
+          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+            {events[i].eventsName}
+          </td>
+          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+            {events[i].fixedAmount}
+          </td>
+          <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+            {events[i].startSubscribePeriod}~{events[i].endSubscribePeriod}
+          </td>
+          <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+            {events[i].paymentDate}
+          </td>
+        </tr>
+      );
+    }
+    return result;
+  };
   return (
     <AdminLayout title="종목관리">
       <div className="p-4">
@@ -71,131 +110,15 @@ function AdminEventPage() {
           </div>
         </div>
 
-        <table className="table w-full p-4 bg-white rounded-lg shadow">
-          <thead>
-            <tr className="border-b text-gray-900">
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                #
-              </th>
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                종목명
-              </th>
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                확정공모가액
-              </th>
-              <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                청약기간
-              </th>
-              <th className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
-                납입일
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {init ? (
-              <>
-                {events.length > 0 ? (
-                  events.map((event, index) => {
-                    return (
-                      <tr
-                        key={event.id}
-                        onClick={() => openEventDetailEvent({ event })}
-                        className="border-b cursor-pointer text-gray-700"
-                      >
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap text-center">
-                          {index + 1}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {event.eventName}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {event.fixedAmount}
-                        </td>
-                        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                          {event.startSubscribePeriod}~
-                          {event.endSubscribePeriod}
-                        </td>
-                        <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-                          {event.paymentDate}
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td className="p-4" colSpan={5}>
-                      생성된 종목이 없습니다.
-                    </td>
-                  </tr>
-                )}
-              </>
-            ) : (
-              <tr>
-                <td className="p-4" colSpan={5}>
-                  로딩중..
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        <div className="flex flex-col items-center px-5 py-5 xs:flex-row xs:justify-between">
-          <div className="flex items-center">
-            <button
-              type="button"
-              className="w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
-            >
-              <svg
-                width="9"
-                fill="currentColor"
-                height="8"
-                className=""
-                viewBox="0 0 1792 1792"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
-              </svg>
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 "
-            >
-              1
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
-            >
-              2
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-gray-600 bg-white border-t border-b hover:bg-gray-100"
-            >
-              3
-            </button>
-            <button
-              type="button"
-              className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
-            >
-              4
-            </button>
-            <button
-              type="button"
-              className="w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
-            >
-              <svg
-                width="9"
-                fill="currentColor"
-                height="8"
-                className=""
-                viewBox="0 0 1792 1792"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M1363 877l-742 742q-19 19-45 19t-45-19l-166-166q-19-19-19-45t19-45l531-531-531-531q-19-19-19-45t19-45l166-166q19-19 45-19t45 19l742 742q19 19 19 45t-19 45z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Table
+          titles={["종목명", "확정공모가액", "청약기간", "납입일"]}
+          itemInit={init}
+          itemLength={events.length}
+          colSpan={5}
+        >
+          {events.length !== 0 ? tableData(events) : null}
+        </Table>
+        <Pager dataLength={events.length} />
       </div>
     </AdminLayout>
   );
