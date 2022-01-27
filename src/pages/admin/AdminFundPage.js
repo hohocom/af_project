@@ -8,29 +8,12 @@ function AdminFundPage() {
   const { fundListInit } = useFundStream();
   const { fundList } = useFund();
 
-  const openUpdateFormEvent = ({ fund }) => {
-    open({ setView: <FundForm fund={fund} /> });
-  };
-
-  const openCreateFormEvent = () => {
-    open({ setView: <FundForm /> });
-  };
-
-  const openFundDetailEvent = ({ fund }) => {
-    // setFundDetail(fund);
-    open({
-      setView: (
-        <FundDetail fund={fund} openUpdateFormEvent={openUpdateFormEvent} />
-      ),
-    });
-  };
-
   return (
     <AdminLayout title="펀드관리">
       <div className="p-4">
         <div className="flex items-center justify-between py-4">
           <button
-            onClick={openCreateFormEvent}
+            onClick={() => open({ setView: <FundForm /> })}
             type="button"
             className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
           >
@@ -71,7 +54,18 @@ function AdminFundPage() {
             return (
               <tr
                 key={fund.id}
-                onClick={() => openFundDetailEvent({ fund })}
+                onClick={() =>
+                  open({
+                    setView: (
+                      <FundDetail
+                        fund={fund}
+                        openUpdateFormEvent={() =>
+                          open({ setView: <FundForm fund={fund} /> })
+                        }
+                      />
+                    ),
+                  })
+                }
                 className="text-gray-700 border-b cursor-pointer"
               >
                 <td className="p-4 text-center border-r dark:border-dark-5">

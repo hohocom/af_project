@@ -12,25 +12,21 @@ export function useFundStream() {
   const [fundList, setFundList] = useRecoilState(fundListState);
   const [fundListInit, setFundListInit] = useState(false);
   useEffect(() => {
-    let unsub = null;
-    if (fundList.length <= 0) {
-      console.debug("%c[펀드 실시간 감지..]", "color:red");
-      unsub = db.collection("funds").onSnapshot((snapshot) => {
-        const docs = snapshot.docs.map((fund) => {
-          return {
-            id: fund.id,
-            ...fund.data(),
-          };
-        });
-        setFundList(docs);
+    console.debug("%c[펀드 실시간 감지..]", "color:red");
+    const unsub = db.collection("funds").onSnapshot((snapshot) => {
+      const docs = snapshot.docs.map((fund) => {
+        return {
+          id: fund.id,
+          ...fund.data(),
+        };
       });
-    }
+      setFundList(docs);
+    });
+
     setFundListInit(true);
     return () => {
-      if (unsub !== null) {
-        console.debug("%c[펀드 실시간 감지 종료]", "color:red");
-        unsub();
-      }
+      console.debug("%c[펀드 실시간 감지 종료]", "color:red");
+      unsub();
     };
   }, []);
 
@@ -40,8 +36,25 @@ export function useFundStream() {
 function useFund() {
   const [fundList, setFundList] = useRecoilState(fundListState);
 
+  const store = async ({ form }) => {
+    await db.collection("funds").add(form);
+  };
+
+  const edit = async ({ id, form }) => {
+    await db.collection("funds").doc(id).set(form);
+  };
+
+  const destroy = async ({ id }) => {
+    const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
+    if (result !== "삭제") return;
+    await db.collection("funds").doc(id).delete();
+  };
+
   return {
     fundList,
+    store,
+    edit,
+    destroy,
   };
 }
 

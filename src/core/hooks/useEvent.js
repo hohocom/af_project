@@ -12,25 +12,21 @@ export function useEventStream() {
   const [eventList, setEventList] = useRecoilState(eventListState);
   const [eventListInit, setEventListInit] = useState(false);
   useEffect(() => {
-    let unsub = null;
-    if (eventList.length <= 0) {
-      console.debug("%c[종목 실시간 감지..]", "color:red");
-      unsub = db.collection("events").onSnapshot((snapshot) => {
-        const docs = snapshot.docs.map((fund) => {
-          return {
-            id: fund.id,
-            ...fund.data(),
-          };
-        });
-        setEventList(docs);
+    console.debug("%c[종목 실시간 감지..]", "color:red");
+    const unsub = db.collection("events").onSnapshot((snapshot) => {
+      const docs = snapshot.docs.map((fund) => {
+        return {
+          id: fund.id,
+          ...fund.data(),
+        };
       });
-    }
-    setEventListInit(true);
+      setEventList(docs);
+      setEventListInit(true);
+    });
+
     return () => {
-      if (unsub !== null) {
-        console.debug("%c[종목 실시간 감지 종료]", "color:red");
-        unsub();
-      }
+      console.debug("%c[종목 실시간 감지 종료]", "color:red");
+      unsub();
     };
   }, []);
 
@@ -40,8 +36,25 @@ export function useEventStream() {
 function useEvent() {
   const [eventList, setEventList] = useRecoilState(eventListState);
 
+  const store = async ({ form }) => {
+    await db.collection("events").add(form);
+  };
+
+  const edit = async ({ id, form }) => {
+    await db.collection("events").doc(id).set(form);
+  };
+
+  const destroy = async ({ id }) => {
+    const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
+    if (result !== "삭제") return;
+    await db.collection("events").doc(id).delete();
+  };
+
   return {
     eventList,
+    store,
+    edit,
+    destroy,
   };
 }
 

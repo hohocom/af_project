@@ -2,15 +2,12 @@
 import { Pager, Table, withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { EventDetail, EventForm } from "components/layouts/admin";
-import { useModal } from "core/hooks";
-import { useEffect } from "react";
-import { useState } from "react/cjs/react.development";
-import { db } from "utils/firebase";
+import { useModal, useEvent, useEventStream } from "core/hooks";
 
 function AdminEventPage() {
   const { open } = useModal();
-  const [init, setInit] = useState(false);
-  const [events, setEvents] = useState([]);
+  const { eventListInit } = useEventStream();
+  const { eventList } = useEvent();
 
   const openUpdateFormEvent = ({ event }) => {
     open({ setView: <EventForm event={event} /> });
@@ -27,20 +24,6 @@ function AdminEventPage() {
       ),
     });
   };
-
-  useEffect(() => {
-    const unsub = db.collection("events").onSnapshot((snapshot) => {
-      const newEvents = snapshot.docs.map((event) => {
-        return {
-          id: event.id,
-          ...event.data(),
-        };
-      });
-      setEvents(newEvents);
-      setInit(true);
-    });
-    return () => unsub();
-  }, []);
 
   return (
     <AdminLayout title="종목관리">
@@ -73,11 +56,11 @@ function AdminEventPage() {
 
         <Table
           titles={["종목명", "확정공모가액", "청약기간", "납입일"]}
-          itemInit={init}
-          itemLength={events.length}
+          itemInit={eventListInit}
+          itemLength={eventList.length}
           colSpan={5}
         >
-          {events.map((event, index) => {
+          {eventList.map((event, index) => {
             return (
               <tr
                 key={event.id}

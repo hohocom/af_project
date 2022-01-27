@@ -1,4 +1,4 @@
-import { useForm, useModal } from "core/hooks";
+import { useForm, useFund, useModal } from "core/hooks";
 import { db } from "utils/firebase";
 
 function FundForm({ fund = null }) {
@@ -17,24 +17,7 @@ function FundForm({ fund = null }) {
           endJoinPeriod: "",
         }
   );
-
-  const createFund = async () => {
-    await db.collection("funds").add(form);
-    resetForm();
-    close();
-  };
-
-  const updateFund = async () => {
-    await db.collection("funds").doc(fund.id).set(form);
-    close();
-  };
-
-  const deleteFund = async () => {
-    const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
-    if (result !== "삭제") return;
-    await db.collection("funds").doc(fund.id).delete();
-    close();
-  };
+  const { store, edit, destroy } = useFund();
 
   return (
     <form>
@@ -143,7 +126,11 @@ function FundForm({ fund = null }) {
         <button
           type="button"
           className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          onClick={createFund}
+          onClick={() => {
+            store({ form });
+            resetForm();
+            close();
+          }}
           disabled={!isCompleted}
         >
           {isCompleted ? "생성" : "모든 항목을 입력해주세요.."}
@@ -153,7 +140,10 @@ function FundForm({ fund = null }) {
           <button
             type="button"
             className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={updateFund}
+            onClick={() => {
+              edit({ id: fund.id, form: form });
+              close();
+            }}
             disabled={!isCompleted}
           >
             {isCompleted ? "수정" : "모든 항목을 입력해주세요.."}
@@ -161,7 +151,10 @@ function FundForm({ fund = null }) {
           <button
             type="button"
             className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-red-400 rounded-lg shadow-md hover:bg-red-500 focus:ring-red-300 focus:ring-offset-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={deleteFund}
+            onClick={() => {
+              destroy({ id: fund.id });
+              close();
+            }}
           >
             삭제
           </button>
