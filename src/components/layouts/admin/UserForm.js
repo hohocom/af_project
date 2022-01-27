@@ -21,7 +21,6 @@ function UserForm({ user }) {
       .createUserWithEmailAndPassword(form.email, form.password)
       .then(async (user) => {
         console.debug(user);
-        await auth.signOut();
       });
     db.collection("users").doc(userCredential.user.uid).set({
       email: form.email,
