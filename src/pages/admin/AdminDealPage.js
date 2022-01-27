@@ -16,18 +16,6 @@ function AdminDealPage() {
   const [funds, setFunds] = useState([]);
   const [events, setEvents] = useState([]);
 
-  const openUpdateFormEvent = ({ event }) => {
-    open({ setView: <DealForm events={events} funds={funds} /> });
-  };
-
-  const openCreateFormEvent = () => {
-    open({ setView: <DealForm events={events} funds={funds} /> });
-  };
-
-  const openEventDetailEvent = ({ event }) => {
-    open({ setView: <DealForm /> });
-  };
-
   useEffect(() => {
     const unsub = db.collection("deals").onSnapshot((snapshot) => {
       const newDeals = snapshot.docs.map((deal) => {
@@ -67,6 +55,18 @@ function AdminDealPage() {
     });
     return () => unsub();
   }, []);
+
+  const openUpdateFormEvent = ({ event }) => {
+    open({ setView: <DealForm events={events} funds={funds} /> });
+  };
+
+  const openCreateFormEvent = () => {
+    open({ setView: <DealForm events={events} funds={funds} /> });
+  };
+
+  const openEventDetailEvent = ({ event }) => {
+    open({ setView: <DealForm /> });
+  };
 
   return (
     <AdminLayout title="거래관리">
