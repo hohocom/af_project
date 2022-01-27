@@ -1,14 +1,12 @@
 import { Pager, Table, withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { FundDetail, FundForm } from "components/layouts/admin";
-import { useModal } from "core/hooks";
-import { useEffect, useState } from "react";
-import { db } from "utils/firebase";
+import { useFund, useFundStream, useModal } from "core/hooks";
 
 function AdminFundPage() {
   const { open } = useModal();
-  const [init, setInit] = useState(false);
-  const [funds, setFunds] = useState([]);
+  const { fundListInit } = useFundStream();
+  const { fundList } = useFund();
 
   const openUpdateFormEvent = ({ fund }) => {
     open({ setView: <FundForm fund={fund} /> });
@@ -26,21 +24,6 @@ function AdminFundPage() {
       ),
     });
   };
-
-  useEffect(() => {
-    const unsub = db.collection("funds").onSnapshot((snapshot) => {
-      const newFunds = snapshot.docs.map((fund) => {
-        return {
-          id: fund.id,
-          ...fund.data(),
-        };
-      });
-      setFunds(newFunds);
-    
-      setInit(true);
-    });
-    return () => unsub();
-  }, []);
 
   return (
     <AdminLayout title="펀드관리">
@@ -80,11 +63,11 @@ function AdminFundPage() {
             "기본수수료",
             "거래수수료",
           ]}
-          itemInit={init}
-          itemLength={funds.length}
+          itemInit={fundListInit}
+          itemLength={fundList.length}
           colSpan={7}
         >
-          {funds.map((fund, index) => {
+          {fundList.map((fund, index) => {
             return (
               <tr
                 key={fund.id}
