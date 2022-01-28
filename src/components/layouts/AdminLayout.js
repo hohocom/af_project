@@ -63,7 +63,9 @@ function AdminLayout({ children, title = "제목" }) {
         <header className="w-full p-4 text-xl bg-white border-b font-noto-bold">
           {title}
         </header>
-        <section className="w-full h-full p-4 overflow-y-auto">{children}</section>
+        <section className="w-full h-full p-4 overflow-y-auto">
+          {children}
+        </section>
         <Modal />
       </main>
     </div>

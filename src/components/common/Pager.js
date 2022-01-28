@@ -1,10 +1,65 @@
-function Pager() {
+import { useEffect, useState } from "react";
+
+function Pager({ totalPageLength, setCurrentPage, currentPage }) {
+  const pageIndexLimit = 5; // > 몇 페이지씩 넘겨줄건지
+  const start = 1; // 시작페이지
+  const end = Math.ceil(totalPageLength / pageIndexLimit); // 마지막페이지
+  const [current, setCurrent] = useState(1); //
+
+  const buttonUI = (i) => {
+    return (
+      <button
+        key={i}
+        type="button"
+        className={`w-full px-4 py-2 text-base  bg-white border-t border-b hover:bg-gray-100 ${
+          currentPage === i ? "text-indigo-500" : "text-black"
+        }`}
+        onClick={() => setCurrentPage(i)}
+      >
+        {i}
+      </button>
+    );
+  };
+  const buttonNumber = () => {
+    let result = [];
+    if (current === end) {
+      for (
+        let i = current * pageIndexLimit - (pageIndexLimit - 1);
+        i <= totalPageLength;
+        i++
+      ) {
+        result.push(buttonUI(i));
+      }
+    } else {
+      for (
+        let i = current * pageIndexLimit - (pageIndexLimit - 1);
+        i <= current * pageIndexLimit;
+        i++
+      ) {
+        result.push(buttonUI(i));
+      }
+    }
+
+    return result;
+  };
+  useEffect(() => {
+    setCurrentPage(current * pageIndexLimit - (pageIndexLimit - 1));
+  }, [current]);
+  useEffect(() => {
+    console.log(currentPage);
+  }, [currentPage]);
+
   return (
     <div className="flex flex-col items-center px-5 py-5 xs:flex-row xs:justify-between">
       <div className="flex items-center">
         <button
           type="button"
           className="w-full p-4 text-base text-gray-600 bg-white border rounded-l-xl hover:bg-gray-100"
+          onClick={() => {
+            if (start < current) {
+              setCurrent(current - 1);
+            }
+          }}
         >
           <svg
             width="9"
@@ -17,33 +72,16 @@ function Pager() {
             <path d="M1427 301l-531 531 531 531q19 19 19 45t-19 45l-166 166q-19 19-45 19t-45-19l-742-742q-19-19-19-45t19-45l742-742q19-19 45-19t45 19l166 166q19 19 19 45t-19 45z"></path>
           </svg>
         </button>
-        <button
-          type="button"
-          className="w-full px-4 py-2 text-base text-indigo-500 bg-white border-t border-b hover:bg-gray-100 "
-        >
-          1
-        </button>
-        <button
-          type="button"
-          className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
-        >
-          2
-        </button>
-        <button
-          type="button"
-          className="w-full px-4 py-2 text-base text-gray-600 bg-white border-t border-b hover:bg-gray-100"
-        >
-          3
-        </button>
-        <button
-          type="button"
-          className="w-full px-4 py-2 text-base text-gray-600 bg-white border hover:bg-gray-100"
-        >
-          4
-        </button>
+        {buttonNumber()}
+
         <button
           type="button"
           className="w-full p-4 text-base text-gray-600 bg-white border-t border-b border-r rounded-r-xl hover:bg-gray-100"
+          onClick={() => {
+            if (end > current) {
+              setCurrent(current + 1);
+            }
+          }}
         >
           <svg
             width="9"

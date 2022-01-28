@@ -2,13 +2,18 @@
 import { Pager, Table, withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { EventDetail, EventForm } from "components/layouts/admin";
-import { useModal, useEvent, useEventStream } from "core/hooks";
+import { useEvent, useEventStream, useModal } from "core/hooks";
+import { useState } from "react/cjs/react.development";
 
 function AdminEventPage() {
   const { open } = useModal();
   const { eventListInit } = useEventStream();
   const { eventList } = useEvent();
+  const pageLimit = 10; // 페이지당 몇개 보여줄건지
+  const [currentPage, setCurrentPage] = useState(1); //현재 페이지
+  const totalPageLength = Math.ceil(eventList.length / pageLimit); // 총 페이지 갯수
 
+  //상태
   const openUpdateFormEvent = ({ event }) => {
     open({ setView: <EventForm event={event} /> });
   };
@@ -23,6 +28,46 @@ function AdminEventPage() {
         <EventDetail event={event} openUpdateFormEvent={openUpdateFormEvent} />
       ),
     });
+  };
+
+  const tableData = (events) => {
+    let result = [];
+    for (
+      let i = currentPage * pageLimit - (pageLimit - 1);
+      totalPageLength === currentPage
+        ? i <= events.length
+        : i <= currentPage * pageLimit;
+      i++
+    ) {
+      result.push(tableUI(events[i - 1], i));
+    }
+    return result;
+  };
+
+  const tableUI = (event, i) => {
+    return (
+      <tr
+        key={event.id}
+        onClick={() => openEventDetailEvent({ event })}
+        className="text-gray-700 border-b cursor-pointer"
+      >
+        <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+          {i}
+        </td>
+        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+          {event.eventsName}
+        </td>
+        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+          {event.fixedAmount}
+        </td>
+        <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+          {event.startSubscribePeriod}~{event.endSubscribePeriod}
+        </td>
+        <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+          {event.paymentDate}
+        </td>
+      </tr>
+    );
   };
 
   return (
@@ -60,33 +105,15 @@ function AdminEventPage() {
           itemLength={eventList.length}
           colSpan={5}
         >
-          {eventList.map((event, index) => {
-            return (
-              <tr
-                key={event.id}
-                onClick={() => openEventDetailEvent({ event })}
-                className="text-gray-700 border-b cursor-pointer"
-              >
-                <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                  {index + 1}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.eventName}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.fixedAmount}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.startSubscribePeriod}~{event.endSubscribePeriod}
-                </td>
-                <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.paymentDate}
-                </td>
-              </tr>
-            );
-          })}
+          {eventListInit && tableData(eventList)}
         </Table>
-        <Pager />
+        {eventListInit && (
+          <Pager
+            totalPageLength={totalPageLength}
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+          />
+        )}
       </div>
     </AdminLayout>
   );
