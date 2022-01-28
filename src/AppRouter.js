@@ -28,10 +28,12 @@ import { Loading } from "components/common";
 function App() {
   const [manager, setManager] = useState(null);
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
       console.debug("실행되버림!!");
       if (user) {
+        console.debug(user);
         const managerRef = await db.collection("managers").get();
         managerRef.docs.forEach((manager) => {
           if (manager.id === user.uid) {

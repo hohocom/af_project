@@ -10,7 +10,7 @@ function Table({
       <thead>
         <tr className="text-gray-900 border-b">
           <th className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-            No
+            #
           </th>
           {titles.map((th, index) => {
             return (
