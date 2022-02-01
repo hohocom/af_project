@@ -15,59 +15,9 @@ function AdminFundPage() {
   const { fundList } = useFund();
   const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
     useSearch();
-  const { pageLimit, currentPage, setCurrentPage, getTotalPageLength } =
-    usePager({
-      pageLimit: 10,
-    });
-
-  const tableBodyList = () => {
-    let result = [];
-    const newList = getListOrSearchList({ list: fundList });
-    for (
-      let i = currentPage * pageLimit - (pageLimit - 1);
-      getTotalPageLength({ list: newList }) === currentPage
-        ? i <= newList.length
-        : i <= currentPage * pageLimit;
-      i++
-    ) {
-      if (newList[i - 1]) {
-        const fund = newList[i - 1];
-        result.push(
-          <tr
-            key={fund.id}
-            onClick={() =>
-              open({
-                setView: (
-                  <FundDetail
-                    fund={fund}
-                    openUpdateFormEvent={() =>
-                      open({ setView: <FundForm fund={fund} /> })
-                    }
-                  />
-                ),
-              })
-            }
-            className="text-gray-700 border-b cursor-pointer"
-          >
-            <td className="p-4 text-center border-r dark:border-dark-5">{i}</td>
-            <td className="p-4 border-r dark:border-dark-5">{fund.fundName}</td>
-            <td className="p-4 border-r dark:border-dark-5">
-              {fund.fundTotalCost}
-            </td>
-            <td className="p-4 border-r dark:border-dark-5">{fund.target}</td>
-            <td className="p-4 border-r dark:border-dark-5">
-              {fund.incentive}
-            </td>
-            <td className="p-4 border-r dark:border-dark-5">
-              {fund.defaultFee}
-            </td>
-            <td className="p-4 dark:border-dark-5">{fund.transactionFee}</td>
-          </tr>
-        );
-      }
-    }
-    return result;
-  };
+  const { pageLimit, currentPage, setCurrentPage, getPagerList } = usePager({
+    pageLimit: 10,
+  });
 
   return (
     <AdminLayout title="펀드관리">
@@ -111,7 +61,50 @@ function AdminFundPage() {
           itemLength={fundList.length}
           colSpan={7}
         >
-          {fundListInit && tableBodyList()}
+          {getPagerList({ list: getListOrSearchList({ list: fundList }) }).map(
+            (fund, i) => {
+              return (
+                <tr
+                  key={fund.id}
+                  onClick={() =>
+                    open({
+                      setView: (
+                        <FundDetail
+                          fund={fund}
+                          openUpdateFormEvent={() =>
+                            open({ setView: <FundForm fund={fund} /> })
+                          }
+                        />
+                      ),
+                    })
+                  }
+                  className="text-gray-700 border-b cursor-pointer"
+                >
+                  <td className="p-4 text-center border-r dark:border-dark-5">
+                    {i}
+                  </td>
+                  <td className="p-4 border-r dark:border-dark-5">
+                    {fund.fundName}
+                  </td>
+                  <td className="p-4 border-r dark:border-dark-5">
+                    {fund.fundTotalCost}
+                  </td>
+                  <td className="p-4 border-r dark:border-dark-5">
+                    {fund.target}
+                  </td>
+                  <td className="p-4 border-r dark:border-dark-5">
+                    {fund.incentive}
+                  </td>
+                  <td className="p-4 border-r dark:border-dark-5">
+                    {fund.defaultFee}
+                  </td>
+                  <td className="p-4 dark:border-dark-5">
+                    {fund.transactionFee}
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </Table>
 
         <Pager

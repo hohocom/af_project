@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AdminLayout } from "components/layouts";
-import { useModal } from "core/hooks";
+import { useModal, usePager, useSearch } from "core/hooks";
 import { db } from "utils/firebase";
 
 import { UserDetail, UserForm } from "components/layouts/admin";
@@ -12,21 +12,12 @@ function AdminUserPage() {
   const [init, setInit] = useState(false);
   const [users, setUsers] = useState([]);
 
-  const openUpdateFormEvent = ({ user }) => {
-    open({ setView: <UserForm user={user} /> });
-  };
-
-  const openCreateFormEvent = () => {
-    open({ setView: <UserForm /> });
-  };
-
-  const openUserDetailEvent = ({ user }) => {
-    open({
-      setView: (
-        <UserDetail user={user} openUpdateFormEvent={openUpdateFormEvent} />
-      ),
+  const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
+    useSearch();
+  const { pageLimit, currentPage, setCurrentPage, getTotalPageLength } =
+    usePager({
+      pageLimit: 10,
     });
-  };
 
   useEffect(() => {
     const unsub = db.collection("users").onSnapshot((snapshot) => {
@@ -48,7 +39,7 @@ function AdminUserPage() {
       <div className="p-4">
         <div className="flex items-center justify-between mt-4 mb-4">
           <button
-            onClick={openCreateFormEvent}
+            onClick={() => open({ setView: <UserForm /> })}
             className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
           >
             회원 생성
@@ -80,7 +71,18 @@ function AdminUserPage() {
             return (
               <tr
                 key={user.id}
-                onClick={() => openUserDetailEvent({ user })}
+                onClick={() =>
+                  open({
+                    setView: (
+                      <UserDetail
+                        user={user}
+                        openUpdateFormEvent={() =>
+                          open({ setView: <UserForm user={user} /> })
+                        }
+                      />
+                    ),
+                  })
+                }
                 className="text-gray-700 border-b cursor-pointer"
               >
                 <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">

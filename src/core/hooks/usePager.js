@@ -7,20 +7,21 @@ function usePager({ pageLimit = 10 }) {
     return Math.ceil(list.length / pageLimit);
   };
 
-  const tableBodyList = ({ list, callback }) => {
+  const getPagerList = ({ list }) => {
+    if (list === null) return [];
+
     let result = [];
 
     for (
       let i = currentPage * pageLimit - (pageLimit - 1);
-      getTotalPageLength({ list }) === currentPage
+      getTotalPageLength({ list: list }) === currentPage
         ? i <= list.length
         : i <= currentPage * pageLimit;
       i++
     ) {
       if (list[i - 1]) {
         const item = list[i - 1];
-
-        result.push(callback({ item, i }));
+        result.push(item);
       }
     }
     return result;
@@ -31,7 +32,7 @@ function usePager({ pageLimit = 10 }) {
     currentPage,
     setCurrentPage,
     getTotalPageLength,
-    tableBodyList,
+    getPagerList,
   };
 }
 

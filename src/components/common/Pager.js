@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 
-function Pager({ totalPageLength, setCurrentPage, currentPage }) {
+function Pager({ totalPageLength, setCurrentPage = null, currentPage }) {
   const pageIndexLimit = 5; // > 몇 페이지씩 넘겨줄건지
   const start = 1; // 시작페이지
   const end = Math.ceil(totalPageLength / pageIndexLimit); // 마지막페이지
@@ -43,7 +44,8 @@ function Pager({ totalPageLength, setCurrentPage, currentPage }) {
     return result;
   };
   useEffect(() => {
-    setCurrentPage(current * pageIndexLimit - (pageIndexLimit - 1));
+    setCurrentPage &&
+      setCurrentPage(current * pageIndexLimit - (pageIndexLimit - 1));
   }, [current]);
   useEffect(() => {
     console.log(currentPage);

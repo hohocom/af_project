@@ -16,66 +16,9 @@ function AdminEventPage() {
   const { eventList } = useEvent();
   const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
     useSearch();
-  const {
-    pageLimit,
-    currentPage,
-    setCurrentPage,
-    getTotalPageLength,
-    tableBodyList,
-  } = usePager({
+  const { pageLimit, currentPage, setCurrentPage, getPagerList } = usePager({
     pageLimit: 10,
   });
-
-  // const tableBodyList = () => {
-  //   let result = [];
-  //   const newList = getListOrSearchList({ list: eventList });
-  //   for (
-  //     let i = currentPage * pageLimit - (pageLimit - 1);
-  //     getTotalPageLength({ list: newList }) === currentPage
-  //       ? i <= newList.length
-  //       : i <= currentPage * pageLimit;
-  //     i++
-  //   ) {
-  //     if (newList[i - 1]) {
-  //       const item = newList[i - 1];
-  //       result.push(
-  //         <tr
-  //           key={item.id}
-  //           onClick={() =>
-  //             open({
-  //               setView: (
-  //                 <EventDetail
-  //                   event={item}
-  //                   openUpdateFormEvent={() =>
-  //                     open({ setView: <EventForm event={item} /> })
-  //                   }
-  //                 />
-  //               ),
-  //             })
-  //           }
-  //           className="text-gray-700 border-b cursor-pointer"
-  //         >
-  //           <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-  //             {i}
-  //           </td>
-  //           <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-  //             {item.eventName}
-  //           </td>
-  //           <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-  //             {item.fixedAmount}
-  //           </td>
-  //           <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-  //             {item.startSubscribePeriod}~{item.endSubscribePeriod}
-  //           </td>
-  //           <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-  //             {item.paymentDate}
-  //           </td>
-  //         </tr>
-  //       );
-  //     }
-  //   }
-  //   return result;
-  // };
 
   return (
     <AdminLayout title="종목관리">
@@ -112,46 +55,44 @@ function AdminEventPage() {
           itemLength={eventList.length}
           colSpan={5}
         >
-          {eventListInit &&
-            tableBodyList({
-              list: getListOrSearchList({ list: eventList }),
-              callback: (item, i) => {
-                return (
-                  <tr
-                    key={item.id}
-                    onClick={() =>
-                      open({
-                        setView: (
-                          <EventDetail
-                            event={item}
-                            openUpdateFormEvent={() =>
-                              open({ setView: <EventForm event={item} /> })
-                            }
-                          />
-                        ),
-                      })
-                    }
-                    className="text-gray-700 border-b cursor-pointer"
-                  >
-                    <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                      {i}
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      {item.eventName}
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      {item.fixedAmount}
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      {item.startSubscribePeriod}~{item.endSubscribePeriod}
-                    </td>
-                    <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-                      {item.paymentDate}
-                    </td>
-                  </tr>
-                );
-              },
-            })}
+          {getPagerList({ list: getListOrSearchList({ list: eventList }) }).map(
+            (item, i) => {
+              return (
+                <tr
+                  key={item.id}
+                  onClick={() =>
+                    open({
+                      setView: (
+                        <EventDetail
+                          event={item}
+                          openUpdateFormEvent={() =>
+                            open({ setView: <EventForm event={item} /> })
+                          }
+                        />
+                      ),
+                    })
+                  }
+                  className="text-gray-700 border-b cursor-pointer"
+                >
+                  <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                    {i}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {item.eventName}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {item.fixedAmount}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {item.startSubscribePeriod}~{item.endSubscribePeriod}
+                  </td>
+                  <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+                    {item.paymentDate}
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </Table>
         {eventListInit && (
           <Pager

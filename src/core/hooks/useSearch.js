@@ -12,6 +12,7 @@ function useSearch() {
     } else {
       let isFinded = false;
       for (let i = 0; i < list.length; i++) {
+        // eventName 바꿔야함 각 객체명에 맞게
         if (list[i].eventName.includes(search)) {
           isFinded = true;
           result.push(list[i]);
