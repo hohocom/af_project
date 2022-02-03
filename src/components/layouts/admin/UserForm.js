@@ -1,9 +1,9 @@
-import { useForm, useModal } from "core/hooks";
-import { db, auth } from "utils/firebase";
+import { useForm, useModal, useUser } from "core/hooks";
 
 function UserForm({ user }) {
   const { close } = useModal();
-  const { form, changeInput, resetForm, isCompleted } = useForm(
+  const { store, edit, destroy } = useUser();
+  const { form, changeInput, isCompleted } = useForm(
     user
       ? user
       : {
@@ -15,35 +15,6 @@ function UserForm({ user }) {
           phone: "",
         }
   );
-
-  const createUser = async () => {
-    const userCredential = await auth
-      .createUserWithEmailAndPassword(form.email, form.password)
-      .then(async (user) => {
-        console.debug(user);
-      });
-    db.collection("users").doc(userCredential.user.uid).set({
-      email: form.email,
-      name: form.name,
-      birthday: form.birthday,
-      address: form.address,
-      phone: form.phone,
-    });
-    resetForm();
-    close();
-  };
-
-  const updateUser = async () => {
-    await db.collection("users").doc(user.id).set(form);
-    close();
-  };
-
-  const deleteUser = async () => {
-    const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
-    if (result !== "삭제") return;
-    await db.collection("users").doc(user.id).delete();
-    close();
-  };
 
   return (
     <form className="min-w-[350px]">
@@ -115,7 +86,10 @@ function UserForm({ user }) {
         <button
           type="button"
           className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          onClick={createUser}
+          onClick={() => {
+            store({ form });
+            close();
+          }}
           disabled={!isCompleted}
         >
           {isCompleted ? "생성" : "모든 항목을 입력해주세요.."}
@@ -125,7 +99,10 @@ function UserForm({ user }) {
           <button
             type="button"
             className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={updateUser}
+            onClick={() => {
+              edit({ user, form });
+              close();
+            }}
             disabled={!isCompleted}
           >
             {isCompleted ? "수정" : "모든 항목을 입력해주세요.."}
@@ -133,7 +110,10 @@ function UserForm({ user }) {
           <button
             type="button"
             className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-red-400 rounded-lg shadow-md hover:bg-red-500 focus:ring-red-300 focus:ring-offset-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={deleteUser}
+            onClick={() => {
+              destroy({ userId: user.id });
+              close();
+            }}
           >
             삭제
           </button>

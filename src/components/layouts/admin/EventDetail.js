@@ -17,7 +17,13 @@ function EventDetail({ event, openUpdateFormEvent }) {
       </div>
       <div className="flex flex-col mt-2">
         <p className="text-sm text-gray-700">확정공모가액</p>
-        <p>{event.fixedAmount}</p>
+        <p>
+          {new Intl.NumberFormat("ko", {
+            currency: "INR",
+            minimumFractionDigits: 0,
+          }).format(event.fixedAmount)}{" "}
+          원
+        </p>
       </div>
       <div className="flex flex-col mt-2">
         <p className="text-sm text-gray-700">납입일</p>

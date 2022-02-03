@@ -1,72 +1,33 @@
 /* eslint-disable array-callback-return */
-import { Pager, Table, withPrivate } from "components/common";
+import { Pager, Search, Table, withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { DealForm } from "components/layouts/admin";
-import { useModal } from "core/hooks";
-import { useEffect } from "react";
-import { useState } from "react/cjs/react.development";
+import {
+  useDealStream,
+  useEventStream,
+  useFundStream,
+  useModal,
+  usePager,
+  useSearch,
+} from "core/hooks";
+import { useState } from "react";
 import { db } from "utils/firebase";
 
 function AdminDealPage() {
   const { open } = useModal();
-  const [init, setInit] = useState(false);
-  const [deals, setDeals] = useState([]);
+
+  const { dealList, dealListInit } = useDealStream();
+  const { eventList } = useEventStream();
+  const { fundList } = useFundStream();
 
   const [checkedFundId, setCheckedFundId] = useState(null);
-  const [funds, setFunds] = useState([]);
-  const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    const unsub = db.collection("deals").onSnapshot((snapshot) => {
-      const newDeals = snapshot.docs.map((deal) => {
-        return {
-          id: deal.id,
-          ...deal.data(),
-        };
-      });
-      setDeals(newDeals);
-      setInit(true);
+  const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
+    useSearch();
+  const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
+    usePager({
+      pageLimit: 10,
     });
-    return () => unsub();
-  }, []);
-
-  useEffect(() => {
-    const unsub = db.collection("funds").onSnapshot((snapshot) => {
-      const newFunds = snapshot.docs.map((fund) => {
-        return {
-          id: fund.id,
-          ...fund.data(),
-        };
-      });
-      setFunds(newFunds);
-    });
-    return () => unsub();
-  }, []);
-
-  useEffect(() => {
-    const unsub = db.collection("events").onSnapshot((snapshot) => {
-      const newEvents = snapshot.docs.map((event) => {
-        return {
-          id: event.id,
-          ...event.data(),
-        };
-      });
-      setEvents(newEvents);
-    });
-    return () => unsub();
-  }, []);
-
-  const openUpdateFormEvent = ({ event }) => {
-    open({ setView: <DealForm events={events} funds={funds} /> });
-  };
-
-  const openCreateFormEvent = () => {
-    open({ setView: <DealForm events={events} funds={funds} /> });
-  };
-
-  const openEventDetailEvent = ({ event }) => {
-    open({ setView: <DealForm /> });
-  };
 
   return (
     <AdminLayout title="거래관리">
@@ -74,7 +35,11 @@ function AdminDealPage() {
         <div className="flex items-center justify-between">
           <div className="flex">
             <button
-              onClick={openCreateFormEvent}
+              onClick={() =>
+                open({
+                  setView: <DealForm events={eventList} funds={fundList} />,
+                })
+              }
               className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
             >
               거래 생성
@@ -87,22 +52,14 @@ function AdminDealPage() {
               className="p-2 mr-6 bg-white border rounded-md"
               onChange={(e) => {
                 setCheckedFundId(e.target.value);
-                deals.map(async (deal) => {
-                  console.debug(deal);
-                  if (checkedFundId !== null && deal.fundId === checkedFundId) {
-                    console.debug(deal.fundId);
-                    console.debug(deal.eventId);
-                    const eventRef = await db
-                      .collection("events")
-                      .doc(deal.eventId)
-                      .get();
-                    console.debug(eventRef.data());
-                  }
+                dealList.map(async (deal) => {
+                  if (checkedFundId !== null && deal.fundId === checkedFundId)
+                    await db.collection("events").doc(deal.eventId).get();
                 });
               }}
             >
               <option className="p-2">펀드선택</option>
-              {funds.map((fund) => {
+              {fundList.map((fund) => {
                 return (
                   <option key={fund.id} value={fund.id} className="p-2">
                     {fund.fundName}
@@ -110,6 +67,7 @@ function AdminDealPage() {
                 );
               })}
             </select>
+
             <div className="flex items-center gap-8">
               <label className="inline-flex items-center">
                 <input type="radio" name="vehicle" className="w-5 h-5" />
@@ -127,39 +85,21 @@ function AdminDealPage() {
           </div>
 
           <div className="text-end">
-            <div className="flex flex-col justify-center w-3/4 max-w-sm space-y-3 md:flex-row md:w-full md:space-x-3 md:space-y-0">
-              <div className="relative">
-                <input
-                  type="text"
-                  id='"form-subscribe-Filter'
-                  className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                  placeholder="name"
-                />
-              </div>
-              <button className="flex-shrink-0 px-4 py-2 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">
-                검색
-              </button>
-            </div>
+            <Search
+              search={search}
+              setSearch={setSearch}
+              setSearchList={setSearchList}
+              searchEvent={() => {
+                searchEvent({
+                  list: fundList,
+                  key: "fundName",
+                  callback: () => {
+                    setCurrentPage(1);
+                  },
+                });
+              }}
+            />
           </div>
-        </div>
-        <div className="flex flex-wrap mb-4">
-          {deals.map((deal) => {
-            if (deal.fundId === checkedFundId) {
-              return (
-                <div
-                  className="p-4 m-2 bg-white rounded-md shadow-md"
-                  key={deal.id}
-                >
-                  <p>
-                    종목명: <strong className="text-xl">카카오뱅크</strong>
-                  </p>
-                  <p>
-                    거래잔량(주): <strong className="text-xl">100</strong>
-                  </p>
-                </div>
-              );
-            }
-          })}
         </div>
         <Table
           titles={[
@@ -170,45 +110,54 @@ function AdminDealPage() {
             "수량",
             "거래잔량",
           ]}
-          itemInit={init}
-          itemLength={deals.length}
+          itemInit={dealListInit}
+          itemLength={dealList.length}
+          colSpan={7}
         >
-          {deals.map((deal, index) => {
-            if (deal.fundId === checkedFundId) {
-              return (
-                <tr
-                  key={deal.id}
-                  onClick={() => openEventDetailEvent({ deal })}
-                  className="text-gray-700 border-b cursor-pointer"
-                >
-                  <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                    {index + 1}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.dealDate}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.dealDate}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    공모가격
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    -
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.quantity}주
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.quantity}주
-                  </td>
-                </tr>
-              );
+          {getPagerList({ list: getListOrSearchList({ list: dealList }) }).map(
+            (deal, index) => {
+              if (deal.fundId === checkedFundId) {
+                return (
+                  <tr
+                    key={deal.id}
+                    onClick={() => open({ setView: <DealForm /> })}
+                    className="text-gray-700 border-b cursor-pointer"
+                  >
+                    <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                      {index + 1}
+                    </td>
+                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                      {deal.dealDate}
+                    </td>
+                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                      {deal.dealDate}
+                    </td>
+                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                      공모가격
+                    </td>
+                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                      -
+                    </td>
+                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                      {deal.quantity}주
+                    </td>
+                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                      {deal.quantity}주
+                    </td>
+                  </tr>
+                );
+              }
             }
-          })}
+          )}
         </Table>
 
-        <Pager />
+        <Pager
+          totalPageLength={getTotalPageLength({
+            list: dealList,
+          })}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
       </div>
     </AdminLayout>
   );

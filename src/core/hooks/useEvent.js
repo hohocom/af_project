@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { atom, useRecoilState } from "recoil";
 import { db } from "utils/firebase";
 
 const eventListState = atom({
@@ -9,7 +9,7 @@ const eventListState = atom({
 });
 
 export function useEventStream() {
-  const setEventList = useSetRecoilState(eventListState);
+  const [eventList, setEventList] = useRecoilState(eventListState);
   const [eventListInit, setEventListInit] = useState(false);
   useEffect(() => {
     console.debug("%c[종목 실시간 감지..]", "color:red");
@@ -30,7 +30,7 @@ export function useEventStream() {
     };
   }, []);
 
-  return { eventListInit };
+  return { eventList, eventListInit };
 }
 
 function useEvent() {

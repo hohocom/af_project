@@ -1,5 +1,6 @@
 /* eslint-disable array-callback-return */
 import { useForm, useModal } from "core/hooks";
+import { currency } from "utils/currency";
 import { db } from "utils/firebase";
 
 function DealForm({ deal, funds, events }) {
@@ -77,7 +78,9 @@ function DealForm({ deal, funds, events }) {
             <div key={event.id}>
               <div className="flex flex-col mt-2">
                 <label className="font-noto-regular">공모가액</label>
-                <input value={event.fixedAmount} disabled />
+                <div className="p-2 rounded-md bg-gray-100">
+                  {currency(event.fixedAmount)}원
+                </div>
               </div>
               <div className="flex flex-col mt-2">
                 <label className="font-noto-regular">거래날짜</label>
@@ -100,11 +103,14 @@ function DealForm({ deal, funds, events }) {
                 <input
                   type="number"
                   name="quantity"
-                  value={event.quantity}
+                  value={form.quantity}
                   className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                   onChange={changeInput}
                 />
               </div>
+              <span className="p-2 rounded-md text-xs">
+                {currency(form.quantity)}주
+              </span>
             </div>
           );
         }

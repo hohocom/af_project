@@ -5,7 +5,7 @@ function useSearch() {
   const [searchList, setSearchList] = useState([]); //필터에 맞는 종목
 
   // 검색 버튼 클릭 이벤트
-  const searchEvent = ({ list, callback }) => {
+  const searchEvent = ({ list, key, callback }) => {
     let result = [];
     if (search === "") {
       setSearchList([]);
@@ -13,7 +13,7 @@ function useSearch() {
       let isFinded = false;
       for (let i = 0; i < list.length; i++) {
         // eventName 바꿔야함 각 객체명에 맞게
-        if (list[i].eventName.includes(search)) {
+        if (list[i][key].includes(search)) {
           isFinded = true;
           result.push(list[i]);
         }

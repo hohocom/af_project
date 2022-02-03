@@ -619,9 +619,6 @@ video {
 .z-40 {
 	z-index: 40;
 }
-.m-2 {
-	margin: 0.5rem;
-}
 .mx-2 {
 	margin-left: 0.5rem;
 	margin-right: 0.5rem;
@@ -871,9 +868,6 @@ video {
 }
 .flex-col {
 	flex-direction: column;
-}
-.flex-wrap {
-	flex-wrap: wrap;
 }
 .items-start {
 	align-items: flex-start;

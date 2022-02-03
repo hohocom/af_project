@@ -1,5 +1,6 @@
 import { useForm, useModal } from "core/hooks";
 import { useEvent } from "core/hooks";
+import { currency } from "utils/currency";
 
 function EventForm({ event }) {
   const { close } = useModal();
@@ -38,12 +39,16 @@ function EventForm({ event }) {
           확정공모가액
         </label>
         <input
+          type="number"
           value={form.fixedAmount}
           name="fixedAmount"
           placeholder="확정공모가액 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           onChange={changeInput}
         />
+        <span className="p-2 rounded-md text-xs">
+          {currency(form.fixedAmount)}원
+        </span>
       </div>
       <div className="flex flex-col mt-2">
         <label htmlFor="name-with-label" className="text-gray-700">

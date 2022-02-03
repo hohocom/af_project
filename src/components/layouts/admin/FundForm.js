@@ -1,4 +1,5 @@
 import { useForm, useFund, useModal } from "core/hooks";
+import { currency } from "utils/currency";
 import { db } from "utils/firebase";
 
 function FundForm({ fund = null }) {
@@ -49,6 +50,9 @@ function FundForm({ fund = null }) {
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           onChange={changeInput}
         />
+        <span className="p-2 rounded-md text-xs">
+          {currency(form.fundTotalCost)} 원
+        </span>
       </div>
       <div className="flex flex-col mt-2">
         <label htmlFor="name-with-label" className="text-gray-700">

@@ -9,16 +9,18 @@ import {
   usePager,
   useSearch,
 } from "core/hooks";
+import { currency } from "utils/currency";
 
 function AdminEventPage() {
-  const { open } = useModal();
   const { eventListInit } = useEventStream();
   const { eventList } = useEvent();
+  const { open } = useModal();
   const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
     useSearch();
-  const { pageLimit, currentPage, setCurrentPage, getPagerList } = usePager({
-    pageLimit: 10,
-  });
+  const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
+    usePager({
+      pageLimit: 10,
+    });
 
   return (
     <AdminLayout title="종목관리">
@@ -40,6 +42,7 @@ function AdminEventPage() {
               searchEvent={() => {
                 searchEvent({
                   list: eventList,
+                  key: "eventName",
                   callback: () => {
                     setCurrentPage(1);
                   },
@@ -72,16 +75,17 @@ function AdminEventPage() {
                       ),
                     })
                   }
-                  className="text-gray-700 border-b cursor-pointer"
+                  className="text-gray-700 border-b cursor-pointer hover:bg-gray-100"
                 >
                   <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                    {i}
+                    {i + 1}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {item.eventName}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {item.fixedAmount}
+                    {/* {item.fixedAmount} */}
+                    {currency(item.fixedAmount)} 원
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {item.startSubscribePeriod}~{item.endSubscribePeriod}
@@ -96,9 +100,7 @@ function AdminEventPage() {
         </Table>
         {eventListInit && (
           <Pager
-            totalPageLength={Math.ceil(
-              getListOrSearchList({ list: eventList }).length / pageLimit
-            )}
+            totalPageLength={getTotalPageLength({ list: eventList })}
             setCurrentPage={setCurrentPage}
             currentPage={currentPage}
           />

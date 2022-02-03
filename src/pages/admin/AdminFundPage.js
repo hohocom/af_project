@@ -8,16 +8,18 @@ import {
   usePager,
   useSearch,
 } from "core/hooks";
+import { currency } from "utils/currency";
 
 function AdminFundPage() {
-  const { open } = useModal();
   const { fundListInit } = useFundStream();
   const { fundList } = useFund();
+  const { open } = useModal();
   const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
     useSearch();
-  const { pageLimit, currentPage, setCurrentPage, getPagerList } = usePager({
-    pageLimit: 10,
-  });
+  const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
+    usePager({
+      pageLimit: 10,
+    });
 
   return (
     <AdminLayout title="펀드관리">
@@ -39,6 +41,7 @@ function AdminFundPage() {
               searchEvent={() => {
                 searchEvent({
                   list: fundList,
+                  key: "fundName",
                   callback: () => {
                     setCurrentPage(1);
                   },
@@ -78,16 +81,16 @@ function AdminFundPage() {
                       ),
                     })
                   }
-                  className="text-gray-700 border-b cursor-pointer"
+                  className="text-gray-700 border-b cursor-pointer hover:bg-gray-100"
                 >
                   <td className="p-4 text-center border-r dark:border-dark-5">
-                    {i}
+                    {i + 1}
                   </td>
                   <td className="p-4 border-r dark:border-dark-5">
                     {fund.fundName}
                   </td>
                   <td className="p-4 border-r dark:border-dark-5">
-                    {fund.fundTotalCost}
+                    {currency(fund.fundTotalCost)} 원
                   </td>
                   <td className="p-4 border-r dark:border-dark-5">
                     {fund.target}
@@ -108,9 +111,7 @@ function AdminFundPage() {
         </Table>
 
         <Pager
-          totalPageLength={Math.ceil(
-            getListOrSearchList({ list: fundList }).length / pageLimit
-          )}
+          totalPageLength={getTotalPageLength({ list: fundList })}
           setCurrentPage={setCurrentPage}
           currentPage={currentPage}
         />

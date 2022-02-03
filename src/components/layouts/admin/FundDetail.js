@@ -20,7 +20,13 @@ function FundDetail({ fund, openUpdateFormEvent }) {
       </div>
       <div className="flex flex-col mt-2">
         <p className="text-sm text-gray-700">펀드전체금액</p>
-        <p>{fund.fundTotalCost}</p>
+        <p>
+          {new Intl.NumberFormat("ko", {
+            currency: "INR",
+            minimumFractionDigits: 0,
+          }).format(fund.fundTotalCost)}{" "}
+          원
+        </p>
       </div>
       <div className="flex flex-col mt-2">
         <p className="text-sm text-gray-700">대상</p>

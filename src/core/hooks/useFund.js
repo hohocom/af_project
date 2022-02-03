@@ -30,7 +30,7 @@ export function useFundStream() {
     };
   }, []);
 
-  return { fundListInit };
+  return { fundList, fundListInit };
 }
 
 function useFund() {
