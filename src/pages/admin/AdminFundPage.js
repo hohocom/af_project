@@ -35,6 +35,7 @@ function AdminFundPage() {
 
           <div className="text-end">
             <Search
+              text="펀드 이름을 입력하세요."
               search={search}
               setSearch={setSearch}
               setSearchList={setSearchList}

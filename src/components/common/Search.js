@@ -1,4 +1,10 @@
-function Search({ search, setSearch, setSearchList, searchEvent }) {
+function Search({
+  search,
+  setSearch,
+  setSearchList,
+  searchEvent,
+  text = "이름을 입력하세요",
+}) {
   return (
     <form
       className="flex flex-col justify-center w-3/4 max-w-sm space-y-3 md:flex-row md:w-full md:space-x-3 md:space-y-0"
@@ -12,7 +18,7 @@ function Search({ search, setSearch, setSearchList, searchEvent }) {
           type="text"
           id='"form-subscribe-Filter'
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          placeholder="name"
+          placeholder={text}
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);

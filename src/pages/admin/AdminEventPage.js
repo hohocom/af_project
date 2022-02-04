@@ -36,6 +36,7 @@ function AdminEventPage() {
 
           <div className="text-end">
             <Search
+              text="종목 이름을 입력하세요."
               search={search}
               setSearch={setSearch}
               setSearchList={setSearchList}

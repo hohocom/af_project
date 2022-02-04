@@ -35,6 +35,7 @@ function AdminUserPage() {
           </button>
           <div className="text-end">
             <Search
+              text="회원 이름을 입력하세요."
               search={search}
               setSearch={setSearch}
               setSearchList={setSearchList}

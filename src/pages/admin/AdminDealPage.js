@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 import { Pager, Search, Table, withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts";
 import { DealForm } from "components/layouts/admin";
 import {
+  useDeal,
   useDealStream,
   useEventStream,
   useFundStream,
@@ -10,17 +12,22 @@ import {
   usePager,
   useSearch,
 } from "core/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { currency } from "utils/currency";
 import { db } from "utils/firebase";
 
 function AdminDealPage() {
   const { open } = useModal();
 
-  const { dealList, dealListInit } = useDealStream();
+  const { dealList } = useDealStream();
+  const { setMatchedFundId, getMatchedList, doJoinDealList, joinDealList } =
+    useDeal();
   const { eventList } = useEventStream();
   const { fundList } = useFundStream();
 
-  const [checkedFundId, setCheckedFundId] = useState(null);
+  useEffect(() => {
+    doJoinDealList({ eventList, fundList });
+  }, [eventList, fundList, dealList]);
 
   const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
     useSearch();
@@ -33,6 +40,9 @@ function AdminDealPage() {
     <AdminLayout title="거래관리">
       <div className="p-4">
         <div className="flex items-center justify-between">
+          <div className="flex"></div>
+        </div>
+        <div className="flex items-center justify-between mt-4 mb-4">
           <div className="flex">
             <button
               onClick={() =>
@@ -44,21 +54,13 @@ function AdminDealPage() {
             >
               거래 생성
             </button>
-          </div>
-        </div>
-        <div className="flex items-center justify-between mt-4 mb-4">
-          <div className="flex">
             <select
-              className="p-2 mr-6 bg-white border rounded-md"
+              className="p-2 ml-4 mr-6 bg-white border rounded-md"
               onChange={(e) => {
-                setCheckedFundId(e.target.value);
-                dealList.map(async (deal) => {
-                  if (checkedFundId !== null && deal.fundId === checkedFundId)
-                    await db.collection("events").doc(deal.eventId).get();
-                });
+                setMatchedFundId(e.target.value);
               }}
             >
-              <option className="p-2">펀드선택</option>
+              <option className="p-2">펀드 선택</option>
               {fundList.map((fund) => {
                 return (
                   <option key={fund.id} value={fund.id} className="p-2">
@@ -67,32 +69,18 @@ function AdminDealPage() {
                 );
               })}
             </select>
-
-            <div className="flex items-center gap-8">
-              <label className="inline-flex items-center">
-                <input type="radio" name="vehicle" className="w-5 h-5" />
-                <span className="ml-2 text-gray-700">전체</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input type="radio" name="vehicle" className="w-5 h-5" />
-                <span className="ml-2 text-gray-700">매수</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input type="radio" name="vehicle" className="w-5 h-5" />
-                <span className="ml-2 text-gray-700">매도</span>
-              </label>
-            </div>
           </div>
 
           <div className="text-end">
             <Search
+              text="종목 이름을 입력하세요."
               search={search}
               setSearch={setSearch}
               setSearchList={setSearchList}
               searchEvent={() => {
                 searchEvent({
-                  list: fundList,
-                  key: "fundName",
+                  list: joinDealList,
+                  key: "eventName",
                   callback: () => {
                     setCurrentPage(1);
                   },
@@ -107,47 +95,57 @@ function AdminDealPage() {
             "종목명",
             "매수가",
             "매도가",
-            "수량",
-            "거래잔량",
+            "수량 (주)",
+            "거래잔량 (주)",
           ]}
-          itemInit={dealListInit}
-          itemLength={dealList.length}
+          itemInit={joinDealList}
+          itemLength={joinDealList.length}
           colSpan={7}
         >
-          {getPagerList({ list: getListOrSearchList({ list: dealList }) }).map(
-            (deal, index) => {
-              if (deal.fundId === checkedFundId) {
-                return (
-                  <tr
-                    key={deal.id}
-                    onClick={() => open({ setView: <DealForm /> })}
-                    className="text-gray-700 border-b cursor-pointer"
-                  >
-                    <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                      {index + 1}
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      {deal.dealDate}
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      {deal.dealDate}
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      공모가격
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      -
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      {deal.quantity}주
-                    </td>
-                    <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                      {deal.quantity}주
-                    </td>
-                  </tr>
-                );
-              }
-            }
+          {getMatchedList({ list: joinDealList }).length > 0 ? (
+            getPagerList({
+              list: getListOrSearchList({
+                list: getMatchedList({ list: joinDealList }),
+              }),
+            }).map((deal, i) => {
+              return (
+                <tr
+                  key={deal.id}
+                  className="text-gray-700 border-b cursor-pointer hover:bg-gray-100"
+                >
+                  <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                    {i + 1}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {deal.dealDate}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {deal.eventName}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {currency(deal.fixedAmount)}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    -
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {currency(deal.quantity)} 주
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {currency(deal.quantity)} 주
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    <button>매도</button>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={7} className="p-3">
+                펀드를 선택해주세요.
+              </td>
+            </tr>
           )}
         </Table>
 
