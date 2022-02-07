@@ -12,16 +12,20 @@ import {
   usePager,
   useSearch,
 } from "core/hooks";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { currency } from "utils/currency";
-import { db } from "utils/firebase";
 
 function AdminDealPage() {
   const { open } = useModal();
 
   const { dealList } = useDealStream();
-  const { setMatchedFundId, getMatchedList, doJoinDealList, joinDealList } =
-    useDeal();
+  const {
+    setMatchedFundId,
+    getMatchedList,
+    doJoinDealList,
+    joinDealList,
+    destroy,
+  } = useDeal();
   const { eventList } = useEventStream();
   const { fundList } = useFundStream();
 
@@ -69,6 +73,10 @@ function AdminDealPage() {
                 );
               })}
             </select>
+            <div>
+              <div className="px-2 bg-red-100">매수</div>
+              <div className="px-2 bg-blue-100">매도</div>
+            </div>
           </div>
 
           <div className="text-end">
@@ -97,6 +105,7 @@ function AdminDealPage() {
             "매도가",
             "수량 (주)",
             "거래잔량 (주)",
+            "기록삭제",
           ]}
           itemInit={joinDealList}
           itemLength={joinDealList.length}
@@ -111,7 +120,9 @@ function AdminDealPage() {
               return (
                 <tr
                   key={deal.id}
-                  className="text-gray-700 border-b cursor-pointer hover:bg-gray-100"
+                  className={"text-gray-700 border-b ".concat(
+                    deal.type === "buy" ? "bg-red-50" : "bg-blue-50"
+                  )}
                 >
                   <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
                     {i + 1}
@@ -123,19 +134,29 @@ function AdminDealPage() {
                     {deal.eventName}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {currency(deal.fixedAmount)}
+                    {deal.buyPrice ? currency(deal.buyPrice) : "-"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    -
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {currency(deal.quantity)} 주
+                    {deal.salePrice ? currency(deal.salePrice) : "-"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {currency(deal.quantity)} 주
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    <button>매도</button>
+                    {currency(deal.totalQuantity)} 주
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    <button
+                      onClick={() =>
+                        destroy({
+                          dealId: deal.id,
+                          fundId: deal.fundId,
+                          eventId: deal.eventId,
+                        })
+                      }
+                    >
+                      <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
+                    </button>
                   </td>
                 </tr>
               );
