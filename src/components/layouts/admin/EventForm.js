@@ -15,7 +15,7 @@ function EventForm({ event }) {
           endSubscribePeriod: "",
         }
   );
-  const { store, edit, destroy } = useEvent();
+  const { store, edit } = useEvent();
 
   return (
     <form>
@@ -46,7 +46,7 @@ function EventForm({ event }) {
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           onChange={changeInput}
         />
-        <span className="p-2 rounded-md text-xs">
+        <span className="p-2 text-xs rounded-md">
           {currency(form.fixedAmount)}원
         </span>
       </div>
@@ -97,28 +97,16 @@ function EventForm({ event }) {
           생성
         </button>
       ) : (
-        <>
-          <button
-            type="button"
-            className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={() => {
-              edit({ id: event.id, form: form });
-              close();
-            }}
-          >
-            수정
-          </button>
-          <button
-            type="button"
-            className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-red-400 rounded-lg shadow-md hover:bg-red-500 focus:ring-red-300 focus:ring-offset-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={() => {
-              destroy({ id: event.id });
-              close();
-            }}
-          >
-            삭제
-          </button>
-        </>
+        <button
+          type="button"
+          className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+          onClick={() => {
+            edit({ id: event.id, form: form });
+            close();
+          }}
+        >
+          수정
+        </button>
       )}
     </form>
   );

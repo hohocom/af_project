@@ -24,16 +24,25 @@ import {
 import { useState } from "react/cjs/react.development";
 import { auth, db } from "utils/firebase";
 import { Loading } from "components/common";
+import {
+  useDealStream,
+  useEventStream,
+  useFundStream,
+  useUserStream,
+} from "core/hooks";
 
 function App() {
+  useUserStream();
+  useFundStream();
+  useEventStream();
+  useDealStream();
+
   const [manager, setManager] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
-      console.debug("실행되버림!!");
       if (user) {
-        console.debug(user);
         const managerRef = await db.collection("managers").get();
         managerRef.docs.forEach((manager) => {
           if (manager.id === user.uid) {

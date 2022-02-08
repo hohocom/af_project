@@ -1,10 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { atom, useRecoilState } from "recoil";
+import {
+  atom,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
 import { useEffect, useState } from "react";
 import { db } from "utils/firebase";
 
 const dealListState = atom({
   key: "dealListState",
+  default: [],
+});
+
+export const dealListInit = atom({
+  key: "dealListInit",
   default: [],
 });
 
@@ -14,10 +24,11 @@ const joinDealListState = atom({
 });
 
 export function useDealStream() {
-  const [dealList, setDealList] = useRecoilState(dealListState);
-  const [dealListInit, setDealListInit] = useState(false);
+  const setDealList = useSetRecoilState(dealListState);
+  const setDealListInit = useSetRecoilState(dealListInit);
 
   useEffect(() => {
+    console.debug("%c[거래 실시간 감지..]", "color:red");
     const unsub = db
       .collection("deals")
       .orderBy("dealDate", "desc")
@@ -31,17 +42,15 @@ export function useDealStream() {
         setDealList(newDeals);
         setDealListInit(true);
       });
-    return () => unsub();
+    return () => {
+      console.debug("%c[거래 실시간 감지 종료..]", "color:red");
+      unsub();
+    };
   }, []);
-
-  return {
-    dealList,
-    dealListInit,
-  };
 }
 
 function useDeal() {
-  const [dealList, setDealList] = useRecoilState(dealListState);
+  const dealList = useRecoilValue(dealListState);
   const [joinDealList, setJoinDealList] = useRecoilState(joinDealListState);
   const [matchedFundId, setMatchedFundId] = useState(null);
 
@@ -83,7 +92,7 @@ function useDeal() {
     }
   };
 
-  const store = async ({ form }) => {
+  const getFilterDeal = async ({ form }) => {
     const dealDocs = await db
       .collection("deals")
       .where("fundId", "==", form.fundId)
@@ -92,12 +101,16 @@ function useDeal() {
       .limit(1)
       .get();
     let dealDoc = null;
-
     dealDocs.docs.forEach((deal, index) => {
       if (index === 0) {
         dealDoc = deal.data();
       }
     });
+    return dealDoc;
+  };
+
+  const store = async ({ form }) => {
+    const dealDoc = await getFilterDeal({ form });
 
     if (!dealDoc) {
       await db.collection("deals").add(form);
@@ -118,20 +131,7 @@ function useDeal() {
   };
 
   const edit = async ({ form }) => {
-    const dealDocs = await db
-      .collection("deals")
-      .where("fundId", "==", form.fundId)
-      .where("eventId", "==", form.eventId)
-      .orderBy("dealDate", "desc")
-      .limit(1)
-      .get();
-    let dealDoc = null;
-
-    dealDocs.docs.forEach((deal, index) => {
-      if (index === 0) {
-        dealDoc = deal.data();
-      }
-    });
+    const dealDoc = await getFilterDeal({ form });
 
     if (!dealDoc) {
       window.alert("먼저 해당 종목을 매수해야합니다.");

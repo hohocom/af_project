@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react";
-import { AdminLayout } from "components/layouts";
+import { AdminLayout } from "components/layouts/admin";
 import {
   useModal,
   usePager,
+  userListInitState,
   useSearch,
   useUser,
-  useUserStream,
 } from "core/hooks";
 
-import { UserDetail, UserForm } from "components/layouts/admin";
+import { UserForm } from "components/layouts/admin";
 import { Pager, Search, Table, withPrivate } from "components/common";
+import { useRecoilValue } from "recoil";
 
 function AdminUserPage() {
-  const { userListInit } = useUserStream();
-  const { userList } = useUser();
+  const userListInit = useRecoilValue(userListInitState);
+  const { userList, destroy } = useUser();
   const { open } = useModal();
 
-  const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
-    useSearch();
+  const { search, setSearch, searchEvent, setSearchList, getSearchList } =
+    useSearch({ list: userList });
   const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
     usePager({
       pageLimit: 10,
@@ -53,60 +53,70 @@ function AdminUserPage() {
         </div>
 
         <Table
-          titles={["이름", "email(id)", "생년월일", "주소", "전화번호"]}
+          titles={[
+            "이름",
+            "email(id)",
+            "생년월일",
+            "주소",
+            "전화번호",
+            "수정",
+            "삭제",
+          ]}
           itemInit={userListInit}
           itemLength={userList.length}
           colSpan={6}
         >
-          {getPagerList({ list: getListOrSearchList({ list: userList }) }).map(
-            (user, index) => {
-              return (
-                <tr
-                  key={user.id}
-                  onClick={() =>
-                    open({
-                      setView: (
-                        <UserDetail
-                          user={user}
-                          openUpdateFormEvent={() =>
-                            open({ setView: <UserForm user={user} /> })
-                          }
-                        />
-                      ),
-                    })
-                  }
-                  className="text-gray-700 border-b cursor-pointer hover:bg-gray-100"
-                >
-                  <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                    {index + 1}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {user.name}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {user.email}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {user.birthday}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {user.address}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {user.phone}
-                  </td>
-                </tr>
-              );
-            }
-          )}
+          {getPagerList({ list: getSearchList() }).map((user, index) => {
+            return (
+              <tr
+                key={user.id}
+                // onClick={() =>
+                //   open({
+                //     setView: <UserDetail user={user} />,
+                //   })
+                // }
+                className="text-gray-700 border-b hover:bg-gray-100"
+              >
+                <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                  {index + 1}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.name}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.email}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.birthday}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.address}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {user.phone}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  <button
+                    onClick={() => open({ setView: <UserForm user={user} /> })}
+                  >
+                    <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
+                  </button>
+                </td>
+                <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
+                  <button onClick={() => destroy({ userId: user.id })}>
+                    <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </Table>
-        {userListInit && (
-          <Pager
-            totalPageLength={getTotalPageLength({ list: userList })}
-            setCurrentPage={setCurrentPage}
-            currentPage={currentPage}
-          />
-        )}
+
+        <Pager
+          totalPageLength={getTotalPageLength({ list: userList })}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
       </div>
     </AdminLayout>
   );

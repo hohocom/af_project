@@ -1,18 +1,8 @@
-function FundDetail({ fund, openUpdateFormEvent }) {
+function FundDetail({ fund }) {
   return (
     <div className="pt-4 min-w-[350px]">
       <div className="flex items-center justify-between w-full">
         <h2 className="text-xl font-noto-regular">펀드 상세보기</h2>
-        <button
-          type="button"
-          className="py-2 px-4 bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 text-white transition ease-in 
-            duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg"
-          onClick={() => {
-            openUpdateFormEvent({ fund: fund });
-          }}
-        >
-          수정
-        </button>
       </div>
       <div className="flex flex-col mt-2">
         <p className="text-sm text-gray-700">펀드명</p>

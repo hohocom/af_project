@@ -1,22 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Pager, Search, Table, withPrivate } from "components/common";
-import { AdminLayout } from "components/layouts";
-import { EventDetail, EventForm } from "components/layouts/admin";
+import { AdminLayout } from "components/layouts/admin";
+import { EventForm } from "components/layouts/admin";
 import {
+  eventListInitState,
   useEvent,
-  useEventStream,
   useModal,
   usePager,
   useSearch,
 } from "core/hooks";
+import { useRecoilValue } from "recoil";
 import { currency } from "utils/currency";
 
 function AdminEventPage() {
-  const { eventListInit } = useEventStream();
-  const { eventList } = useEvent();
+  const eventListInit = useRecoilValue(eventListInitState);
+  const { eventList, destroy } = useEvent();
   const { open } = useModal();
-  const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
-    useSearch();
+  const { search, setSearch, searchEvent, setSearchList, getSearchList } =
+    useSearch({ list: eventList });
   const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
     usePager({
       pageLimit: 10,
@@ -54,58 +55,69 @@ function AdminEventPage() {
         </div>
 
         <Table
-          titles={["종목명", "확정공모가액", "청약기간", "납입일"]}
+          titles={[
+            "종목명",
+            "확정공모가액",
+            "청약기간",
+            "납입일",
+            "수정",
+            "삭제",
+          ]}
           itemInit={eventListInit}
           itemLength={eventList.length}
           colSpan={5}
         >
-          {getPagerList({ list: getListOrSearchList({ list: eventList }) }).map(
-            (item, i) => {
-              return (
-                <tr
-                  key={item.id}
-                  onClick={() =>
-                    open({
-                      setView: (
-                        <EventDetail
-                          event={item}
-                          openUpdateFormEvent={() =>
-                            open({ setView: <EventForm event={item} /> })
-                          }
-                        />
-                      ),
-                    })
-                  }
-                  className="text-gray-700 border-b cursor-pointer hover:bg-gray-100"
-                >
-                  <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                    {i + 1}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {item.eventName}
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {/* {item.fixedAmount} */}
-                    {currency(item.fixedAmount)} 원
-                  </td>
-                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {item.startSubscribePeriod}~{item.endSubscribePeriod}
-                  </td>
-                  <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-                    {item.paymentDate}
-                  </td>
-                </tr>
-              );
-            }
-          )}
+          {getPagerList({ list: getSearchList() }).map((event, i) => {
+            return (
+              <tr
+                key={event.id}
+                // onClick={() =>
+                //   open({
+                //     setView: <EventDetail event={event} />,
+                //   })
+                // }
+                className="text-gray-700 border-b hover:bg-gray-100"
+              >
+                <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                  {i + 1}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {event.eventName}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {/* {item.fixedAmount} */}
+                  {currency(event.fixedAmount)} 원
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  {event.startSubscribePeriod}~{event.endSubscribePeriod}
+                </td>
+                <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+                  {event.paymentDate}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  <button
+                    onClick={() =>
+                      open({ setView: <EventForm event={event} /> })
+                    }
+                  >
+                    <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
+                  </button>
+                </td>
+                <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
+                  <button onClick={() => destroy({ id: event.id })}>
+                    <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </Table>
-        {eventListInit && (
-          <Pager
-            totalPageLength={getTotalPageLength({ list: eventList })}
-            setCurrentPage={setCurrentPage}
-            currentPage={currentPage}
-          />
-        )}
+
+        <Pager
+          totalPageLength={getTotalPageLength({ list: eventList })}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
       </div>
     </AdminLayout>
   );

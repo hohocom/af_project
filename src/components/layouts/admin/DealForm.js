@@ -2,7 +2,6 @@
 import { useDeal, useForm, useModal } from "core/hooks";
 import { useEffect, useState } from "react";
 import { currency } from "utils/currency";
-import { db } from "utils/firebase";
 
 function DealForm({ deal, funds, events }) {
   const { close } = useModal();

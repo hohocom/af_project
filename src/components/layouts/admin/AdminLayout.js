@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
-import "assets/styles/table.css";
 import { Modal } from "components/common";
+import { auth } from "utils/firebase";
+import "assets/styles/table.css";
 
 function AdminLayout({ children, title = "제목" }) {
   return (
@@ -60,8 +61,15 @@ function AdminLayout({ children, title = "제목" }) {
         id="main"
         className="flex flex-col w-full h-full transition-all bg-gray-100"
       >
-        <header className="w-full p-4 text-xl bg-white border-b font-noto-bold">
-          {title}
+        <header className="flex items-center justify-between w-full p-4 text-xl bg-white border-b font-noto-bold">
+          <h1>{title}</h1>
+          <button
+            onClick={() => {
+              auth.signOut();
+            }}
+          >
+            <i className="text-gray-600 hover:text-red-400 fas fa-sign-out-alt"></i>
+          </button>
         </header>
         <section className="w-full h-full p-4 overflow-y-auto">
           {children}

@@ -1,21 +1,22 @@
 import { Pager, Search, Table, withPrivate } from "components/common";
-import { AdminLayout } from "components/layouts";
-import { FundDetail, FundForm } from "components/layouts/admin";
+import { AdminLayout } from "components/layouts/admin";
+import { FundForm } from "components/layouts/admin";
 import {
+  fundListInitState,
   useFund,
-  useFundStream,
   useModal,
   usePager,
   useSearch,
 } from "core/hooks";
+import { useRecoilValue } from "recoil";
 import { currency } from "utils/currency";
 
 function AdminFundPage() {
-  const { fundListInit } = useFundStream();
-  const { fundList } = useFund();
+  const fundListInit = useRecoilValue(fundListInitState);
+  const { fundList, destroy } = useFund();
   const { open } = useModal();
-  const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
-    useSearch();
+  const { search, setSearch, searchEvent, setSearchList, getSearchList } =
+    useSearch({ list: fundList });
   const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
     usePager({
       pageLimit: 10,
@@ -60,55 +61,60 @@ function AdminFundPage() {
             "인센티브",
             "기본수수료",
             "거래수수료",
+            "수정",
+            "삭제",
           ]}
           itemInit={fundListInit}
           itemLength={fundList.length}
           colSpan={7}
         >
-          {getPagerList({ list: getListOrSearchList({ list: fundList }) }).map(
-            (fund, i) => {
-              return (
-                <tr
-                  key={fund.id}
-                  onClick={() =>
-                    open({
-                      setView: (
-                        <FundDetail
-                          fund={fund}
-                          openUpdateFormEvent={() =>
-                            open({ setView: <FundForm fund={fund} /> })
-                          }
-                        />
-                      ),
-                    })
-                  }
-                  className="text-gray-700 border-b cursor-pointer hover:bg-gray-100"
-                >
-                  <td className="p-4 text-center border-r dark:border-dark-5">
-                    {i + 1}
-                  </td>
-                  <td className="p-4 border-r dark:border-dark-5">
-                    {fund.fundName}
-                  </td>
-                  <td className="p-4 border-r dark:border-dark-5">
-                    {currency(fund.fundTotalCost)} 원
-                  </td>
-                  <td className="p-4 border-r dark:border-dark-5">
-                    {fund.target}
-                  </td>
-                  <td className="p-4 border-r dark:border-dark-5">
-                    {fund.incentive}
-                  </td>
-                  <td className="p-4 border-r dark:border-dark-5">
-                    {fund.defaultFee}
-                  </td>
-                  <td className="p-4 dark:border-dark-5">
-                    {fund.transactionFee}
-                  </td>
-                </tr>
-              );
-            }
-          )}
+          {getPagerList({ list: getSearchList() }).map((fund, i) => {
+            return (
+              <tr
+                key={fund.id}
+                // onClick={() =>
+                //   open({
+                //     setView: <FundDetail fund={fund} />,
+                //   })
+                // }
+                className="text-gray-700 border-b hover:bg-gray-100"
+              >
+                <td className="p-4 text-center border-r dark:border-dark-5">
+                  {i + 1}
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {fund.fundName}
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {currency(fund.fundTotalCost)} 원
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {fund.target}
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {fund.incentive}
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {fund.defaultFee}
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {fund.transactionFee}
+                </td>
+                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                  <button
+                    onClick={() => open({ setView: <FundForm fund={fund} /> })}
+                  >
+                    <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
+                  </button>
+                </td>
+                <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
+                  <button onClick={() => destroy({ id: fund.id })}>
+                    <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </Table>
 
         <Pager

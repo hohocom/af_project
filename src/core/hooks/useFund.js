@@ -1,16 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { db } from "utils/firebase";
-import { atom, useRecoilState } from "recoil";
+import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 
 const fundListState = atom({
   key: "fundListState",
   default: [],
 });
 
+export const fundListInitState = atom({
+  key: "fundListInitState",
+  default: false,
+});
+
 export function useFundStream() {
-  const [fundList, setFundList] = useRecoilState(fundListState);
-  const [fundListInit, setFundListInit] = useState(false);
+  const setFundList = useSetRecoilState(fundListState);
+  const setFundListInit = useSetRecoilState(fundListInitState);
   useEffect(() => {
     console.debug("%c[펀드 실시간 감지..]", "color:red");
     const unsub = db.collection("funds").onSnapshot((snapshot) => {
@@ -29,12 +34,10 @@ export function useFundStream() {
       unsub();
     };
   }, []);
-
-  return { fundList, fundListInit };
 }
 
 function useFund() {
-  const [fundList, setFundList] = useRecoilState(fundListState);
+  const fundList = useRecoilValue(fundListState);
 
   const store = async ({ form }) => {
     await db.collection("funds").add(form);

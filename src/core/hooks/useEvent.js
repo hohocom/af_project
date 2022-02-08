@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import { atom, useRecoilState } from "recoil";
+import { useEffect } from "react";
+import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
 
 const eventListState = atom({
@@ -8,9 +8,14 @@ const eventListState = atom({
   default: [],
 });
 
+export const eventListInitState = atom({
+  key: "eventListInitState",
+  default: false,
+});
+
 export function useEventStream() {
-  const [eventList, setEventList] = useRecoilState(eventListState);
-  const [eventListInit, setEventListInit] = useState(false);
+  const setEventList = useSetRecoilState(eventListState);
+  const setEventListInit = useSetRecoilState(eventListInitState);
   useEffect(() => {
     console.debug("%c[종목 실시간 감지..]", "color:red");
     const unsub = db.collection("events").onSnapshot((snapshot) => {
@@ -29,12 +34,10 @@ export function useEventStream() {
       unsub();
     };
   }, []);
-
-  return { eventList, eventListInit };
 }
 
 function useEvent() {
-  const [eventList, setEventList] = useRecoilState(eventListState);
+  const eventList = useRecoilValue(eventListState);
 
   const store = async ({ form }) => {
     await db.collection("events").add(form);

@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 import { Pager, Search, Table, withPrivate } from "components/common";
-import { AdminLayout } from "components/layouts";
+import { AdminLayout } from "components/layouts/admin";
 import { DealForm } from "components/layouts/admin";
 import {
   useDeal,
-  useDealStream,
-  useEventStream,
-  useFundStream,
+  useEvent,
+  useFund,
   useModal,
   usePager,
   useSearch,
@@ -17,24 +16,24 @@ import { currency } from "utils/currency";
 
 function AdminDealPage() {
   const { open } = useModal();
-
-  const { dealList } = useDealStream();
   const {
+    dealList,
     setMatchedFundId,
     getMatchedList,
     doJoinDealList,
     joinDealList,
     destroy,
   } = useDeal();
-  const { eventList } = useEventStream();
-  const { fundList } = useFundStream();
+
+  const { eventList } = useEvent();
+  const { fundList } = useFund();
 
   useEffect(() => {
     doJoinDealList({ eventList, fundList });
   }, [eventList, fundList, dealList]);
 
-  const { search, setSearch, searchEvent, setSearchList, getListOrSearchList } =
-    useSearch();
+  const { search, setSearch, searchEvent, setSearchList, getSearchList } =
+    useSearch({ list: joinDealList });
   const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
     usePager({
       pageLimit: 10,
@@ -113,9 +112,7 @@ function AdminDealPage() {
         >
           {getMatchedList({ list: joinDealList }).length > 0 ? (
             getPagerList({
-              list: getListOrSearchList({
-                list: getMatchedList({ list: joinDealList }),
-              }),
+              list: getSearchList(),
             }).map((deal, i) => {
               return (
                 <tr

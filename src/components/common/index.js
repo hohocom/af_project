@@ -6,5 +6,17 @@ import Loading from "./Loading";
 import Table from "./Table";
 import Pager from "./Pager";
 import Search from "./Search";
+import SidebarHandler, { useSidebar } from "./SidebarHandler";
 
-export { Card, Modal, withPrivate, withPublic, Loading, Table, Pager, Search };
+export {
+  Card,
+  Modal,
+  withPrivate,
+  withPublic,
+  Loading,
+  Table,
+  Pager,
+  Search,
+  SidebarHandler,
+  useSidebar,
+};

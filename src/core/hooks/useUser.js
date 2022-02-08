@@ -1,11 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
-import {
-  atom,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
+import { useEffect } from "react";
+import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
 
 const userListState = atom({
@@ -13,9 +8,15 @@ const userListState = atom({
   default: [],
 });
 
+export const userListInitState = atom({
+  key: "userListInitState",
+  default: false,
+});
+
 export function useUserStream() {
-  const [userList, setUserList] = useRecoilState(userListState);
-  const [userListInit, setUserListInit] = useState(false);
+  const setUserList = useSetRecoilState(userListState);
+  const setUserListInit = useSetRecoilState(userListInitState);
+
   useEffect(() => {
     console.debug("%c[회원 실시간 감지..]", "color:red");
     const unsub = db.collection("users").onSnapshot((snapshot) => {
@@ -31,12 +32,9 @@ export function useUserStream() {
     setUserListInit(true);
     return () => {
       console.debug("%c[회원 실시간 감지 종료]", "color:red");
-      console.debug(userList);
       unsub();
     };
   }, []);
-
-  return { userListInit };
 }
 
 function useUser() {

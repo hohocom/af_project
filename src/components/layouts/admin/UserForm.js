@@ -2,7 +2,7 @@ import { useForm, useModal, useUser } from "core/hooks";
 
 function UserForm({ user }) {
   const { close } = useModal();
-  const { store, edit, destroy } = useUser();
+  const { store, edit } = useUser();
   const { form, changeInput, isCompleted } = useForm(
     user
       ? user
@@ -95,29 +95,17 @@ function UserForm({ user }) {
           {isCompleted ? "생성" : "모든 항목을 입력해주세요.."}
         </button>
       ) : (
-        <>
-          <button
-            type="button"
-            className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={() => {
-              edit({ user, form });
-              close();
-            }}
-            disabled={!isCompleted}
-          >
-            {isCompleted ? "수정" : "모든 항목을 입력해주세요.."}
-          </button>
-          <button
-            type="button"
-            className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-red-400 rounded-lg shadow-md hover:bg-red-500 focus:ring-red-300 focus:ring-offset-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            onClick={() => {
-              destroy({ userId: user.id });
-              close();
-            }}
-          >
-            삭제
-          </button>
-        </>
+        <button
+          type="button"
+          className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+          onClick={() => {
+            edit({ user, form });
+            close();
+          }}
+          disabled={!isCompleted}
+        >
+          {isCompleted ? "수정" : "모든 항목을 입력해주세요.."}
+        </button>
       )}
     </form>
   );

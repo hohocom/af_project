@@ -12,7 +12,7 @@ function Pager({ totalPageLength, setCurrentPage = null, currentPage }) {
       <button
         key={i}
         type="button"
-        className={`w-full px-4 py-2 text-base  bg-white border-t border-b hover:bg-gray-100 ${
+        className={`w-full px-4 py-2 text-base  bg-white border-t border-b border-r hover:bg-gray-100 ${
           currentPage === i ? "text-indigo-500" : "text-black"
         }`}
         onClick={() => setCurrentPage(i)}
@@ -43,13 +43,11 @@ function Pager({ totalPageLength, setCurrentPage = null, currentPage }) {
 
     return result;
   };
+
   useEffect(() => {
     setCurrentPage &&
       setCurrentPage(current * pageIndexLimit - (pageIndexLimit - 1));
   }, [current]);
-  useEffect(() => {
-    console.log(currentPage);
-  }, [currentPage]);
 
   return (
     <div className="flex flex-col items-center px-5 py-5 xs:flex-row xs:justify-between">

@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function useSearch() {
+function useSearch({ list = [] }) {
   const [search, setSearch] = useState("");
   const [searchList, setSearchList] = useState([]); //필터에 맞는 종목
+
+  useEffect(() => {
+    setSearchList(list);
+  }, [list]);
 
   // 검색 버튼 클릭 이벤트
   const searchEvent = ({ list, key, callback }) => {
@@ -26,7 +30,7 @@ function useSearch() {
   };
 
   // 기본배열 또는 검색 배열 반환
-  const getListOrSearchList = ({ list }) => {
+  const getSearchList = () => {
     return searchList.length > 0 ? searchList : list;
   };
 
@@ -36,7 +40,7 @@ function useSearch() {
     searchList,
     searchEvent,
     setSearchList,
-    getListOrSearchList,
+    getSearchList,
   };
 }
 
