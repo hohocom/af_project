@@ -1,10 +1,15 @@
-import { useModal } from "core/hooks";
+/* eslint-disable array-callback-return */
+import { useFund, useModal, useUserFund } from "core/hooks";
+import { UserFundEditForm, UserFundForm } from ".";
 
-function UserDetail({ changeStep, user }) {
+function UserDetail({ user }) {
   const { open } = useModal();
+  const { fundList } = useFund();
+  const { getJoinUserFundList, destroy } = useUserFund();
+
   return (
     <>
-      <div className="pt-4 min-w-[350px]">
+      <div className="pt-4 min-w-[500px]">
         <div className="flex items-center justify-between w-full">
           <h2 className="text-xl font-noto-regular">회원 상세정보</h2>
         </div>
@@ -36,7 +41,7 @@ function UserDetail({ changeStep, user }) {
           <button
             onClick={() =>
               open({
-                setView: <div>펀드 추가</div>,
+                setView: <UserFundForm user={user} />,
               })
             }
             className="px-2 py-1 mb-2 text-sm text-white bg-blue-500 rounded-md"
@@ -47,20 +52,58 @@ function UserDetail({ changeStep, user }) {
 
         <table>
           <thead>
-            <tr className="text-gray-700 border-b">
+            <tr className="text-gray-700 bg-gray-100 border-b">
               <th className="p-2">펀드명</th>
               <th className="p-2">가입날짜</th>
               <th className="p-2">가입금액</th>
               <th className="p-2">지분율</th>
+              <th className="p-2">수정</th>
+              <th className="p-2">삭제</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="text-gray-700 border-b">
-              <td className="p-2">AF공모주1호</td>
-              <td className="p-2">2021.12.31</td>
-              <td className="p-2">100,000,000</td>
-              <td className="p-2">2.5%</td>
-            </tr>
+            {getJoinUserFundList({ fundList }).length === 0 ? (
+              <tr>
+                <td colSpan={6}>가입한 펀드가 없습니다.</td>
+              </tr>
+            ) : (
+              getJoinUserFundList({ fundList }).map((userFund) => {
+                if (userFund.userId === user.id) {
+                  return (
+                    <tr className="text-gray-700 border-b" key={userFund.id}>
+                      <td className="p-2">{userFund.fundName}</td>
+                      <td className="p-2">{userFund.joinDate}</td>
+                      <td className="p-2">{userFund.joinPrice}</td>
+                      <td className="p-2">
+                        {Number(userFund.joinPrice) /
+                          Number(userFund.fundTotalCost)}
+                      </td>
+                      <td className="p-2">
+                        <button
+                          onClick={() =>
+                            open({
+                              setView: (
+                                <UserFundEditForm
+                                  user={user}
+                                  userFund={userFund}
+                                />
+                              ),
+                            })
+                          }
+                        >
+                          <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
+                        </button>
+                      </td>
+                      <td className="p-2">
+                        <button onClick={() => destroy({ id: userFund.id })}>
+                          <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                }
+              })
+            )}
           </tbody>
         </table>
       </div>

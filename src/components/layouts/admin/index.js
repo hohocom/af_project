@@ -1,4 +1,6 @@
 import UserForm from "./UserForm";
+import UserFundForm from "./UserFundForm";
+import UserFundEditForm from "./userFundEditForm";
 import UserDetail from "./UserDetail";
 import CloseButton from "./CloseButton";
 import FundForm from "./FundForm";
@@ -11,6 +13,8 @@ import AdminLayout from "./AdminLayout";
 export {
   AdminLayout,
   UserForm,
+  UserFundForm,
+  UserFundEditForm,
   UserDetail,
   CloseButton,
   FundForm,

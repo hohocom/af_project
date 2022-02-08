@@ -833,6 +833,9 @@ video {
 .min-w-\[350px\] {
 	min-width: 350px;
 }
+.min-w-\[500px\] {
+	min-width: 500px;
+}
 .max-w-\[100\%\] {
 	max-width: 100%;
 }
@@ -1364,6 +1367,10 @@ video {
 .hover\:bg-indigo-700:hover {
 	--tw-bg-opacity: 1;
 	background-color: rgba(67, 56, 202, var(--tw-bg-opacity));
+}
+.hover\:bg-gray-200:hover {
+	--tw-bg-opacity: 1;
+	background-color: rgba(229, 231, 235, var(--tw-bg-opacity));
 }
 .hover\:bg-yellow-500:hover {
 	--tw-bg-opacity: 1;

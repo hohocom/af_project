@@ -1,4 +1,4 @@
-import { AdminLayout } from "components/layouts/admin";
+import { AdminLayout, UserDetail } from "components/layouts/admin";
 import {
   useModal,
   usePager,
@@ -70,17 +70,19 @@ function AdminUserPage() {
             return (
               <tr
                 key={user.id}
-                // onClick={() =>
-                //   open({
-                //     setView: <UserDetail user={user} />,
-                //   })
-                // }
                 className="text-gray-700 border-b hover:bg-gray-100"
               >
                 <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
                   {index + 1}
                 </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                <td
+                  className="p-4 font-normal border-r cursor-pointer hover:bg-gray-200 dark:border-dark-5 whitespace-nowrap"
+                  onClick={() =>
+                    open({
+                      setView: <UserDetail user={user} />,
+                    })
+                  }
+                >
                   {user.name}
                 </td>
                 <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">

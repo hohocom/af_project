@@ -28,12 +28,14 @@ import {
   useDealStream,
   useEventStream,
   useFundStream,
+  useUserFundStream,
   useUserStream,
 } from "core/hooks";
 
 function App() {
   useUserStream();
   useFundStream();
+  useUserFundStream();
   useEventStream();
   useDealStream();
 
@@ -52,6 +54,8 @@ function App() {
             });
           }
         });
+      } else {
+        setManager(null);
       }
       setLoading(true);
     });

@@ -8,7 +8,6 @@ function UserForm({ user }) {
       ? user
       : {
           email: "",
-          password: "",
           name: "",
           birthday: "",
           address: "",
@@ -27,17 +26,6 @@ function UserForm({ user }) {
           value={form.email}
           name="email"
           placeholder="이메일을 입력해주세요"
-          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
-        />
-      </div>
-      <div className="flex flex-col mt-2">
-        <label>비밀번호</label>
-        <input
-          type="password"
-          value={form.password}
-          name="password"
-          placeholder="비밀번호 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           onChange={changeInput}
         />

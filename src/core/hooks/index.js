@@ -3,6 +3,7 @@ import useForm from "./useForm";
 import useModal from "./useModal";
 import useUser, { useUserStream, userListInitState } from "./useUser";
 import useFund, { useFundStream, fundListInitState } from "./useFund";
+import useUserFund, { useUserFundStream } from "./useUserFund";
 import useEvent, { useEventStream, eventListInitState } from "./useEvent";
 import useDeal, { useDealStream } from "./useDeal";
 import useSearch from "./useSearch";
@@ -21,6 +22,8 @@ export {
   eventListInitState,
   useUser,
   useUserStream,
+  useUserFund,
+  useUserFundStream,
   userListInitState,
   useDeal,
   useDealStream,
