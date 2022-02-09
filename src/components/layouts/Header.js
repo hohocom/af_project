@@ -5,12 +5,15 @@ import img03 from "assets/images/header/03.svg";
 import img04 from "assets/images/header/04.svg";
 import img05 from "assets/images/header/05.svg";
 import { SidebarHandler } from "components/common";
+import { userDetailState } from "core/state";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import { auth } from "utils/firebase";
 
 function Header({ title = "타이틀" }) {
   const [sidebar, setSidebar] = useState(0);
+  const user = useRecoilValue(userDetailState);
 
   return (
     <>
@@ -95,10 +98,9 @@ function Header({ title = "타이틀" }) {
         </button>
         <SidebarHandler sidebar={sidebar}>
           <div className="flex items-center justify-start mt-4 text-white">
-            <div className="w-[60px] h-[60px] rounded-full bg-gray-50 mr-2"></div>
             <div>
               <p>
-                <strong>에이에프</strong>님의
+                <strong>{user.name}</strong>님의
               </p>
               <p>투자현황입니다</p>
             </div>
@@ -107,35 +109,27 @@ function Header({ title = "타이틀" }) {
             <div className="flex items-center justify-start">
               <div className="min-w-[50px]">
                 {/* tracking-[2rem] */}
-                <strong>아이디</strong>
+                <strong>이메일</strong>
               </div>
-              <p className="font-apple-sb">afia@afassets.com</p>
+              <p className="font-apple-sb">{user.id}</p>
             </div>
             <div className="flex items-center justify-start">
               <div className="min-w-[50px]">
                 <strong>생년월일</strong>
               </div>
-              <p className="font-apple-sb">1968.01.10</p>
+              <p className="font-apple-sb">{user.birthday}</p>
             </div>
             <div className="flex items-start justify-start">
               <div className="min-w-[50px]">
                 <strong>주소</strong>
               </div>
-              <p className="font-apple-sb">
-                광주광역시 서구 상무중앙로 110(치평동)
-              </p>
+              <p className="font-apple-sb">{user.address}</p>
             </div>
             <div className="flex items-center justify-start">
               <div className="min-w-[50px]">
                 <strong>휴대전화</strong>
               </div>
-              <p className="font-apple-sb">010-3884-2540</p>
-            </div>
-            <div className="flex items-center justify-start">
-              <div className="min-w-[50px]">
-                <strong>이메일</strong>
-              </div>
-              <p className="font-apple-sb">afia@afassets.com</p>
+              <p className="font-apple-sb">{user.phone}</p>
             </div>
           </div>
           <Link
@@ -147,7 +141,10 @@ function Header({ title = "타이틀" }) {
           </Link>
           <div className="flex items-end justify-between mt-6 text-white">
             <div className="text-2xl ">투자리스트</div>
-            <div className="text-sm">1월 10일 기준</div>
+            <div className="text-sm">
+              {new Date().getMonth() === 12 ? 1 : new Date().getMonth() + 1}월{" "}
+              {new Date().getDate()}일 기준
+            </div>
           </div>
           <ul>
             <li>

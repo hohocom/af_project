@@ -9,3 +9,8 @@ export const userListInitState = atom({
   key: "userListInitState",
   default: false,
 });
+
+export const userDetailState = atom({
+  key: "userDetailState",
+  default: null,
+});

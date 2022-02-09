@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/iframe-has-title */
 /* eslint-disable array-callback-return */
-import React, { useEffect } from "react";
+import React from "react";
 import { useRoutes } from "react-router-dom";
 
 import {
@@ -11,6 +12,7 @@ import {
   LoadingPage,
   LoginPage,
   ProfitOrLossPage,
+  UserDetailPage,
   UserEditPage,
 } from "pages";
 
@@ -21,16 +23,17 @@ import {
   AdminLoginPage,
   AdminUserPage,
 } from "pages/admin";
-import { useState } from "react/cjs/react.development";
-import { auth, db } from "utils/firebase";
 import { Loading } from "components/common";
 import {
   useDealStream,
   useEventStream,
   useFundStream,
+  useSignObserver,
   useUserFundStream,
   useUserStream,
 } from "core/hooks";
+import { useRecoilValue } from "recoil";
+import { managerDetailState, userDetailState } from "core/state";
 
 function App() {
   useUserStream();
@@ -39,31 +42,9 @@ function App() {
   useEventStream();
   useDealStream();
 
-  const [manager, setManager] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    auth.onAuthStateChanged(async (user) => {
-      console.debug("로그인/로그아웃 감지");
-      if (user) {
-        const userRef = await db.collection("users").doc(user.email).get();
-
-        //로그인은 되었는데 문서가 없는 상황
-        if (userRef.data() === undefined) return;
-
-        if (userRef.data().role === "ADMIN") {
-          setManager(userRef.data());
-        } else {
-          setUser(userRef.data());
-        }
-      } else {
-        setManager(null);
-        setUser(null);
-      }
-      setLoading(true);
-    });
-  }, []);
+  const { loading } = useSignObserver();
+  const manager = useRecoilValue(managerDetailState);
+  const user = useRecoilValue(userDetailState);
 
   const route = useRoutes([
     // 모바일, 회원 전용 페이지 리스트
@@ -85,7 +66,7 @@ function App() {
     },
     {
       path: "/users/me",
-      element: <UserEditPage user={user} redirectURL="/login" />,
+      element: <UserDetailPage user={user} redirectURL="/login" />,
     },
     {
       path: "/invest-detail",

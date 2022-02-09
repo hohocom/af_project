@@ -9,6 +9,7 @@ import useDeal, { useDealStream } from "./useDeal";
 import useSearch from "./useSearch";
 import usePager from "./usePager";
 import useTable from "./useTable";
+import { useSignObserver } from "./useSign";
 
 export {
   useStep,
@@ -27,4 +28,5 @@ export {
   useSearch,
   usePager,
   useTable,
+  useSignObserver,
 };

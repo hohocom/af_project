@@ -1,3 +1,4 @@
+import { Modal } from "components/common";
 import { Header } from ".";
 
 function MobileLayout({
@@ -16,6 +17,7 @@ function MobileLayout({
           {children}
         </div>
       </div>
+      <Modal />
     </div>
   );
 }

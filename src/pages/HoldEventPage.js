@@ -1,5 +1,5 @@
 import { Card, withPrivate } from "components/common";
-import { Header, MobileLayout } from "components/layouts";
+import { MobileLayout } from "components/layouts";
 import { useState } from "react";
 
 function HoldEventPage() {
