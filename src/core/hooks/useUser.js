@@ -1,17 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { userListInitState, userListState } from "core/state";
 import { useEffect } from "react";
-import { atom, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
-
-const userListState = atom({
-  key: "userListState",
-  default: [],
-});
-
-export const userListInitState = atom({
-  key: "userListInitState",
-  default: false,
-});
 
 export function useUserStream() {
   const setUserList = useSetRecoilState(userListState);

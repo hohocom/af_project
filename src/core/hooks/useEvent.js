@@ -1,17 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { eventListInitState, eventListState } from "core/state";
 import { useEffect } from "react";
-import { atom, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
-
-const eventListState = atom({
-  key: "eventListState",
-  default: [],
-});
-
-export const eventListInitState = atom({
-  key: "eventListInitState",
-  default: false,
-});
 
 export function useEventStream() {
   const setEventList = useSetRecoilState(eventListState);

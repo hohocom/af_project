@@ -6,8 +6,8 @@ function MobileLayout({
   children,
 }) {
   return (
-    <div className="flex items-center justify-center w-full h-screen overflow-hidden bg-gray-100">
-      <div className="relative h-full w-full max-w-[500px] bg-white overflow-y-auto">
+    <div className="flex items-start justify-center w-full h-screen ">
+      <div className="relative h-full bg-gray-100 w-full max-w-[500px] overflow-y-auto">
         <div
           className="h-full font-gong-light"
           style={{ backgroundColor: themeColor }}

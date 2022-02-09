@@ -1,7 +1,7 @@
 // TODO: 투자내역 페이지
 
 import { Header, MobileLayout } from "components/layouts";
-import { Card } from "components/common";
+import { Card, withPrivate } from "components/common";
 import { InvestBody, InvestDetail } from "components/layouts/investDetail";
 
 function InvestDetailPage() {
@@ -23,4 +23,4 @@ function InvestDetailPage() {
   );
 }
 
-export default InvestDetailPage;
+export default withPrivate(InvestDetailPage);

@@ -7,6 +7,7 @@ import img05 from "assets/images/header/05.svg";
 import { SidebarHandler } from "components/common";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { auth } from "utils/firebase";
 
 function Header({ title = "타이틀" }) {
   const [sidebar, setSidebar] = useState(0);
@@ -179,7 +180,10 @@ function Header({ title = "타이틀" }) {
           </ul>
 
           <div className="absolute bottom-0 left-0 flex items-center justify-center w-full mb-4">
-            <button className="flex items-start justify-center text-white">
+            <button
+              className="flex items-start justify-center text-white"
+              onClick={() => auth.signOut()}
+            >
               <img src={img05} alt="img_05" className="h-[20px]" />
               로그아웃하기
             </button>

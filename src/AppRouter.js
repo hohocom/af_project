@@ -40,22 +40,26 @@ function App() {
   useDealStream();
 
   const [manager, setManager] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     auth.onAuthStateChanged(async (user) => {
+      console.debug("로그인/로그아웃 감지");
       if (user) {
-        const managerRef = await db.collection("managers").get();
-        managerRef.docs.forEach((manager) => {
-          if (manager.id === user.uid) {
-            setManager({
-              id: manager.id,
-              ...manager.data(),
-            });
-          }
-        });
+        const userRef = await db.collection("users").doc(user.email).get();
+
+        //로그인은 되었는데 문서가 없는 상황
+        if (userRef.data() === undefined) return;
+
+        if (userRef.data().role === "ADMIN") {
+          setManager(userRef.data());
+        } else {
+          setUser(userRef.data());
+        }
       } else {
         setManager(null);
+        setUser(null);
       }
       setLoading(true);
     });
@@ -63,14 +67,46 @@ function App() {
 
   const route = useRoutes([
     // 모바일, 회원 전용 페이지 리스트
-    { path: "/", element: <LoadingPage /> },
-    { path: "/login", element: <LoginPage /> },
-    { path: "/users/me", element: <UserEditPage /> },
-    { path: "/invest-detail", element: <InvestDetailPage /> },
-    { path: "/assignment-status", element: <AssignmentStatusPage /> },
-    { path: "/conclusions", element: <ConclusionPage /> },
-    { path: "/hold-events", element: <HoldEventPage /> },
-    { path: "/profit-or-loss", element: <ProfitOrLossPage /> },
+    {
+      path: "/",
+      element: (
+        <LoadingPage
+          user={user}
+          restricted={true}
+          redirectURL="/invest-detail"
+        />
+      ),
+    },
+    {
+      path: "/login",
+      element: (
+        <LoginPage user={user} restricted={true} redirectURL="/invest-detail" />
+      ),
+    },
+    {
+      path: "/users/me",
+      element: <UserEditPage user={user} redirectURL="/login" />,
+    },
+    {
+      path: "/invest-detail",
+      element: <InvestDetailPage user={user} redirectURL="/login" />,
+    },
+    {
+      path: "/assignment-status",
+      element: <AssignmentStatusPage user={user} redirectURL="/login" />,
+    },
+    {
+      path: "/conclusions",
+      element: <ConclusionPage user={user} redirectURL="/login" />,
+    },
+    {
+      path: "/hold-events",
+      element: <HoldEventPage user={user} redirectURL="/login" />,
+    },
+    {
+      path: "/profit-or-loss",
+      element: <ProfitOrLossPage user={user} redirectURL="/login" />,
+    },
     // 데스크톱, 관리자 전용 페이지 리스트
     {
       path: "/admin",

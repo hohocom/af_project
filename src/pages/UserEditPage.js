@@ -1,6 +1,7 @@
 import img01 from "assets/images/user-detail/01.svg";
 import img02 from "assets/images/user-detail/02.svg";
 import img03 from "assets/images/user-detail/03.svg";
+import { withPrivate } from "components/common";
 import { MobileLayout } from "components/layouts";
 import { useNavigate } from "react-router-dom";
 
@@ -86,4 +87,4 @@ function UserEditPage() {
   );
 }
 
-export default UserEditPage;
+export default withPrivate(UserEditPage);

@@ -1,5 +1,6 @@
 import { Header, MobileLayout } from "components/layouts";
 import img01 from "assets/images/conclusion/01.svg";
+import { withPrivate } from "components/common";
 
 function ProfitOrLossPage() {
   return (
@@ -83,4 +84,4 @@ function ProfitOrLossPage() {
   );
 }
 
-export default ProfitOrLossPage;
+export default withPrivate(ProfitOrLossPage);

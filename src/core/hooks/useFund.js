@@ -1,17 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
 import { db } from "utils/firebase";
-import { atom, useRecoilValue, useSetRecoilState } from "recoil";
-
-const fundListState = atom({
-  key: "fundListState",
-  default: [],
-});
-
-export const fundListInitState = atom({
-  key: "fundListInitState",
-  default: false,
-});
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { fundListInitState, fundListState } from "core/state";
 
 export function useFundStream() {
   const setFundList = useSetRecoilState(fundListState);

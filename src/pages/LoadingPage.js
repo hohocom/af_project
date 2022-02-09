@@ -3,6 +3,7 @@ import img02 from "assets/images/loading/02.png";
 import img03 from "assets/images/loading/03.png";
 import img04 from "assets/images/loading/04.png";
 import img05 from "assets/images/loading/05.png";
+import { withPublic } from "components/common";
 import { MobileLayout } from "components/layouts";
 import { Link } from "react-router-dom";
 
@@ -51,4 +52,4 @@ function LoadingPage() {
   );
 }
 
-export default LoadingPage;
+export default withPublic(LoadingPage);

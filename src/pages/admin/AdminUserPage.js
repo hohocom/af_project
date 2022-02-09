@@ -1,15 +1,10 @@
 import { AdminLayout, UserDetail } from "components/layouts/admin";
-import {
-  useModal,
-  usePager,
-  userListInitState,
-  useSearch,
-  useUser,
-} from "core/hooks";
+import { useModal, usePager, useSearch, useUser } from "core/hooks";
 
 import { UserForm } from "components/layouts/admin";
 import { Pager, Search, Table, withPrivate } from "components/common";
 import { useRecoilValue } from "recoil";
+import { userListInitState } from "core/state";
 
 function AdminUserPage() {
   const userListInit = useRecoilValue(userListInitState);

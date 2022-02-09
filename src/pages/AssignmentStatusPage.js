@@ -1,4 +1,4 @@
-import { Card } from "components/common";
+import { Card, withPrivate } from "components/common";
 import { Header, MobileLayout } from "components/layouts";
 import { useState } from "react";
 
@@ -165,4 +165,4 @@ function AssignmentStatusPage() {
   );
 }
 
-export default AssignmentStatusPage;
+export default withPrivate(AssignmentStatusPage);

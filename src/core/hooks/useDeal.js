@@ -7,21 +7,9 @@ import {
 } from "recoil";
 import { useEffect, useState } from "react";
 import { db } from "utils/firebase";
+import { dealListInit, dealListState, joinDealListState } from "core/state";
 
-const dealListState = atom({
-  key: "dealListState",
-  default: [],
-});
 
-export const dealListInit = atom({
-  key: "dealListInit",
-  default: [],
-});
-
-const joinDealListState = atom({
-  key: "joinDealListState",
-  default: [],
-});
 
 export function useDealStream() {
   const setDealList = useSetRecoilState(dealListState);
