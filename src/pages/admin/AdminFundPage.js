@@ -87,13 +87,13 @@ function AdminFundPage() {
                   {fund.target}
                 </td>
                 <td className="p-4 border-r dark:border-dark-5">
-                  {fund.incentive}
+                  {fund.incentive} %
                 </td>
                 <td className="p-4 border-r dark:border-dark-5">
-                  {fund.defaultFee}
+                  {fund.defaultFee} %
                 </td>
                 <td className="p-4 border-r dark:border-dark-5">
-                  {fund.transactionFee}
+                  {fund.transactionFee} %
                 </td>
                 <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                   <button

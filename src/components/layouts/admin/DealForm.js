@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { useDeal, useForm, useModal } from "core/hooks";
+import { useDeal, useForm, useFund, useModal } from "core/hooks";
 import { useEffect, useState } from "react";
 import { currency } from "utils/currency";
 
@@ -9,7 +9,8 @@ function DealForm({ deal, funds, events }) {
   const [fund, setFund] = useState(null);
   const [event, setEvent] = useState(null);
 
-  const { store, edit } = useDeal();
+  const { fundList } = useFund();
+  const { buyStore, sellStore } = useDeal();
   const { form, setForm, changeInput, isCompleted, setIsCompletedIgnoreList } =
     useForm(
       deal
@@ -22,14 +23,19 @@ function DealForm({ deal, funds, events }) {
             salePrice: 0, // 매도 금액
             quantity: 0, // 매수/매도 수량
             totalQuantity: 0, // 전체 잔량
-            type: "buy", // sell
+            type: "buy", // sell,
           }
     );
 
   // 매수, 매도 토글 이벤트
   useEffect(() => {
     if (form.type === "buy") {
-      setIsCompletedIgnoreList(["totalQuantity", "salePrice"]);
+      setIsCompletedIgnoreList([
+        "totalQuantity",
+        "salePrice",
+        // "fundProfit",
+        // "transactionFee",
+      ]);
     } else if (form.type === "sell") {
       setIsCompletedIgnoreList(["totalQuantity", "buyPrice"]);
     }
@@ -201,7 +207,9 @@ function DealForm({ deal, funds, events }) {
         type="button"
         className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
         onClick={() => {
-          form.type === "buy" ? store({ form }) : edit({ form });
+          form.type === "buy"
+            ? buyStore({ form })
+            : sellStore({ form, fundList });
           close();
         }}
         disabled={!isCompleted}

@@ -9,8 +9,6 @@ import { useEffect, useState } from "react";
 import { db } from "utils/firebase";
 import { dealListInit, dealListState, joinDealListState } from "core/state";
 
-
-
 export function useDealStream() {
   const setDealList = useSetRecoilState(dealListState);
   const setDealListInit = useSetRecoilState(dealListInit);
@@ -42,17 +40,6 @@ function useDeal() {
   const [joinDealList, setJoinDealList] = useRecoilState(joinDealListState);
   const [matchedFundId, setMatchedFundId] = useState(null);
 
-  const getMatchedList = ({ list }) => {
-    const newList = [];
-    list.forEach((item) => {
-      if (item.fundId === matchedFundId) {
-        newList.push(item);
-      }
-    });
-
-    return newList;
-  };
-
   const doJoinDealList = ({ fundList, eventList }) => {
     console.debug(dealList);
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
@@ -60,7 +47,6 @@ function useDeal() {
       dealList.forEach((deal) => {
         eventList.forEach((event) => {
           if (deal.eventId === event.id) {
-            console.debug(event);
             joinDealList.push({
               id: deal.id,
               fundId: deal.fundId,
@@ -72,6 +58,9 @@ function useDeal() {
               totalQuantity: deal.totalQuantity,
               dealDate: deal.dealDate,
               type: deal.type,
+              fundProfit: deal.fundProfit,
+              transactionFee: deal.transactionFee,
+              afterFundProfit: deal.afterFundProfit,
             });
           }
         });
@@ -97,7 +86,7 @@ function useDeal() {
     return dealDoc;
   };
 
-  const store = async ({ form }) => {
+  const buyStore = async ({ form }) => {
     const dealDoc = await getFilterDeal({ form });
 
     if (!dealDoc) {
@@ -118,7 +107,7 @@ function useDeal() {
     }
   };
 
-  const edit = async ({ form }) => {
+  const sellStore = async ({ form, fundList }) => {
     const dealDoc = await getFilterDeal({ form });
 
     if (!dealDoc) {
@@ -132,6 +121,37 @@ function useDeal() {
       window.alert("이전 거래날짜 이후로 설정해주세요.");
       return;
     }
+
+    // 거래 수수료(transitionfee) = (매도금액*매도수량) * 거래수수료(fundList참조)
+    let transactionFee = 0;
+    let fundRatio = 0;
+
+    fundList.forEach((fund) => {
+      if (fund.id === form.fundId) {
+        fundRatio = fund.transactionFee;
+      }
+    });
+    transactionFee = form.salePrice * form.quantity * (fundRatio / 100);
+    console.debug(transactionFee);
+    // 펀드 수익 (fundProfit) = (매도금액*매도수량)-(매수금액*매도수량)-거래수수료
+    const dealRef = await db
+      .collection("deals")
+      .where("fundId", "==", form.fundId)
+      .where("eventId", "==", form.eventId)
+      .where("type", "==", "buy")
+      .get();
+    let afterFundProfit = 0;
+    let fundProfit = 0;
+    let buyPrice = 0; // 매수금액
+    dealRef.docs.forEach((deal) => {
+      buyPrice = deal.data().buyPrice;
+    });
+    fundProfit = form.salePrice * form.quantity - buyPrice * form.quantity;
+    afterFundProfit =
+      form.salePrice * form.quantity -
+      buyPrice * form.quantity -
+      transactionFee;
+    console.debug(afterFundProfit);
     await db.collection("deals").add({
       fundId: form.fundId,
       eventId: form.eventId,
@@ -143,6 +163,9 @@ function useDeal() {
         ? Number(dealDoc.totalQuantity) - Number(form.quantity)
         : 0, // 전체 잔량
       type: form.type, // sell
+      fundProfit: fundProfit,
+      transactionFee: transactionFee,
+      afterFundProfit: afterFundProfit,
     });
   };
 
@@ -168,14 +191,13 @@ function useDeal() {
   };
 
   return {
-    getMatchedList,
     matchedFundId,
     setMatchedFundId,
     doJoinDealList,
     joinDealList,
     dealList,
-    store,
-    edit,
+    buyStore,
+    sellStore,
     destroy,
   };
 }
