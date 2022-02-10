@@ -49,8 +49,8 @@ function useForm(formObj) {
         form[f] === "undefinded" ||
         form[f] === 0
       ) {
-        console.debug(`${f} : ${form[f]}`);
-        console.debug("유효성 검사 불합격!!");
+        // console.debug(`${f} : ${form[f]}`);
+        // console.debug("유효성 검사 불합격!!");
         result = false;
       }
     }

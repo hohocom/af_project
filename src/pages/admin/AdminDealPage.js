@@ -19,7 +19,7 @@ function AdminDealPage() {
   const {
     dealList,
     setMatchedFundId,
-    getMatchedList,
+    matchedFundId,
     doJoinDealList,
     joinDealList,
     destroy,
@@ -60,6 +60,7 @@ function AdminDealPage() {
             <select
               className="p-2 ml-4 mr-6 bg-white border rounded-md"
               onChange={(e) => {
+                console.debug(e.target.value);
                 setMatchedFundId(e.target.value);
               }}
             >
@@ -102,18 +103,21 @@ function AdminDealPage() {
             "종목명",
             "매수가",
             "매도가",
-            "수량 (주)",
-            "거래잔량 (주)",
+            "수량",
+            "거래잔량",
+            "실현손익",
+            "거래수수료",
+            "수수료 후 실현손익",
             "기록삭제",
           ]}
           itemInit={joinDealList}
           itemLength={joinDealList.length}
           colSpan={7}
         >
-          {getMatchedList({ list: joinDealList }).length > 0 ? (
-            getPagerList({
-              list: getSearchList(),
-            }).map((deal, i) => {
+          {getPagerList({
+            list: getSearchList(),
+          }).map((deal, i) => {
+            if (deal.fundId === matchedFundId)
               return (
                 <tr
                   key={deal.id}
@@ -131,16 +135,31 @@ function AdminDealPage() {
                     {deal.eventName}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.buyPrice ? currency(deal.buyPrice) : "-"}
+                    {deal.buyPrice ? currency(deal.buyPrice) + "원" : "-"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.salePrice ? currency(deal.salePrice) : "-"}
+                    {deal.salePrice ? currency(deal.salePrice) + "원" : "-"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {currency(deal.quantity)} 주
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {currency(deal.totalQuantity)} 주
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {deal.type === "sell"
+                      ? currency(deal.fundProfit) + "원"
+                      : "없음"}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {deal.type === "sell"
+                      ? currency(deal.transactionFee) + "원"
+                      : "없음"}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {deal.type === "sell"
+                      ? currency(deal.afterFundProfit) + "원"
+                      : "없음"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     <button
@@ -157,14 +176,7 @@ function AdminDealPage() {
                   </td>
                 </tr>
               );
-            })
-          ) : (
-            <tr>
-              <td colSpan={7} className="p-3">
-                펀드를 선택해주세요.
-              </td>
-            </tr>
-          )}
+          })}
         </Table>
 
         <Pager

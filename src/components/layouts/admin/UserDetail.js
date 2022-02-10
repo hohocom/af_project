@@ -74,10 +74,7 @@ function UserDetail({ user }) {
                       <td className="p-2">{userFund.fundName}</td>
                       <td className="p-2">{userFund.joinDate}</td>
                       <td className="p-2">{userFund.joinPrice}</td>
-                      <td className="p-2">
-                        {Number(userFund.joinPrice) /
-                          Number(userFund.fundTotalCost)}
-                      </td>
+                      <td className="p-2">{userFund.shareRatio}</td>
                       <td className="p-2">
                         <button
                           onClick={() =>

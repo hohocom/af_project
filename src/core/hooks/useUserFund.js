@@ -3,11 +3,11 @@ import { useEffect } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
 
-const userFundListState = atom({
+export const userFundListState = atom({
   key: "userFundListState",
   default: [],
 });
-const userFundListInitState = atom({
+export const userFundListInitState = atom({
   key: "userFundListInitState",
   default: [],
 });
@@ -54,6 +54,11 @@ function useUserFund() {
               joinDate: userFund.joinDate,
               fundTotalCost: fund.fundTotalCost,
               joinPrice: userFund.joinPrice,
+              shareRatio:
+                Number(userFund.joinPrice) / Number(fund.fundTotalCost),
+              joinPeriod: `${fund.startJoinPeriod}~${fund.endJoinPeriod}`,
+              target: fund.target,
+              // totalFundProfit :
             });
           }
         });
