@@ -1,6 +1,6 @@
 import { currency } from "utils/currency";
 
-function InvestBody({ fund }) {
+function InvestBody({ fund, user }) {
   return (
     <>
       <div className="flex flex-col items-center w-1/2 text-sm border-r">

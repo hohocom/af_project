@@ -12,7 +12,6 @@ function FundForm({ fund = null }) {
           target: "",
           incentive: "",
           defaultFee: "",
-          transactionFee: "",
           startJoinPeriod: "",
           endJoinPeriod: "",
         }
@@ -67,7 +66,7 @@ function FundForm({ fund = null }) {
       </div>
       <div className="flex flex-col mt-2">
         <label htmlFor="name-with-label" className="text-gray-700">
-          인센티브
+          인센티브(%)
         </label>
         <input
           value={form.incentive}
@@ -79,7 +78,7 @@ function FundForm({ fund = null }) {
       </div>
       <div className="flex flex-col mt-2">
         <label htmlFor="name-with-label" className="text-gray-700">
-          기본수수료
+          기본수수료(%)
         </label>
         <input
           value={form.defaultFee}
@@ -87,23 +86,6 @@ function FundForm({ fund = null }) {
           placeholder="기본 수수료 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           onChange={changeInput}
-        />
-      </div>
-      <div className="flex flex-col mt-2">
-        <label htmlFor="name-with-label" className="text-gray-700">
-          거래수수료
-        </label>
-        <input
-          value={form.transactionFee}
-          name="transactionFee"
-          placeholder="거래 수수료"
-          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
-          // onBlur={(e) => {
-          //   console.debug("sldkfjsalf");
-          //   e.target.focus();
-          //   return;
-          // }}
         />
       </div>
       <div className="flex flex-col mt-2">

@@ -55,6 +55,8 @@ function AdminUserPage() {
             "생년월일",
             "주소",
             "전화번호",
+            "거래은행",
+            "계좌번호",
             "수정",
             "삭제",
           ]}
@@ -93,6 +95,12 @@ function AdminUserPage() {
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {user.phone}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.bankName}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.bankNumber}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     <button

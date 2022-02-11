@@ -55,7 +55,6 @@ function AdminFundPage() {
             "대상",
             "인센티브",
             "기본수수료",
-            "거래수수료",
             "가입기간",
             "수정",
             "삭제",
@@ -68,11 +67,6 @@ function AdminFundPage() {
             return (
               <tr
                 key={fund.id}
-                // onClick={() =>
-                //   open({
-                //     setView: <FundDetail fund={fund} />,
-                //   })
-                // }
                 className="text-gray-700 border-b hover:bg-gray-100"
               >
                 <td className="p-4 text-center border-r dark:border-dark-5">
@@ -92,9 +86,6 @@ function AdminFundPage() {
                 </td>
                 <td className="p-4 border-r dark:border-dark-5">
                   {fund.defaultFee} %
-                </td>
-                <td className="p-4 border-r dark:border-dark-5">
-                  {fund.transactionFee} %
                 </td>
                 <td className="p-4 border-r dark:border-dark-5">
                   {fund.startJoinPeriod} ~ {fund.endJoinPeriod}

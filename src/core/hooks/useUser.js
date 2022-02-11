@@ -32,13 +32,7 @@ function useUser() {
   const userList = useRecoilValue(userListState);
 
   const store = async ({ form }) => {
-    db.collection("users").doc(form.email).set({
-      email: form.email,
-      name: form.name,
-      birthday: form.birthday,
-      address: form.address,
-      phone: form.phone,
-    });
+    await db.collection("users").doc(form.email).set(form);
   };
 
   const edit = async ({ form, user }) => {

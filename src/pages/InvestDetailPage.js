@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 // TODO: 투자내역 페이지
 
-import { Header, MobileLayout } from "components/layouts";
+import { MobileLayout } from "components/layouts";
 import { Card, withPrivate } from "components/common";
 import { InvestBody, InvestDetail } from "components/layouts/investDetail";
 import { useRecoilValue } from "recoil";
@@ -24,7 +24,7 @@ function InvestDetailPage() {
                 key={index}
                 title={userFund.fundName}
                 body={<InvestBody fund={userFund} />}
-                bottomOutside={<InvestDetail fund={userFund} />}
+                bottomOutside={<InvestDetail fund={userFund} user={user} />}
               />
             );
         })}

@@ -3,18 +3,21 @@ import { useEffect, useState } from "react";
 import { currency } from "utils/currency";
 import { db } from "utils/firebase";
 
-function InvestDetail({ fund }) {
+function InvestDetail({ fund, user }) {
   const [state, setState] = useState(0);
   //const [loading, setLoading] = useState(false);
   const [sumData, setSumData] = useState({});
+
   const changeState = (s) => {
     if (s === state) setState(0);
     else if (s === 1) setState(1);
     else if (s === 2) setState(2);
   };
   useEffect(() => {
+    console.debug(user);
     sumFundProfitByOption();
   }, []);
+
   const sumFundProfitByOption = async () => {
     console.log(fund.fundId);
     const dealRef = await db
@@ -36,6 +39,20 @@ function InvestDetail({ fund }) {
     });
   };
 
+  const getDefaultFee = () => {
+    //펀드 가입금액 * 기본수수료  * ((현재날짜 - 가입날짜 % 365) +1)
+    console.debug(fund);
+    console.debug(new Date().getTime() - new Date(fund.joinDate).getTime());
+
+    const minusTimeStamp =
+      new Date().getTime() - new Date(fund.joinDate).getTime();
+    const result =
+      fund.joinPrice *
+      (fund.fundDefaultFee / 100) *
+      Math.floor(new Date(minusTimeStamp) / 1000 / 60 / 60 / 24 / 365 + 1);
+    return result;
+  };
+
   return (
     <>
       {state !== 0 && (
@@ -53,11 +70,11 @@ function InvestDetail({ fund }) {
                 <p className="w-2/3 text-left font-apple-sb">{fund.userId}</p>
               </div>
               <div className="flex">
-                <p className="w-1/3 mr-4 text-right text-red-500">거래은행</p>
-                <p className="w-2/3 text-left font-apple-sb">하나은행</p>
+                <p className="w-1/3 mr-4 text-right">거래은행</p>
+                <p className="w-2/3 text-left font-apple-sb">{user.bankName}</p>
               </div>
               <div className="flex">
-                <p className="w-1/3 mr-4 text-right text-red-500">계좌번호</p>
+                <p className="w-1/3 mr-4 text-right">계좌번호</p>
                 <p className="w-2/3 text-left font-apple-sb">3333-05-1254973</p>
               </div>
               <div className="flex">
@@ -94,8 +111,10 @@ function InvestDetail({ fund }) {
                 </p>
               </div>
               <div className="flex">
-                <p className="w-1/3 mr-4 text-right text-red-500">기본수수료</p>
-                <p className="w-2/3 text-left font-apple-sb">0원</p>
+                <p className="w-1/3 mr-4 text-right">기본수수료</p>
+                <p className="w-2/3 text-left font-apple-sb">
+                  {currency(getDefaultFee())}원
+                </p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right text-red-500">인센티브</p>

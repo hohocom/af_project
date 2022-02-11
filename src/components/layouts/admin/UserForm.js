@@ -12,6 +12,8 @@ function UserForm({ user }) {
           birthday: "",
           address: "",
           phone: "",
+          bankName: "",
+          bankNumber: "",
         }
   );
 
@@ -66,6 +68,26 @@ function UserForm({ user }) {
           value={form.phone}
           name="phone"
           placeholder="전화번호 입력"
+          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          onChange={changeInput}
+        />
+      </div>
+      <div className="flex flex-col mt-2">
+        <label>거래은행</label>
+        <input
+          value={form.bankName}
+          name="bankName"
+          placeholder="거래은행 입력"
+          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          onChange={changeInput}
+        />
+      </div>
+      <div className="flex flex-col mt-2">
+        <label>계좌번호</label>
+        <input
+          value={form.bankNumber}
+          name="bankNumber"
+          placeholder="계좌번호 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
           onChange={changeInput}
         />

@@ -54,6 +54,7 @@ function useUserFund() {
               joinDate: userFund.joinDate,
               fundTotalCost: fund.fundTotalCost,
               joinPrice: userFund.joinPrice,
+              fundDefaultFee: fund.defaultFee,
               shareRatio:
                 Number(userFund.joinPrice) / Number(fund.fundTotalCost),
               joinPeriod: `${fund.startJoinPeriod}~${fund.endJoinPeriod}`,
