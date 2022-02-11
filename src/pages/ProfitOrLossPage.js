@@ -14,15 +14,14 @@ function ProfitOrLossPage() {
   const [datas, setDatas] = useState([]);
   const fundList = useRecoilValue(fundListState);
   const { getJoinUserFundList } = useUserFund(); //내가 가입한 펀드정보
-
-  useEffect(async () => {
-    await FundProfitAll(); //내가 가입한 펀드의 수익률
+  const [dealRef, setDealRef] = useState();
+  useEffect(() => {
+    FundProfitAll(); //내가 가입한 펀드의 수익률
   }, []);
-
+  const resultArray = [];
   const FundProfitAll = async () => {
-    const resultArray = [];
     const joinUserFundList = getJoinUserFundList({ fundList });
-    await joinUserFundList.forEach(async (userFund, index) => {
+    joinUserFundList.forEach(async (userFund, index) => {
       // 펀드 갯수만큼!
       if (userFund.userId === user.id) {
         const dealRef = await db
@@ -30,23 +29,37 @@ function ProfitOrLossPage() {
           .where("fundId", "==", userFund.fundId)
           .where("type", "==", "sell")
           .get();
-        dealRef.docs.forEach((deal) => {
-          resultArray.push({
-            dealDate: deal.data().dealDate,
-            fundProfit: deal.data().fundProfit,
-            transactionFee: deal.data().transactionFee,
-            afterFundProfit: deal.data().afterFundProfit,
-          });
-        });
-        console.debug(index, "번째");
-        setDatas(resultArray);
+
+        setDealRef(dealRef);
+        // dealRef.docs.forEach((deal, index) => {
+        //   resultArray.push({
+        //     dealDate: deal.data().dealDate,
+        //     fundProfit: deal.data().fundProfit,
+        //     transactionFee: deal.data().transactionFee,
+        //     afterFundProfit: deal.data().afterFundProfit,
+        //   });
+        // });
       }
     });
+    console.log(resultArray);
   };
   useEffect(() => {
+    console.log(dealRef);
+    // dealRef.docs.forEach((deal, index) => {
+    //   resultArray.push({
+    //     dealDate: deal.data().dealDate,
+    //     fundProfit: deal.data().fundProfit,
+    //     transactionFee: deal.data().transactionFee,
+    //     afterFundProfit: deal.data().afterFundProfit,
+    //   });
+    // });
+    // setDatas(resultArray);
+  }, [dealRef]);
+
+  useEffect(() => {
     console.log("Data");
-    // await datas.sort((a, b) => new Date(a.dealDate) - new Date(b.dealDate));
-    console.log(datas);
+    // console.log(datas);
+    // console.log(datas);
   }, [datas]);
 
   return (

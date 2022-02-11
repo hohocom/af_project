@@ -22,6 +22,7 @@ function DealForm({ deal, funds, events }) {
             buyPrice: 0, // 매수 금액
             salePrice: 0, // 매도 금액
             quantity: 0, // 매수/매도 수량
+            transactionFee: 0, // 거래수수료(원)
             totalQuantity: 0, // 전체 잔량
             type: "buy", // sell,
           }
@@ -179,7 +180,52 @@ function DealForm({ deal, funds, events }) {
               {currency(form.quantity)}주
             </span>
           </div>
-
+          {form.type === "buy" ? (
+            <div className="flex flex-col mt-2">
+              <label className="font-noto-regular">거래수수료(%)</label>
+              <input
+                type="number"
+                name="transactionFee"
+                value={form.transactionFee}
+                className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                onChange={(e) => {
+                  setForm({
+                    ...form,
+                    transactionFee: e.target.value,
+                    totalQuantity: form.type === "buy" ? e.target.value : 0,
+                  });
+                }}
+              />
+              <span className="p-2 text-xs rounded-md">
+                {currency(
+                  Number(form.quantity) *
+                    Number(event.fixedAmount) *
+                    Number(form.transactionFee / 100)
+                )}
+                원
+              </span>
+            </div>
+          ) : (
+            <div className="flex flex-col mt-2">
+              <label className="font-noto-regular">거래수수료(원)</label>
+              <input
+                type="number"
+                name="transactionFee"
+                value={form.transactionFee}
+                className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                onChange={(e) => {
+                  setForm({
+                    ...form,
+                    transactionFee: e.target.value,
+                    totalQuantity: form.type === "buy" ? e.target.value : 0,
+                  });
+                }}
+              />
+              <span className="p-2 text-xs rounded-md">
+                {currency(form.transactionFee)}원
+              </span>
+            </div>
+          )}
           <div className="flex flex-col mt-2">
             <label className="font-noto-regular">거래날짜</label>
             {form.type === "buy" && (

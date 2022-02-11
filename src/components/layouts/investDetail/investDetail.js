@@ -20,14 +20,13 @@ function InvestDetail({ fund }) {
     const dealRef = await db
       .collection("deals")
       .where("fundId", "==", fund.fundId)
-      .where("type", "==", "sell")
       .get();
     let sumFundProfit = 0;
     let sumTransactionFee = 0;
     let sumAfterFundProfit = 0;
     dealRef.docs.forEach((deal) => {
       sumFundProfit += deal.data().fundProfit;
-      sumTransactionFee += deal.data().transactionFee;
+      sumTransactionFee += Number(deal.data().transactionFee);
       sumAfterFundProfit += deal.data().afterFundProfit;
     });
     setSumData({

@@ -87,24 +87,29 @@ function useDeal() {
   };
 
   const buyStore = async ({ form }) => {
-    const dealDoc = await getFilterDeal({ form });
-
-    if (!dealDoc) {
-      await db.collection("deals").add(form);
-    } else {
-      await db.collection("deals").add({
-        fundId: form.fundId,
-        eventId: form.eventId,
-        dealDate: form.dealDate, // 거래 일자
-        buyPrice: form.buyPrice, // 매수 금액
-        salePrice: 0, // 매도 금액
-        quantity: form.quantity, // 매수/매도 수량
-        totalQuantity: dealDoc
-          ? Number(dealDoc.totalQuantity) + Number(form.quantity)
-          : 0, // 전체 잔량
-        type: form.type, // sell
-      });
-    }
+    console.log(`quantity ${form.quantity}`);
+    console.log(`buyPrice ${form.buyPrice}`);
+    console.log(`transactionFee ${form.transactionFee / 100}`);
+    await db.collection("deals").add({
+      fundId: form.fundId,
+      eventId: form.eventId,
+      dealDate: form.dealDate, // 거래 일자
+      buyPrice: form.buyPrice, // 매수 금액
+      salePrice: 0, // 매도 금액
+      quantity: form.quantity, // 매수/매도 수량
+      totalQuantity: form.quantity,
+      transactionFee:
+        Number(form.quantity) *
+        Number(form.buyPrice) *
+        Number(form.transactionFee / 100),
+      type: form.type,
+      fundProfit: 0,
+      afterFundProfit:
+        0 -
+        Number(form.quantity) *
+          Number(form.buyPrice) *
+          Number(form.transactionFee / 100),
+    });
   };
 
   const sellStore = async ({ form, fundList }) => {
@@ -123,16 +128,16 @@ function useDeal() {
     }
 
     // 거래 수수료(transitionfee) = (매도금액*매도수량) * 거래수수료(fundList참조)
-    let transactionFee = 0;
-    let fundRatio = 0;
+    // let transactionFee = 0;
+    // let fundRatio = 0;
 
-    fundList.forEach((fund) => {
-      if (fund.id === form.fundId) {
-        fundRatio = fund.transactionFee;
-      }
-    });
-    transactionFee = form.salePrice * form.quantity * (fundRatio / 100);
-    console.debug(transactionFee);
+    // fundList.forEach((fund) => {
+    //   if (fund.id === form.fundId) {
+    //     fundRatio = fund.transactionFee;
+    //   }
+    // });
+    // transactionFee = form.salePrice * form.quantity * (fundRatio / 100);
+    // console.debug(transactionFee);
     // 펀드 수익 (fundProfit) = (매도금액*매도수량)-(매수금액*매도수량)-거래수수료
     const dealRef = await db
       .collection("deals")
@@ -140,18 +145,20 @@ function useDeal() {
       .where("eventId", "==", form.eventId)
       .where("type", "==", "buy")
       .get();
-    let afterFundProfit = 0;
     let fundProfit = 0;
     let buyPrice = 0; // 매수금액
     dealRef.docs.forEach((deal) => {
       buyPrice = deal.data().buyPrice;
     });
     fundProfit = form.salePrice * form.quantity - buyPrice * form.quantity;
-    afterFundProfit =
-      form.salePrice * form.quantity -
-      buyPrice * form.quantity -
-      transactionFee;
-    console.debug(afterFundProfit);
+    // let afterFundProfit = 0;
+    // afterFundProfit =
+    //   form.salePrice * form.quantity -
+    //   buyPrice * form.quantity -
+    //   transactionFee;
+    console.log(dealDoc.totalQuantity);
+    console.log(form.quantity);
+
     await db.collection("deals").add({
       fundId: form.fundId,
       eventId: form.eventId,
@@ -164,8 +171,8 @@ function useDeal() {
         : 0, // 전체 잔량
       type: form.type, // sell
       fundProfit: fundProfit,
-      transactionFee: transactionFee,
-      afterFundProfit: afterFundProfit,
+      transactionFee: form.transactionFee,
+      afterFundProfit: fundProfit - form.transactionFee,
     });
   };
 

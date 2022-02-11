@@ -147,19 +147,15 @@ function AdminDealPage() {
                     {currency(deal.totalQuantity)} 주
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.type === "sell"
-                      ? currency(deal.fundProfit) + "원"
-                      : "없음"}
+                    {currency(deal.fundProfit) + "원"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {deal.type === "sell"
-                      ? currency(deal.transactionFee) + "원"
-                      : "없음"}
+                    {currency(deal.transactionFee)} 원
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {deal.type === "sell"
                       ? currency(deal.afterFundProfit) + "원"
-                      : "없음"}
+                      : currency(-deal.transactionFee) + "원"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     <button
