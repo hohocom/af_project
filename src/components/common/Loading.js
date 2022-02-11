@@ -15,5 +15,21 @@ function Loading({
 }) {
   return isLoading ? loadingUI : children;
 }
-
 export default Loading;
+
+export function LoadingType2({ children, isLoading = false }) {
+  return (
+    <div>
+      {isLoading && (
+        <div className="fixed z-50 w-full h-full bg-black/30">
+          <div className="loader">
+            <div className="inner one"></div>
+            <div className="inner two"></div>
+            <div className="inner three"></div>
+          </div>
+        </div>
+      )}
+      {children}
+    </div>
+  );
+}

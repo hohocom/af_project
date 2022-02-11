@@ -5,7 +5,7 @@ import "assets/styles/table.css";
 
 function AdminLayout({ children, title = "제목" }) {
   return (
-    <div className="fixed flex w-full h-full overflow-x-auto font-noto-light">
+    <div className="fixed flex w-full h-full font-noto-light">
       <div className="relative bg-white dark:bg-gray-800">
         <div className="flex flex-col sm:flex-row sm:justify-around">
           <div className="h-screen border-r shadow-sm w-72">
@@ -59,7 +59,7 @@ function AdminLayout({ children, title = "제목" }) {
       </div>
       <main
         id="main"
-        className="flex flex-col w-full h-full transition-all bg-gray-100"
+        className="flex flex-col w-full h-full overflow-x-auto transition-all bg-gray-100"
       >
         <header className="flex items-center justify-between w-full p-4 text-xl bg-white border-b font-noto-bold">
           <h1>{title}</h1>

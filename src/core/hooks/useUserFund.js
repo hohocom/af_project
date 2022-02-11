@@ -64,7 +64,7 @@ function useUserFund() {
         });
       });
     }
-    console.debug(joinUserFundList);
+    // console.debug(joinUserFundList);
     return joinUserFundList;
   };
 

@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import { AdminLayout, UserDetail } from "components/layouts/admin";
 import { useModal, usePager, useSearch, useUser } from "core/hooks";
 
@@ -62,50 +63,53 @@ function AdminUserPage() {
           colSpan={6}
         >
           {getPagerList({ list: getSearchList() }).map((user, index) => {
-            return (
-              <tr
-                key={user.id}
-                className="text-gray-700 border-b hover:bg-gray-100"
-              >
-                <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                  {index + 1}
-                </td>
-                <td
-                  className="p-4 font-normal border-r cursor-pointer hover:bg-gray-200 dark:border-dark-5 whitespace-nowrap"
-                  onClick={() =>
-                    open({
-                      setView: <UserDetail user={user} />,
-                    })
-                  }
+            if (user.role !== "ADMIN")
+              return (
+                <tr
+                  key={user.id}
+                  className="text-gray-700 border-b hover:bg-gray-100"
                 >
-                  {user.name}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {user.email}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {user.birthday}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {user.address}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {user.phone}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  <button
-                    onClick={() => open({ setView: <UserForm user={user} /> })}
+                  <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                    {index + 1}
+                  </td>
+                  <td
+                    className="p-4 font-normal border-r cursor-pointer hover:bg-gray-200 dark:border-dark-5 whitespace-nowrap"
+                    onClick={() =>
+                      open({
+                        setView: <UserDetail user={user} />,
+                      })
+                    }
                   >
-                    <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
-                  </button>
-                </td>
-                <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
-                  <button onClick={() => destroy({ userId: user.id })}>
-                    <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            );
+                    {user.name}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.email}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.birthday}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.address}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.phone}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    <button
+                      onClick={() =>
+                        open({ setView: <UserForm user={user} /> })
+                      }
+                    >
+                      <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
+                    </button>
+                  </td>
+                  <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
+                    <button onClick={() => destroy({ userId: user.id })}>
+                      <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              );
           })}
         </Table>
 

@@ -4,17 +4,15 @@
 import { Header, MobileLayout } from "components/layouts";
 import { Card, withPrivate } from "components/common";
 import { InvestBody, InvestDetail } from "components/layouts/investDetail";
-import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { userDetailState } from "core/state";
 import { fundListState } from "core/state";
-import { userFundListState, useUserFund } from "core/hooks";
-import { db } from "utils/firebase";
+import { useUserFund } from "core/hooks";
 
 function InvestDetailPage() {
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
-  const { getJoinUserFundList } = useUserFund();
+  const { getJoinUserFundList } = useUserFund(); //내가 가입한 펀드정보
 
   return (
     <MobileLayout>
