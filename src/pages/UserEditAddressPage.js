@@ -4,41 +4,32 @@ import { MobileLayout } from "components/layouts";
 import { useForm, useLoading } from "core/hooks";
 import { userDetailState } from "core/state";
 import { useNavigate } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-import { auth } from "utils/firebase";
+import { useRecoilState } from "recoil";
+import { db } from "utils/firebase";
 
-function UserEditPwPage() {
+function UserEditAddressPage() {
   const navigate = useNavigate();
-  const user = useRecoilValue(userDetailState);
+  const [user, setUser] = useRecoilState(userDetailState);
   const { form, changeInput, isCompleted } = useForm({
-    password: "",
-    newPassword: "",
+    address: "",
   });
   const { loading, setLoading } = useLoading();
 
   const changePassword = async () => {
     setLoading(true);
-    await auth
-      .signInWithEmailAndPassword(user.id, form.password)
-      .then(async () => {
-        await auth.currentUser
-          .updatePassword(form.newPassword)
-          .then(async () => {
-            setLoading(false);
-            await auth.signOut();
-            window.alert("비밀번호가 변경되었습니다. 다시 로그인해주세요.");
-          })
-          .catch((error) => {
-            setLoading(false);
-            window.alert(error);
-            throw new Error(error);
-          });
-      })
-      .catch((error) => {
-        setLoading(false);
-        window.alert("비밀번호가 일치하지 않습니다.");
-        throw new Error(error);
+    await db
+      .collection("users")
+      .doc(user.id)
+      .set({
+        ...user,
+        address: form.address,
       });
+    setUser({
+      ...user,
+      address: form.address,
+    });
+    setLoading(false);
+    navigate("/users/me");
   };
 
   return (
@@ -53,7 +44,7 @@ function UserEditPwPage() {
             >
               <img src={img02} alt="img_02" className="w-[20px]" />
             </button>
-            <p className="ml-2">비밀번호 변경</p>
+            <p className="ml-2">주소 변경</p>
           </div>
 
           <form
@@ -64,20 +55,11 @@ function UserEditPwPage() {
             }}
           >
             <input
-              type="password"
-              name="password"
+              name="address"
               onChange={changeInput}
-              value={form.password}
+              value={form.address}
               className="w-full p-2 border rounded-md"
-              placeholder="기존 비밀번호를 입력해주세요."
-            />
-            <input
-              type="password"
-              name="newPassword"
-              onChange={changeInput}
-              value={form.newPassword}
-              className="w-full p-2 border rounded-md"
-              placeholder="변경할 비밀번호를 입력해주세요."
+              placeholder="변경할 주소를 입력하세요."
             />
             <button
               className="p-2 mt-2 text-white bg-blue-500 rounded-md"
@@ -92,4 +74,4 @@ function UserEditPwPage() {
   );
 }
 
-export default withPrivate(UserEditPwPage);
+export default withPrivate(UserEditAddressPage);

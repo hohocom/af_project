@@ -19,7 +19,7 @@ export default Loading;
 
 export function LoadingType2({ children, isLoading = false }) {
   return (
-    <div>
+    <>
       {isLoading && (
         <div className="fixed z-50 w-full h-full bg-black/30">
           <div className="loader">
@@ -30,6 +30,6 @@ export function LoadingType2({ children, isLoading = false }) {
         </div>
       )}
       {children}
-    </div>
+    </>
   );
 }

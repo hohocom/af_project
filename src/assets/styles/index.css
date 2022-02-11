@@ -1157,11 +1157,11 @@ video {
 .pt-0 {
 	padding-top: 0px;
 }
-.pt-2 {
-	padding-top: 0.5rem;
-}
 .pt-2\.5 {
 	padding-top: 0.625rem;
+}
+.pt-2 {
+	padding-top: 0.5rem;
 }
 .pt-4 {
 	padding-top: 1rem;
