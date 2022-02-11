@@ -1,6 +1,8 @@
 import LoadingPage from "./LoadingPage";
 import LoginPage from "./LoginPage";
 import UserDetailPage from "./UserDetailPage";
+import UserEditPwPage from "./UserEditPwPage";
+import UserEditAddressPage from "./UserEditAddressPage";
 import InvestDetailPage from "./InvestDetailPage";
 import AssignmentStatusPage from "./AssignmentStatusPage";
 import HoldEventPage from "./HoldEventPage";
@@ -11,6 +13,8 @@ export {
   LoadingPage,
   LoginPage,
   UserDetailPage,
+  UserEditPwPage,
+  UserEditAddressPage,
   InvestDetailPage,
   AssignmentStatusPage,
   HoldEventPage,

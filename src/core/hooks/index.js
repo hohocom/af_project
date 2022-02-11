@@ -14,6 +14,8 @@ import useSearch from "./useSearch";
 import usePager from "./usePager";
 import useTable from "./useTable";
 import { useSignObserver } from "./useSign";
+import useLoading from "./useLoading";
+
 export {
   userFundListState,
   userFundListInitState,
@@ -34,4 +36,5 @@ export {
   usePager,
   useTable,
   useSignObserver,
+  useLoading,
 };

@@ -13,7 +13,8 @@ import {
   LoginPage,
   ProfitOrLossPage,
   UserDetailPage,
-  UserEditPage,
+  UserEditAddressPage,
+  UserEditPwPage,
 } from "pages";
 
 import {
@@ -67,6 +68,14 @@ function App() {
     {
       path: "/users/me",
       element: <UserDetailPage user={user} redirectURL="/login" />,
+    },
+    {
+      path: "/users/me/re-password",
+      element: <UserEditPwPage user={user} redirectURL="/login" />,
+    },
+    {
+      path: "/users/me/re-address",
+      element: <UserEditAddressPage user={user} redirectURL="/login" />,
     },
     {
       path: "/invest-detail",
