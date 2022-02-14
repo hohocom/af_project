@@ -87,8 +87,9 @@ function AssignmentStatusPage() {
                           </div>
                         </td>
                         <td>
-                          <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                            <p>150,000,000원</p>
+                          <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p>{currency(deal.buyPrice * deal.quantity)}원</p>
+                            <br />
                           </div>
                         </td>
                       </tr>

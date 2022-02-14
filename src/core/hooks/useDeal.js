@@ -41,10 +41,13 @@ function useDeal() {
   const [matchedFundId, setMatchedFundId] = useState(null);
 
   const doJoinDealList = ({ fundList, eventList }) => {
-    console.debug(dealList);
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealList = [];
-      dealList.forEach((deal) => {
+      console.log(fundList);
+      console.log(dealList);
+      console.log(eventList);
+
+      dealList.forEach((deal, index) => {
         eventList.forEach((event) => {
           if (deal.eventId === event.id) {
             joinDealList.push({

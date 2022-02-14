@@ -3,59 +3,58 @@ import { MobileLayout } from "components/layouts";
 import img01 from "assets/images/conclusion/01.svg";
 import { withPrivate } from "components/common";
 import { useEffect, useState } from "react";
-import { useUserFund } from "core/hooks";
+import { useDeal, useUserFund } from "core/hooks";
 import { useRecoilValue } from "recoil";
 import { fundListState } from "core/state";
 import { db } from "utils/firebase";
-import { userDetailState } from "core/state";
+import { userDetailState, eventListState } from "core/state";
 import { currency } from "utils/currency";
 
 function ProfitOrLossPage() {
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
-  const { getJoinUserFundList } = useUserFund(); //내가 가입한 펀드정보
+  const eventList = useRecoilValue(eventListState);
+  const { joinDealList, doJoinDealList } = useDeal();
   const [dealRef, setDealRef] = useState([]);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
-  const [open, setOpen] = useState(false);
   const d = new Date();
   const year = d.getFullYear(); // 년
   const month = d.getMonth(); // 월
   const day = d.getDate(); // 일
+  const monthBtn = [1, 3, 6, 12];
+  const [clickMonth, SetclickMonth] = useState(0);
+  const getFilterJoinDealList = async () => {
+    const filterFundList = [];
 
-  const fundProfitAll = async () => {
-    console.debug("fundProfitAll");
-    let resultArray = [];
-    await Promise.all(
-      getJoinUserFundList({ fundList }).map(async (userFund, index) => {
-        if (userFund.userId === user.id) {
-          const dealRef = await db
-            .collection("deals")
-            .where("fundId", "==", userFund.fundId)
-            .where("type", "==", "sell")
-            .get();
+    const userFundRef = await db
+      .collection("userFunds")
+      .where("userId", "==", user.id)
+      .where("type", "==", "sell")
+      .get();
 
-          dealRef.docs.forEach((deal, index) => {
-            resultArray.push(deal.data());
-          });
+    userFundRef.docs.map((userFund) => {
+      fundList.forEach((fund) => {
+        console.log(fund);
+        if (userFund.data().fundId === fund.id) {
+          filterFundList.push(fund);
         }
-      })
-    );
-    // 결과 내림차순으로 정렬
-    resultArray.sort(function (a, b) {
-      return new Date(b.dealDate) - new Date(a.dealDate);
+      });
     });
-    setDealRef(resultArray);
-  };
 
+    doJoinDealList({ eventList, fundList: filterFundList });
+  };
   useEffect(() => {
-    fundProfitAll(); //내가 가입한 펀드의 수익
+    getFilterJoinDealList();
   }, []);
 
   // 기간조회
   const getDateFilterList = () => {
     let result = [];
-    dealRef.forEach((deal) => {
+    if (startDate == null && endDate == null) {
+      return joinDealList;
+    }
+    joinDealList.forEach((deal) => {
       if (
         new Date(deal.dealDate) >= new Date(startDate) &&
         new Date(deal.dealDate) <= new Date(endDate)
@@ -63,14 +62,9 @@ function ProfitOrLossPage() {
         result.push(deal);
       }
     });
+
     return result;
   };
-  useEffect(() => {
-    console.log(startDate);
-  }, [startDate, endDate]);
-  useEffect(() => {
-    console.log(endDate);
-  }, [endDate]);
   return (
     <MobileLayout>
       <div className="flex flex-col w-full p-4">
@@ -86,6 +80,7 @@ function ProfitOrLossPage() {
               className="w-full bg-white outline-none"
               onChange={(e) => {
                 setStartDate(e.target.value);
+                SetclickMonth(0);
               }}
             />
           </label>
@@ -97,95 +92,65 @@ function ProfitOrLossPage() {
               className="w-full bg-white outline-none"
               onChange={(e) => {
                 setEndDate(e.target.value);
+                SetclickMonth(0);
               }}
             />
           </label>
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <button
-            className="p-2 w-[80px] bg-white rounded-md"
-            onClick={() => {
-              setStartDate(new Date(year, month - 1, day));
-              setEndDate(new Date());
-              setOpen(true);
-            }}
-          >
-            1개월
-          </button>
-          <button
-            className="p-2 w-[80px] bg-white rounded-md"
-            onClick={() => {
-              setStartDate(new Date(year, month - 3, day));
-              setEndDate(new Date());
-              setOpen(true);
-            }}
-          >
-            3개월
-          </button>
-          <button
-            className="p-2 w-[80px] bg-white rounded-md"
-            onClick={() => {
-              setStartDate(new Date(year, month - 6, day));
-              setEndDate(new Date());
-              setOpen(true);
-            }}
-          >
-            6개월
-          </button>
-          <button
-            className="p-2 w-[80px] bg-white rounded-md"
-            onClick={() => {
-              setStartDate(new Date(year, month - 12, day));
-              setEndDate(new Date());
-              setOpen(true);
-            }}
-          >
-            1년
-          </button>
-        </div>
-        <div className="flex items-center justify-center mt-4">
-          <button
-            className="p-2 w-[70%] bg-blue-600 rounded-md text-white"
-            onClick={() => setOpen(true)}
-          >
-            조회
-          </button>
+          {monthBtn.map((m) => {
+            return (
+              <button
+                key={m}
+                className={`p-2 w-[80px]   rounded-md   ${
+                  clickMonth === m ? `bg-[#1E3A8A] text-white` : `bg-white`
+                }`}
+                onClick={() => {
+                  setStartDate(new Date(year, month - m, day));
+                  setEndDate(new Date());
+                  SetclickMonth(m);
+                }}
+              >
+                {m}개월
+              </button>
+            );
+          })}
         </div>
 
-        {open && (
+        {
           <div className="w-full mt-6 bg-white rounded-md">
             <table className="w-full text-xs table-fixed">
               <thead>
                 <tr>
                   <th className="p-2 border-r">날짜</th>
-                  <th className="p-2 border-r">수수료</th>
+                  <th className="p-2 border-r">거래수수료</th>
                   <th className="p-2 border-r">손익</th>
                   <th>수수료 후 실손익</th>
                 </tr>
               </thead>
               <tbody className="font-apple-sb">
-                {getDateFilterList().map((data, index) => {
+                {getDateFilterList().map((deal, index) => {
                   return (
                     <tr className="border-t" key={index}>
                       <td className="border-r">
                         <div className="p-1">
-                          <p>{data.dealDate}</p>
+                          <p>{deal.dealDate}</p>
                         </div>
                       </td>
                       <td className="border-r">
                         <div className="flex flex-col items-end p-1">
-                          <p>{currency(data.transactionFee)}원</p>
+                          <p>{currency(deal.transactionFee)}원</p>
                         </div>
                       </td>
                       <td className="border-r">
                         <div className="flex flex-col items-end p-1">
-                          <p>{currency(data.fundProfit)}원</p>
+                          <p>{currency(deal.fundProfit)}원</p>
                         </div>
                       </td>
                       <td>
                         <div className="flex flex-col items-end p-1">
-                          <p>{currency(data.afterFundProfit)}원</p>
+                          <p>{currency(deal.afterFundProfit)}원</p>
                         </div>
                       </td>
                     </tr>
@@ -194,7 +159,7 @@ function ProfitOrLossPage() {
               </tbody>
             </table>
           </div>
-        )}
+        }
       </div>
     </MobileLayout>
   );
