@@ -15,6 +15,7 @@ import usePager from "./usePager";
 import useTable from "./useTable";
 import { useSignObserver } from "./useSign";
 import useLoading from "./useLoading";
+import useValidate from "./useValidate";
 
 export {
   userFundListState,
@@ -37,4 +38,5 @@ export {
   useTable,
   useSignObserver,
   useLoading,
+  useValidate,
 };

@@ -7,24 +7,25 @@ function useForm(formObj) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isCompletedIgnoreList, setIsCompletedIgnoreList] = useState([]);
 
+  // TODO: form 객체가 변경하거나, 유효성 검사 제외 리스트가 바뀔 때마다 formData 검사
   useEffect(() => {
     checkFormData();
-  }, [isCompletedIgnoreList]);
+  }, [form, isCompletedIgnoreList]);
 
+  // TODO: form을 순회하며 form 객체의 key와 입력값의 name이 같은 곳의 값을 변경
   const changeInput = (e) => {
     const name = e.target.name;
     const value = e.target.value;
-    console.debug(name, value);
+    // console.debug(name, value);
     if (!name) throw new Error("name 없음!");
-
     for (let f in form) {
-      // console.debug(f);
       if (name === f) {
         setForm({ ...form, [f]: value });
       }
     }
   };
 
+  // TODO: form 객체 값 모두 초기화
   const resetForm = () => {
     const newObj = {};
     for (let f in form) {
@@ -34,13 +35,16 @@ function useForm(formObj) {
     setForm(newObj);
   };
 
+  /**
+   * TODO: form 객체에 null, "", " ", undefined, 0 값 체크
+   * 하나라도 값이 충족되지 않으면 isCompleted 값은 false
+   */
   const checkFormData = () => {
     let result = true;
     // console.debug("폼데이터 감시중..");
     for (let f in form) {
       if (checkIgnore({ key: f })) {
-        console.debug(f);
-        console.debug("유효성 이그노어");
+        // console.debug(f);
       } else if (
         form[f] === null ||
         form[f] === "" ||
@@ -49,15 +53,13 @@ function useForm(formObj) {
         form[f] === "undefinded" ||
         form[f] === 0
       ) {
-        // console.debug(`${f} : ${form[f]}`);
-        // console.debug("유효성 검사 불합격!!");
         result = false;
       }
     }
-    console.debug(form);
     setIsCompleted(result);
   };
 
+  // TODO: 유효성 검사 제외 항목 체크
   const checkIgnore = ({ key }) => {
     let result = false;
     isCompletedIgnoreList.forEach((k) => {
@@ -65,10 +67,6 @@ function useForm(formObj) {
     });
     return result;
   };
-
-  useEffect(() => {
-    checkFormData();
-  }, [form]);
 
   return {
     form,

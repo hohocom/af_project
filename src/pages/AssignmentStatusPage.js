@@ -1,11 +1,14 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable array-callback-return */
 import { Card, withPrivate } from "components/common";
 import { MobileLayout } from "components/layouts";
 import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
-import { userDetailState } from "core/state";
+import { eventListState, userDetailState } from "core/state";
 import { fundListState } from "core/state";
-import { useUserFund } from "core/hooks";
+import { useDeal, useUserFund } from "core/hooks";
 import { db } from "utils/firebase";
+import { currency } from "utils/currency";
 function AssignmentStatusPage() {
   const [modal, setModal] = useState({
     isOpen: false,
@@ -13,35 +16,40 @@ function AssignmentStatusPage() {
   });
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
-  const { getJoinUserFundList } = useUserFund(); //내가 가입한 펀드정보
-  const [buyList, setBuyList] = useState();
+  const eventList = useRecoilValue(eventListState);
+  const { joinDealList, doJoinDealList } = useDeal();
 
-  const getBuyList = async () => {
-    console.debug("getBuyList");
-    let result = [];
-    await Promise.all(
-      getJoinUserFundList({ fundList }).map(async (userFund, index) => {
-        if (userFund.userId === user.id) {
-          const dealRef = await db
-            .collection("deals")
-            .where("fundId", "==", userFund.fundId)
-            .where("type", "==", "buy")
-            .get();
-          dealRef.docs.forEach((deal) => {
-            result.push(deal.data());
-          });
-        }
-      })
-    );
-    setBuyList(result);
-  };
-
+  // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
-    getBuyList();
+    getFilterJoinDealList();
   }, []);
-  useEffect(() => {
-    console.log(buyList);
-  }, [buyList]);
+
+  /**
+   * @필터링된_JoinDealList
+   * 1. 로그인한 회원이 가입한 펀드목록 가져오기
+   * 2. 전역에 저장된 펀드리스트를 회원펀드목록과 일치하는 펀드만 뽑아서 새로운 배열로 추출
+   * 3. 기존의 doJoinDealList의 인자값인 fundList에 필터링된 펀드리스트 던지기
+   * 4. 결과: 회원이 가입한 펀드로 필터링된 거래 리스트 가져옴
+   * * 매수 내역만 가져오는 것은 화면에서 그려줄 때 조건처리
+   */
+  const getFilterJoinDealList = async () => {
+    const filterFundList = [];
+
+    const userFundRef = await db
+      .collection("userFunds")
+      .where("userId", "==", user.id)
+      .get();
+
+    userFundRef.docs.map((userFund) => {
+      fundList.forEach((fund) => {
+        if (userFund.data().fundId === fund.id) {
+          filterFundList.push(fund);
+        }
+      });
+    });
+
+    doJoinDealList({ eventList, fundList: filterFundList });
+  };
 
   return (
     <MobileLayout>
@@ -58,97 +66,36 @@ function AssignmentStatusPage() {
                 </tr>
               </thead>
               <tbody className="font-apple-sb">
-                <tr
-                  className="border-t"
-                  onClick={() => setModal({ ...modal, isOpen: true })}
-                >
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>150,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-t">
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>9,000,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-t">
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>9,000,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-t">
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>9,000,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
+                {joinDealList.map((deal) => {
+                  if (deal.type === "buy")
+                    return (
+                      <tr
+                        key={deal.id}
+                        className="border-t"
+                        onClick={() => setModal({ ...modal, isOpen: true })}
+                      >
+                        <td className="border-r">
+                          <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p>{deal.dealDate}</p>
+                            <nobr>{deal.eventName}</nobr>
+                          </div>
+                        </td>
+                        <td className="border-r">
+                          <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p>{currency(deal.buyPrice)}원</p>
+                            <nobr>{deal.quantity}주</nobr>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p>150,000,000원</p>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                })}
               </tbody>
             </table>
-          }
-          bottomOutside={
-            <div className="flex justify-center w-full mt-2">
-              <button
-                className="w-1/2 p-2 text-white bg-blue-600 rounded-md"
-                // onClick={() => changeState(2)}
-              >
-                더보기(1/10)
-              </button>
-            </div>
           }
         />
         {modal.isOpen && (
