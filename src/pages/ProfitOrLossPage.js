@@ -24,18 +24,30 @@ function ProfitOrLossPage() {
   const day = d.getDate(); // 일
   const monthBtn = [1, 3, 6, 12];
   const [clickMonth, SetclickMonth] = useState(0);
+
+  // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
+  useEffect(() => {
+    getFilterJoinDealList();
+  }, []);
+
+  /**
+   * @필터링된_JoinDealList
+   * 1. 로그인한 회원이 가입한 펀드목록 가져오기
+   * 2. 전역에 저장된 펀드리스트를 회원펀드목록과 일치하는 펀드만 뽑아서 새로운 배열로 추출
+   * 3. 기존의 doJoinDealList의 인자값인 fundList에 필터링된 펀드리스트 던지기
+   * 4. 결과: 회원이 가입한 펀드로 필터링된 거래 리스트 가져옴
+   * * 매수 내역만 가져오는 것은 화면에서 그려줄 때 조건처리
+   */
   const getFilterJoinDealList = async () => {
     const filterFundList = [];
 
     const userFundRef = await db
       .collection("userFunds")
       .where("userId", "==", user.id)
-      .where("type", "==", "sell")
       .get();
 
     userFundRef.docs.map((userFund) => {
       fundList.forEach((fund) => {
-        console.log(fund);
         if (userFund.data().fundId === fund.id) {
           filterFundList.push(fund);
         }
@@ -44,9 +56,6 @@ function ProfitOrLossPage() {
 
     doJoinDealList({ eventList, fundList: filterFundList });
   };
-  useEffect(() => {
-    getFilterJoinDealList();
-  }, []);
 
   // 기간조회
   const getDateFilterList = () => {

@@ -54,7 +54,7 @@ function ConclusionPage() {
         }
       });
     });
-    console.log(filterFundList);
+
     doJoinDealList({ eventList, fundList: filterFundList });
   };
 

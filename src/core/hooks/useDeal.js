@@ -40,13 +40,11 @@ function useDeal() {
   const [joinDealList, setJoinDealList] = useRecoilState(joinDealListState);
   const [matchedFundId, setMatchedFundId] = useState(null);
 
-  const doJoinDealList = ({ fundList, eventList }) => {
+  const doJoinDealList = ({ fundList, eventList, type = "all" }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealList = [];
-      console.log(fundList);
-      console.log(dealList);
-      console.log(eventList);
 
+      //events 와 deals join
       dealList.forEach((deal, index) => {
         eventList.forEach((event) => {
           if (deal.eventId === event.id) {
@@ -68,6 +66,7 @@ function useDeal() {
           }
         });
       });
+      console.log(joinDealList);
       setJoinDealList(joinDealList);
     }
   };
