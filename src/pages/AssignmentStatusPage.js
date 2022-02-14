@@ -1,12 +1,48 @@
 import { Card, withPrivate } from "components/common";
 import { MobileLayout } from "components/layouts";
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { useRecoilValue } from "recoil";
+import { userDetailState } from "core/state";
+import { fundListState } from "core/state";
+import { useUserFund } from "core/hooks";
+import { db } from "utils/firebase";
 function AssignmentStatusPage() {
   const [modal, setModal] = useState({
     isOpen: false,
     data: {},
   });
+  const user = useRecoilValue(userDetailState);
+  const fundList = useRecoilValue(fundListState);
+  const { getJoinUserFundList } = useUserFund(); //내가 가입한 펀드정보
+  const [buyList, setBuyList] = useState();
+
+  const getBuyList = async () => {
+    console.debug("getBuyList");
+    let result = [];
+    await Promise.all(
+      getJoinUserFundList({ fundList }).map(async (userFund, index) => {
+        if (userFund.userId === user.id) {
+          const dealRef = await db
+            .collection("deals")
+            .where("fundId", "==", userFund.fundId)
+            .where("type", "==", "buy")
+            .get();
+          dealRef.docs.forEach((deal) => {
+            result.push(deal.data());
+          });
+        }
+      })
+    );
+    setBuyList(result);
+  };
+
+  useEffect(() => {
+    getBuyList();
+  }, []);
+  useEffect(() => {
+    console.log(buyList);
+  }, [buyList]);
+
   return (
     <MobileLayout>
       <div className="relative flex flex-col w-full p-4">

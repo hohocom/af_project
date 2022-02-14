@@ -1,12 +1,13 @@
 import { Card, withPrivate } from "components/common";
 import { MobileLayout } from "components/layouts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function HoldEventPage() {
   const [modal, setModal] = useState({
     isOpen: false,
     data: {},
   });
+
   return (
     <MobileLayout>
       <div className="relative flex flex-col w-full p-4">
