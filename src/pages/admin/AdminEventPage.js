@@ -27,7 +27,7 @@ function AdminEventPage() {
             type="button"
             className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
           >
-            종목명 생성
+            종목 생성
           </button>
 
           <div className="text-end">

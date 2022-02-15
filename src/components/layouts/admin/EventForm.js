@@ -1,113 +1,132 @@
-import { useForm, useModal } from "core/hooks";
+import { useModal } from "core/hooks";
 import { useEvent } from "core/hooks";
+import { useForm } from "react-hook-form";
 import { currency } from "utils/currency";
 
 function EventForm({ event }) {
   const { close } = useModal();
-  const { form, changeInput, resetForm } = useForm(
-    event
-      ? event
-      : {
-          eventName: "",
-          fixedAmount: "",
-          paymentDate: "",
-          startSubscribePeriod: "",
-          endSubscribePeriod: "",
-        }
-  );
   const { store, edit } = useEvent();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
+
+  const watchAllFields = watch();
+
+  const onSubmit = async (data) => {
+    !event
+      ? await store({ form: data })
+      : await edit({ form: data, id: event.id });
+    close();
+  };
+
+  const onError = (error) => console.log(error);
 
   return (
-    <form>
+    <form className="min-w-[350px]" onSubmit={handleSubmit(onSubmit, onError)}>
       <h2 className="text-xl font-noto-regular">
         종목 {event ? "수정" : "생성"}
       </h2>
+
       <div className="flex flex-col mt-2">
-        <label htmlFor="name-with-label" className="text-gray-700">
-          종목명
+        <label>
+          펀드명
+          <span className="ml-1 text-xs text-red-500">
+            {errors.eventName && errors.eventName.message}
+          </span>
         </label>
         <input
-          value={form.eventName}
-          name="eventName"
-          placeholder="종목명 입력"
+          {...register("eventName", {
+            required: "종목이름은 필수 입력값입니다.",
+          })}
+          defaultValue={event ? event.eventName : null}
+          placeholder="종목이름 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label htmlFor="name-with-label" className="text-gray-700">
+        <label>
           확정공모가액
+          <span className="ml-1 text-xs text-red-500">
+            {errors.fixedAmount && errors.fixedAmount.message}
+          </span>
         </label>
         <input
           type="number"
-          value={form.fixedAmount}
-          name="fixedAmount"
+          {...register("fixedAmount", {
+            required: "확정공모가액은 필수 입력값입니다.",
+            pattern: {
+              value: /\d/,
+              message: "숫자만 입력가능합니다.",
+            },
+          })}
+          defaultValue={event ? event.fixedAmount : null}
           placeholder="확정공모가액 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
         <span className="p-2 text-xs rounded-md">
-          {currency(form.fixedAmount)}원
+          {currency(
+            watchAllFields.fixedAmount ? watchAllFields.fixedAmount : 0
+          )}{" "}
+          원
         </span>
       </div>
+
       <div className="flex flex-col mt-2">
-        <label htmlFor="name-with-label" className="text-gray-700">
+        <label>
           납입일
-        </label>
-        <input
-          type="date"
-          value={form.paymentDate}
-          name="paymentDate"
-          placeholder="납입일 입력"
-          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
-        />
-      </div>
-      <div className="flex flex-col mt-2">
-        <label htmlFor="name-with-label" className="text-gray-700">
-          청약기간
+          <span className="ml-1 text-xs text-red-500">
+            {errors.paymentDate && errors.paymentDate.message}
+          </span>
         </label>
         <div className="flex justify-between w-full">
           <input
+            {...register("paymentDate", {
+              required: "납입일은 필수 입력값입니다.",
+            })}
+            defaultValue={event ? event.paymentDate : null}
             type="date"
-            value={form.startSubscribePeriod}
-            name="startSubscribePeriod"
-            className="flex-1 w-2/5 px-4 py-2 mr-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-            onChange={changeInput}
-          />
-          <input
-            type="date"
-            value={form.endSubscribePeriod}
-            name="endSubscribePeriod"
             className="flex-1 w-2/5 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-            onChange={changeInput}
           />
         </div>
       </div>
-      {!event ? (
-        <button
-          type="button"
-          className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          onClick={() => {
-            store({ form: form });
-            resetForm();
-            close();
-          }}
-        >
-          생성
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          onClick={() => {
-            edit({ id: event.id, form: form });
-            close();
-          }}
-        >
-          수정
-        </button>
-      )}
+
+      <div className="flex flex-col mt-2">
+        <label>
+          청약기간
+          <span className="ml-1 text-xs text-red-500">
+            {errors.startSubscribePeriod && errors.startSubscribePeriod.message}
+            {!errors.startSubscribePeriod &&
+              errors.endSubscribePeriod &&
+              errors.endSubscribePeriod.message}
+          </span>
+        </label>
+        <div className="flex justify-between w-full">
+          <input
+            {...register("startSubscribePeriod", {
+              required: "청약기간은 필수 입력값입니다.",
+            })}
+            defaultValue={event ? event.startSubscribePeriod : null}
+            type="date"
+            className="flex-1 w-2/5 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+          <input
+            {...register("endSubscribePeriod", {
+              required: "청약기간은 필수 입력값입니다.",
+            })}
+            defaultValue={event ? event.endSubscribePeriod : null}
+            type="date"
+            className="flex-1 w-2/5 px-4 py-2 ml-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <button className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2">
+        {!event ? "생성" : "수정"}
+      </button>
     </form>
   );
 }
