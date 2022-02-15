@@ -14,6 +14,9 @@ function AssignmentStatusPage() {
     isOpen: false,
     data: {},
   });
+  useEffect(() => {
+    console.log(modal);
+  }, [modal]);
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
@@ -49,6 +52,7 @@ function AssignmentStatusPage() {
     });
 
     doJoinDealList({ eventList, fundList: filterFundList });
+    console.log(joinDealList);
   };
 
   return (
@@ -60,7 +64,11 @@ function AssignmentStatusPage() {
             <table className="w-full text-xs table-fixed">
               <thead>
                 <tr>
-                  <th className="p-2 border-r">날짜/종목명</th>
+                  <th className="p-2 border-r">
+                    날짜
+                    <br />
+                    펀드명/종목명
+                  </th>
                   <th className="p-2 border-r">매수가/매수량</th>
                   <th>금액/비고</th>
                 </tr>
@@ -72,12 +80,16 @@ function AssignmentStatusPage() {
                       <tr
                         key={deal.id}
                         className="border-t"
-                        onClick={() => setModal({ ...modal, isOpen: true })}
+                        onClick={() =>
+                          setModal({ ...modal, isOpen: true, data: deal })
+                        }
                       >
                         <td className="border-r">
                           <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
                             <p>{deal.dealDate}</p>
-                            <nobr>{deal.eventName}</nobr>
+                            <nobr>
+                              {deal.fundName}/{deal.eventName}
+                            </nobr>
                           </div>
                         </td>
                         <td className="border-r">
@@ -119,17 +131,25 @@ function AssignmentStatusPage() {
                     <p>총 납입금액</p>
                   </div>
                   <div className="flex flex-col items-start w-8/12 p-4 font-apple-sb">
-                    <p>664-43-527481</p>
-                    <p>(주)에이에프투자자문</p>
-                    <p>알비더블유</p>
-                    <p>21,400원</p>
-                    <p>2021.11.11~2021.11.12</p>
-                    <p>2021.11.16</p>
-                    <p>미확약</p>
-                    <p>200주</p>
-                    <p>4,280,000원</p>
-                    <p>42,800원</p>
-                    <p>4,322,800원</p>
+                    <p>x</p>
+                    <p>x</p>
+                    <p>{modal.data.eventName}</p>
+                    <p>{currency(modal.data.buyPrice)}원</p>
+                    <p>
+                      {modal.data.subscribePeriod
+                        ? modal.data.subscribePeriod
+                        : "없음"}
+                    </p>
+                    <p>
+                      {modal.data.paymentDate ? modal.data.paymentDate : "없음"}
+                    </p>
+                    <p>x</p>
+                    <p>{currency(modal.data.quantity)}주</p>
+                    <p>
+                      {currency(modal.data.quantity * modal.data.buyPrice)}원
+                    </p>
+                    <p>x</p>
+                    <p>청약수수료 + 배정금액</p>
                   </div>
                 </div>
               }

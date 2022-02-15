@@ -5,8 +5,10 @@ import { db } from "utils/firebase";
 
 function InvestDetail({ fund, user }) {
   const [state, setState] = useState(0);
-  //const [loading, setLoading] = useState(false);
   const [sumData, setSumData] = useState({});
+  const d = new Date();
+  const year = d.getFullYear(); // 년
+  const month = d.getMonth(); // 월
 
   const changeState = (s) => {
     if (s === state) setState(0);
@@ -14,36 +16,56 @@ function InvestDetail({ fund, user }) {
     else if (s === 2) setState(2);
   };
   useEffect(() => {
-    console.debug(user);
     sumFundProfitByOption();
   }, []);
 
   const sumFundProfitByOption = async () => {
-    console.log(fund.fundId);
     const dealRef = await db
       .collection("deals")
       .where("fundId", "==", fund.fundId)
+      .orderBy("dealDate", "desc")
       .get();
+    console.log(fund.incentive / 100);
     let sumFundProfit = 0;
     let sumTransactionFee = 0;
     let sumAfterFundProfit = 0;
+    let allSumFundProfit = [];
+    let date = 0;
     dealRef.docs.forEach((deal) => {
-      sumFundProfit += deal.data().fundProfit;
-      sumTransactionFee += Number(deal.data().transactionFee);
-      sumAfterFundProfit += deal.data().afterFundProfit;
+      if (date === deal.data().dealDate.substring(0, 7)) {
+        //달별 총 수익 구하기 (실현손익기준)
+        allSumFundProfit[allSumFundProfit.length - 1].sumFundProfit +=
+          deal.data().fundProfit;
+        date = deal.data().dealDate.substring(0, 7);
+      } else {
+        allSumFundProfit.push({
+          date: deal.data().dealDate.substring(0, 7),
+          sumFundProfit: deal.data().fundProfit,
+        });
+        date = deal.data().dealDate.substring(0, 7);
+      }
+
+      if (
+        new Date(year, month - 1, 1) <= new Date(deal.data().dealDate) &&
+        new Date(year, month, 0) >= new Date(deal.data().dealDate)
+      ) {
+        sumFundProfit += deal.data().fundProfit;
+        sumTransactionFee += Number(deal.data().transactionFee);
+        sumAfterFundProfit += deal.data().afterFundProfit;
+      }
     });
+
     setSumData({
       sumFundProfit: sumFundProfit,
       sumTransactionFee: sumTransactionFee,
       sumAfterFundProfit: sumAfterFundProfit,
+      allSumFundProfit: allSumFundProfit,
     });
   };
 
+  //기본 수수료 구하기
   const getDefaultFee = () => {
     //펀드 가입금액 * 기본수수료  * ((현재날짜 - 가입날짜 % 365) +1)
-    console.debug(fund);
-    console.debug(new Date().getTime() - new Date(fund.joinDate).getTime());
-
     const minusTimeStamp =
       new Date().getTime() - new Date(fund.joinDate).getTime();
     const result =
@@ -51,6 +73,38 @@ function InvestDetail({ fund, user }) {
       (fund.fundDefaultFee / 100) *
       Math.floor(new Date(minusTimeStamp) / 1000 / 60 / 60 / 24 / 365 + 1);
     return result;
+  };
+  const getIncentive = () => {
+    let incentivePrice = 0;
+    let LastMonthFundProfit = 0;
+    let PreviousMonthFundProfitSum = 0;
+    sumData.allSumFundProfit.forEach((data) => {
+      if (
+        new Date(year, month - 1, 0) >
+        new Date(data.date.substring(0, 4), data.date.substring(5, 7) - 1, 1)
+      ) {
+        PreviousMonthFundProfitSum += data.sumFundProfit;
+      }
+      if (
+        new Date(year, month - 1, 1).getTime() ===
+        new Date(
+          data.date.substring(0, 4),
+          data.date.substring(5, 7) - 1,
+          1
+        ).getTime()
+      ) {
+        LastMonthFundProfit = data.sumFundProfit;
+      }
+    });
+    if (PreviousMonthFundProfitSum >= 0) {
+      incentivePrice = LastMonthFundProfit;
+    } else if (PreviousMonthFundProfitSum < 0) {
+      incentivePrice = PreviousMonthFundProfitSum + LastMonthFundProfit;
+    }
+
+    return (incentivePrice * fund.incentive) / 100 < 0
+      ? 0
+      : (incentivePrice * fund.incentive) / 100;
   };
 
   return (
@@ -75,7 +129,9 @@ function InvestDetail({ fund, user }) {
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">계좌번호</p>
-                <p className="w-2/3 text-left font-apple-sb">3333-05-1254973</p>
+                <p className="w-2/3 text-left font-apple-sb">
+                  {user.bankNumber}
+                </p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">가입일자</p>
@@ -88,37 +144,46 @@ function InvestDetail({ fund, user }) {
               <div className="flex w-full">
                 <p className="w-1/3 mr-4 text-right">전체운용금액</p>
                 <p className="w-2/3 text-left font-apple-sb">
-                  {currency(fund.fundTotalCost)}원
+                  {currency(Math.floor(fund.fundTotalCost))}원
                 </p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">전체실현손익</p>
                 <p className="w-2/3 text-left font-apple-sb">
-                  {currency(sumData.sumFundProfit)}원
+                  {currency(Math.floor(sumData.sumFundProfit))}원
                 </p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">수수료/제비용</p>
                 <p className="w-2/3 text-left font-apple-sb">
-                  {currency(sumData.sumTransactionFee)}원
+                  {currency(Math.floor(sumData.sumTransactionFee))}원
+                </p>
+              </div>
+
+              <div className="flex">
+                <p className="w-1/3 mr-4 text-right">기본수수료</p>
+                <p className="w-2/3 text-left font-apple-sb">
+                  {currency(Math.floor(getDefaultFee()))}원
+                </p>
+              </div>
+              <div className="flex">
+                <p className="w-1/3 mr-4 text-right  ">인센티브</p>
+                <p className="w-2/3 text-left font-apple-sb">
+                  {currency(Math.floor(getIncentive()))}원
                 </p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">수수료 후 실현손익</p>
                 <p className="w-2/3 text-left font-apple-sb">
-                  {" "}
-                  {currency(sumData.sumAfterFundProfit)}원
+                  {currency(
+                    Math.floor(
+                      sumData.sumAfterFundProfit -
+                        Number(getDefaultFee()) -
+                        Number(getIncentive())
+                    )
+                  )}
+                  원
                 </p>
-              </div>
-              <div className="flex">
-                <p className="w-1/3 mr-4 text-right">기본수수료</p>
-                <p className="w-2/3 text-left font-apple-sb">
-                  {currency(getDefaultFee())}원
-                </p>
-              </div>
-              <div className="flex">
-                <p className="w-1/3 mr-4 text-right text-red-500">인센티브</p>
-                <p className="w-2/3 text-left font-apple-sb">0원</p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">지분율</p>
@@ -129,7 +194,14 @@ function InvestDetail({ fund, user }) {
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">순 실현손익</p>
                 <p className="w-2/3 text-left font-apple-sb">
-                  {currency(sumData.sumAfterFundProfit * fund.shareRatio)}원
+                  {currency(
+                    Math.floor(
+                      (sumData.sumAfterFundProfit - Number(getIncentive())) *
+                        fund.shareRatio -
+                        Number(getDefaultFee())
+                    )
+                  )}
+                  원
                 </p>
               </div>
 
@@ -148,7 +220,18 @@ function InvestDetail({ fund, user }) {
                 <p className="w-2/3 text-left font-apple-sb">
                   {currency(
                     Number(fund.joinPrice) +
-                      sumData.sumAfterFundProfit * fund.shareRatio
+                      (sumData.sumAfterFundProfit - Number(getIncentive())) *
+                        fund.shareRatio -
+                      Number(getDefaultFee()) <
+                      0
+                      ? 0
+                      : Math.floor(
+                          Number(fund.joinPrice) +
+                            (sumData.sumAfterFundProfit -
+                              Number(getIncentive())) *
+                              fund.shareRatio -
+                            Number(getDefaultFee())
+                        )
                   )}
                   원
                 </p>
@@ -168,7 +251,7 @@ function InvestDetail({ fund, user }) {
           className="w-1/2 p-2 text-white bg-blue-600 rounded-md"
           onClick={() => changeState(2)}
         >
-          당월수익
+          당월수익({month}월)
         </button>
       </div>
     </>

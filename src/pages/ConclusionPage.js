@@ -54,7 +54,7 @@ function ConclusionPage() {
         }
       });
     });
-    console.log(filterFundList);
+
     doJoinDealList({ eventList, fundList: filterFundList });
   };
 
@@ -134,7 +134,7 @@ function ConclusionPage() {
                 <th className="p-2 border-r">
                   날짜
                   <br />
-                  종목명
+                  펀드명/종목명
                 </th>
                 <th className="p-2 border-r">
                   매수가
@@ -160,7 +160,9 @@ function ConclusionPage() {
                     <td className="border-r">
                       <div className="p-1">
                         <p>{deal.dealDate}</p>
-                        <p>{deal.eventName}</p>
+                        <p>
+                          {deal.fundName}/{deal.eventName}
+                        </p>
                       </div>
                     </td>
 

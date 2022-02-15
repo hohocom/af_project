@@ -1,13 +1,84 @@
 import { Card, withPrivate } from "components/common";
 import { MobileLayout } from "components/layouts";
 import { useState, useEffect } from "react";
-
+import { useRecoilValue } from "recoil";
+import { eventListState, userDetailState } from "core/state";
+import { fundListState } from "core/state";
+import { useDeal, useUserFund } from "core/hooks";
+import { db } from "utils/firebase";
+import { currency } from "utils/currency";
 function HoldEventPage() {
   const [modal, setModal] = useState({
     isOpen: false,
     data: {},
   });
+  const user = useRecoilValue(userDetailState);
+  const fundList = useRecoilValue(fundListState);
+  const eventList = useRecoilValue(eventListState);
+  const { joinDealList, doJoinDealList } = useDeal();
+  const [joinDealRemainderList, setjoinDealRemainderList] = useState([]);
+  // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
+  useEffect(() => {
+    getFilterJoinDealList();
+  }, []);
 
+  /**
+   * @필터링된_JoinDealList
+   * 1. 로그인한 회원이 가입한 펀드목록 가져오기
+   * 2. 전역에 저장된 펀드리스트를 회원펀드목록과 일치하는 펀드만 뽑아서 새로운 배열로 추출
+   * 3. 기존의 doJoinDealList의 인자값인 fundList에 필터링된 펀드리스트 던지기
+   * 4. 결과: 회원이 가입한 펀드로 필터링된 거래 리스트 가져옴
+   * * 매수 내역만 가져오는 것은 화면에서 그려줄 때 조건처리
+   */
+  const getFilterJoinDealList = async () => {
+    const filterFundList = [];
+
+    const userFundRef = await db
+      .collection("userFunds")
+      .where("userId", "==", user.id)
+      .get();
+
+    userFundRef.docs.map((userFund) => {
+      fundList.forEach((fund) => {
+        if (userFund.data().fundId === fund.id) {
+          filterFundList.push(fund);
+        }
+      });
+    });
+
+    doJoinDealList({ eventList, fundList: filterFundList });
+  };
+  useEffect(() => {
+    let temp = [];
+
+    joinDealList.forEach((deal) => {
+      let vaild = false;
+      console.log(deal);
+      if (temp.length === 0) {
+        temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
+      } else {
+        for (let i = 0; i < temp.length; i++) {
+          if (
+            temp[i].eventId === deal.eventId &&
+            temp[i].fundId === deal.fundId
+          ) {
+            vaild = true;
+          }
+        }
+        if (!vaild) {
+          temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
+        }
+      }
+    });
+    let result = [];
+    console.log(result);
+    temp.forEach((e) => {
+      result.push(e.deal);
+    });
+    setjoinDealRemainderList(result);
+    console.log(temp);
+  }, [joinDealList]);
+  let temp = 0;
   return (
     <MobileLayout>
       <div className="relative flex flex-col w-full p-4">
@@ -17,103 +88,56 @@ function HoldEventPage() {
             <table className="w-full text-xs table-fixed">
               <thead>
                 <tr>
-                  <th className="p-2 border-r">날짜/종목명</th>
-                  <th className="p-2 border-r">매수가/매수량</th>
+                  <th className="p-2 border-r">
+                    날짜
+                    <br />
+                    펀드명/종목명
+                  </th>
+                  <th className="p-2 border-r">매수가/남은수량</th>
                   <th>금액/비고</th>
                 </tr>
               </thead>
               <tbody className="font-apple-sb">
-                <tr
-                  className="border-t"
-                  onClick={() => setModal({ ...modal, isOpen: true })}
-                >
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>150,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-t">
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>9,000,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-t">
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>9,000,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-t">
-                  <td className="border-r">
-                    <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>2021-03-04</p>
-                      <nobr>케이티비 네트워크 솔루션</nobr>
-                    </div>
-                  </td>
-                  <td className="border-r">
-                    <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>500,000원</p>
-                      <nobr>300주</nobr>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="flex justify-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                      <p>9,000,000,000원</p>
-                    </div>
-                  </td>
-                </tr>
+                {joinDealRemainderList.map((deal) => {
+                  if (temp !== deal.eventId && deal.totalQuantity > 0) {
+                    temp = deal.eventId;
+
+                    return (
+                      <tr
+                        key={deal.id}
+                        className="border-t"
+                        onClick={() =>
+                          setModal({ ...modal, isOpen: true, data: deal })
+                        }
+                      >
+                        <td className="border-r">
+                          <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p>{deal.dealDate}</p>
+                            <nobr>
+                              {deal.fundName}/{deal.eventName}
+                            </nobr>
+                          </div>
+                        </td>
+                        <td className="border-r">
+                          <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p>{currency(deal.salePrice)}원</p>
+                            <nobr>{deal.totalQuantity}주</nobr>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p>
+                              {currency(deal.salePrice * deal.totalQuantity)}원
+                            </p>
+                            <br />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                })}
               </tbody>
             </table>
-          }
-          bottomOutside={
-            <div className="flex justify-center w-full mt-2">
-              <button
-                className="w-1/2 p-2 text-white bg-blue-600 rounded-md"
-                // onClick={() => changeState(2)}
-              >
-                더보기(1/10)
-              </button>
-            </div>
           }
         />
         {modal.isOpen && (
@@ -136,17 +160,25 @@ function HoldEventPage() {
                     <p>총 납입금액</p>
                   </div>
                   <div className="flex flex-col items-start w-8/12 p-4">
-                    <p>664-43-527481</p>
-                    <p>(주)에이에프투자자문</p>
-                    <p>알비더블유</p>
-                    <p>21,400원</p>
-                    <p>2021.11.11~2021.11.12</p>
-                    <p>2021.11.16</p>
-                    <p>미확약</p>
-                    <p>200주</p>
-                    <p>4,280,000원</p>
-                    <p>42,800원</p>
-                    <p>4,322,800원</p>
+                    <p>x</p>
+                    <p>x</p>
+                    <p>{modal.data.eventName}</p>
+                    <p>{currency(modal.data.buyPrice)}원</p>
+                    <p>
+                      {modal.data.subscribePeriod
+                        ? modal.data.subscribePeriod
+                        : "없음"}
+                    </p>
+                    <p>
+                      {modal.data.paymentDate ? modal.data.paymentDate : "없음"}
+                    </p>
+                    <p>x</p>
+                    <p>{currency(modal.data.quantity)}주</p>
+                    <p>
+                      {currency(modal.data.quantity * modal.data.buyPrice)}원
+                    </p>
+                    <p>x</p>
+                    <p>청약수수료 + 배정금액</p>
                   </div>
                 </div>
               }
