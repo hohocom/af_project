@@ -16,7 +16,7 @@ function HoldEventPage() {
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
   const { joinDealList, doJoinDealList } = useDeal();
-
+  const [joinDealRemainderList, setjoinDealRemainderList] = useState([]);
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
     getFilterJoinDealList();
@@ -48,6 +48,36 @@ function HoldEventPage() {
 
     doJoinDealList({ eventList, fundList: filterFundList });
   };
+  useEffect(() => {
+    let temp = [];
+
+    joinDealList.forEach((deal) => {
+      let vaild = false;
+      console.log(deal);
+      if (temp.length === 0) {
+        temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
+      } else {
+        for (let i = 0; i < temp.length; i++) {
+          if (
+            temp[i].eventId === deal.eventId &&
+            temp[i].fundId === deal.fundId
+          ) {
+            vaild = true;
+          }
+        }
+        if (!vaild) {
+          temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
+        }
+      }
+    });
+    let result = [];
+    console.log(result);
+    temp.forEach((e) => {
+      result.push(e.deal);
+    });
+    setjoinDealRemainderList(result);
+    console.log(temp);
+  }, [joinDealList]);
   let temp = 0;
   return (
     <MobileLayout>
@@ -68,7 +98,7 @@ function HoldEventPage() {
                 </tr>
               </thead>
               <tbody className="font-apple-sb">
-                {joinDealList.map((deal) => {
+                {joinDealRemainderList.map((deal) => {
                   if (temp !== deal.eventId && deal.totalQuantity > 0) {
                     temp = deal.eventId;
 

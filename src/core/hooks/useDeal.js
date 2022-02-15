@@ -43,7 +43,7 @@ function useDeal() {
   const doJoinDealList = ({ fundList, eventList, type = "all" }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealList = [];
-      console.log(fundList);
+
       //events 와 deals join
       dealList.forEach((deal, index) => {
         eventList.forEach((event) => {
@@ -73,7 +73,6 @@ function useDeal() {
           }
         });
       });
-      console.log(joinDealList);
       setJoinDealList(joinDealList);
     }
   };
