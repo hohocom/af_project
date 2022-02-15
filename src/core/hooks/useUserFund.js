@@ -51,6 +51,7 @@ function useUserFund() {
               userId: userFund.userId,
               fundId: userFund.fundId,
               fundName: fund.fundName,
+              incentive: fund.incentive,
               joinDate: userFund.joinDate,
               fundTotalCost: fund.fundTotalCost,
               joinPrice: userFund.joinPrice,

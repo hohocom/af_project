@@ -43,14 +43,19 @@ function useDeal() {
   const doJoinDealList = ({ fundList, eventList, type = "all" }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealList = [];
-
+      console.log(fundList);
       //events 와 deals join
       dealList.forEach((deal, index) => {
         eventList.forEach((event) => {
+          let fundName = "";
+          fundList.forEach((fund) => {
+            if (fund.id === deal.fundId) fundName = fund.fundName;
+          });
           if (deal.eventId === event.id) {
             joinDealList.push({
               id: deal.id,
               fundId: deal.fundId,
+              fundName: fundName,
               eventId: event.id,
               eventName: event.eventName,
               buyPrice: deal.buyPrice,
@@ -62,6 +67,8 @@ function useDeal() {
               fundProfit: deal.fundProfit,
               transactionFee: deal.transactionFee,
               afterFundProfit: deal.afterFundProfit,
+              subscribePeriod: `${event.startSubscribePeriod}~${event.endSubscribePeriod}`,
+              paymentDate: event.paymentDate,
             });
           }
         });

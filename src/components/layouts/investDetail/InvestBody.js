@@ -21,7 +21,7 @@ function InvestBody({ fund, user }) {
         <span>수익률</span>
         <span className="text-xs font-apple-sb">실적배당</span>
         <br />
-        <span>기간</span>
+        <span>가입기간</span>
         <span className="text-xs font-apple-sb">{fund.joinPeriod}</span>
         <br />
         <span>대상</span>

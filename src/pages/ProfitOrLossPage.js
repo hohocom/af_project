@@ -15,7 +15,6 @@ function ProfitOrLossPage() {
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
   const { joinDealList, doJoinDealList } = useDeal();
-  const [dealRef, setDealRef] = useState([]);
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const d = new Date();
