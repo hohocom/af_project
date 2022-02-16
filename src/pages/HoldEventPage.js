@@ -48,12 +48,11 @@ function HoldEventPage() {
 
     doJoinDealList({ eventList, fundList: filterFundList });
   };
-  useEffect(() => {
+  const getHoldDealList = () => {
     let temp = [];
 
     joinDealList.forEach((deal) => {
       let vaild = false;
-      console.log(deal);
       if (temp.length === 0) {
         temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
       } else {
@@ -71,12 +70,14 @@ function HoldEventPage() {
       }
     });
     let result = [];
-    console.log(result);
+
     temp.forEach((e) => {
       result.push(e.deal);
     });
     setjoinDealRemainderList(result);
-    console.log(temp);
+  };
+  useEffect(() => {
+    getHoldDealList();
   }, [joinDealList]);
   let temp = 0;
   return (
