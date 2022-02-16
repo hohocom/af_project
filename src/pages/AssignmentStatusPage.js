@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { eventListState, userDetailState } from "core/state";
 import { fundListState } from "core/state";
-import { useDeal, useUserFund } from "core/hooks";
+import { useDeal } from "core/hooks";
 import { db } from "utils/firebase";
 import { currency } from "utils/currency";
 function AssignmentStatusPage() {
@@ -111,60 +111,58 @@ function AssignmentStatusPage() {
             </table>
           }
         />
-        {modal.isOpen && (
-          <div className="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full p-4 bg-black/80">
-            <Card
-              title="배정결과"
-              body={
-                <div className="flex w-full text-xs">
-                  <div className="flex flex-col items-end w-4/12 p-4 border-r">
-                    <p>계좌번호</p>
-                    <p>계좌명</p>
-                    <p>참여종목명</p>
-                    <p>확정공모가액</p>
-                    <p>청약기간</p>
-                    <p>납입일</p>
-                    <p>의무보유</p>
-                    <p>배정주식수</p>
-                    <p>배정금액</p>
-                    <p>청약수수료</p>
-                    <p>총 납입금액</p>
-                  </div>
-                  <div className="flex flex-col items-start w-8/12 p-4 font-apple-sb">
-                    <p>x</p>
-                    <p>x</p>
-                    <p>{modal.data.eventName}</p>
-                    <p>{currency(modal.data.buyPrice)}원</p>
-                    <p>
-                      {modal.data.subscribePeriod
-                        ? modal.data.subscribePeriod
-                        : "없음"}
-                    </p>
-                    <p>
-                      {modal.data.paymentDate ? modal.data.paymentDate : "없음"}
-                    </p>
-                    <p>x</p>
-                    <p>{currency(modal.data.quantity)}주</p>
-                    <p>
-                      {currency(modal.data.quantity * modal.data.buyPrice)}원
-                    </p>
-                    <p>x</p>
-                    <p>청약수수료 + 배정금액</p>
-                  </div>
+      </div>{" "}
+      {modal.isOpen && (
+        <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full p-4 bg-black/80">
+          <Card
+            title="배정결과"
+            body={
+              <div className="flex w-full text-xs">
+                <div className="flex flex-col items-end w-4/12 p-4 border-r">
+                  <p>계좌번호</p>
+                  <p>계좌명</p>
+                  <p>참여종목명</p>
+                  <p>확정공모가액</p>
+                  <p>청약기간</p>
+                  <p>납입일</p>
+                  <p>의무보유</p>
+                  <p>배정주식수</p>
+                  <p>배정금액</p>
+                  <p>청약수수료</p>
+                  <p>총 납입금액</p>
                 </div>
-              }
-              bottomOutside={
-                <button
-                  className="p-3 pt-3.5 w-2/3 bg-blue-800 text-white rounded-md mt-4"
-                  onClick={() => setModal({ ...modal, isOpen: false })}
-                >
-                  확인
-                </button>
-              }
-            />
-          </div>
-        )}
-      </div>
+                <div className="flex flex-col items-start w-8/12 p-4 font-apple-sb">
+                  <p>x</p>
+                  <p>x</p>
+                  <p>{modal.data.eventName}</p>
+                  <p>{currency(modal.data.buyPrice)}원</p>
+                  <p>
+                    {modal.data.subscribePeriod
+                      ? modal.data.subscribePeriod
+                      : "없음"}
+                  </p>
+                  <p>
+                    {modal.data.paymentDate ? modal.data.paymentDate : "없음"}
+                  </p>
+                  <p>x</p>
+                  <p>{currency(modal.data.quantity)}주</p>
+                  <p>{currency(modal.data.quantity * modal.data.buyPrice)}원</p>
+                  <p>x</p>
+                  <p>청약수수료 + 배정금액</p>
+                </div>
+              </div>
+            }
+            bottomOutside={
+              <button
+                className="p-3 pt-3.5 w-2/3 bg-blue-800 text-white rounded-md mt-4"
+                onClick={() => setModal({ ...modal, isOpen: false })}
+              >
+                확인
+              </button>
+            }
+          />
+        </div>
+      )}
     </MobileLayout>
   );
 }

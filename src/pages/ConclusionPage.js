@@ -1,19 +1,16 @@
-import { Header, MobileLayout } from "components/layouts";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { MobileLayout } from "components/layouts";
 import img01 from "assets/images/conclusion/01.svg";
 import { withPrivate } from "components/common";
 import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { eventListState, userDetailState } from "core/state";
 import { fundListState } from "core/state";
-import { useDeal, useUserFund } from "core/hooks";
+import { useDeal } from "core/hooks";
 import { db } from "utils/firebase";
 import { currency } from "utils/currency";
 
 function ConclusionPage() {
-  const [modal, setModal] = useState({
-    isOpen: false,
-    data: {},
-  });
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
@@ -26,6 +23,7 @@ function ConclusionPage() {
   const day = d.getDate(); // 일
   const monthBtn = [1, 3, 6, 12];
   const [clickMonth, SetclickMonth] = useState(0);
+
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
     getFilterJoinDealList();
@@ -47,7 +45,7 @@ function ConclusionPage() {
       .where("userId", "==", user.id)
       .get();
 
-    userFundRef.docs.map((userFund, index) => {
+    userFundRef.docs.forEach((userFund, index) => {
       fundList.forEach((fund, index) => {
         if (userFund.data().fundId === fund.id) {
           filterFundList.push(fund);

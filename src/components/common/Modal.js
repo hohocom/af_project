@@ -5,7 +5,7 @@ function Modal() {
   return (
     isOpen && (
       <div
-        className="fixed top-0 left-0 flex items-center justify-center w-full h-full overflow-hidden bg-black/70"
+        className="absolute top-0 left-0 flex items-center justify-center w-full h-full overflow-hidden bg-black/70"
         // onClick={close}
       >
         <div

@@ -16,8 +16,8 @@ function MobileLayout({
           {!hideHeader && <Header title="배정현황" />}
           {children}
         </div>
+        <Modal />
       </div>
-      <Modal />
     </div>
   );
 }

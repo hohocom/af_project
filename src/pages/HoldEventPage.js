@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Card, withPrivate } from "components/common";
 import { MobileLayout } from "components/layouts";
 import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { eventListState, userDetailState } from "core/state";
 import { fundListState } from "core/state";
-import { useDeal, useUserFund } from "core/hooks";
+import { useDeal } from "core/hooks";
 import { db } from "utils/firebase";
 import { currency } from "utils/currency";
 function HoldEventPage() {
@@ -38,7 +39,7 @@ function HoldEventPage() {
       .where("userId", "==", user.id)
       .get();
 
-    userFundRef.docs.map((userFund) => {
+    userFundRef.docs.forEach((userFund) => {
       fundList.forEach((fund) => {
         if (userFund.data().fundId === fund.id) {
           filterFundList.push(fund);

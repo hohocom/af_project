@@ -3,7 +3,7 @@ import { MobileLayout } from "components/layouts";
 import img01 from "assets/images/conclusion/01.svg";
 import { withPrivate } from "components/common";
 import { useEffect, useState } from "react";
-import { useDeal, useUserFund } from "core/hooks";
+import { useDeal } from "core/hooks";
 import { useRecoilValue } from "recoil";
 import { fundListState } from "core/state";
 import { db } from "utils/firebase";
@@ -45,7 +45,7 @@ function ProfitOrLossPage() {
       .where("userId", "==", user.id)
       .get();
 
-    userFundRef.docs.map((userFund) => {
+    userFundRef.docs.forEach((userFund) => {
       fundList.forEach((fund) => {
         if (userFund.data().fundId === fund.id) {
           filterFundList.push(fund);

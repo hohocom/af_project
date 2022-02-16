@@ -1,10 +1,10 @@
 /* eslint-disable array-callback-return */
-import { useForm, useFund, useModal, useUserFund } from "core/hooks";
+import { useForm, useModal, useUserFund } from "core/hooks";
 import { currency } from "utils/currency";
 
 function UserFundEditForm({ user, userFund }) {
   const { close } = useModal();
-  const { form, changeInput, setForm, isCompleted } = useForm({
+  const { form, changeInput, isCompleted } = useForm({
     userId: userFund ? userFund.userId : null,
     fundId: userFund ? userFund.fundId : null,
     joinPrice: userFund ? userFund.joinPrice : null,

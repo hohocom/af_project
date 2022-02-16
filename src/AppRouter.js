@@ -51,13 +51,7 @@ function App() {
     // 모바일, 회원 전용 페이지 리스트
     {
       path: "/",
-      element: (
-        <LoadingPage
-          user={user}
-          restricted={true}
-          redirectURL="/invest-detail"
-        />
-      ),
+      element: <InvestDetailPage user={user} redirectURL="/login" />,
     },
     {
       path: "/login",

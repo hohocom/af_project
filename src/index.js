@@ -10,6 +10,12 @@ import "assets/styles/font.css";
 import "assets/styles/index.css";
 import "utils/firebase";
 
+// 배포 환경에서 console.log, console.warn 지우기
+if (process.env.NODE_ENV === "production") {
+  console.log = function no_console() {};
+  console.debug = function no_console() {};
+}
+
 ReactDOM.render(
   <BrowserRouter>
     <RecoilRoot>

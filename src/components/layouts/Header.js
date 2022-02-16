@@ -1,10 +1,11 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable react-hooks/exhaustive-deps */
 import img01 from "assets/images/header/01.svg";
 import img02 from "assets/images/header/02.svg";
 import img03 from "assets/images/header/03.svg";
-import img04 from "assets/images/header/04.svg";
 import img05 from "assets/images/header/05.svg";
 import { SidebarHandler } from "components/common";
+import { useFund, useUserFund } from "core/hooks";
 import { userDetailState } from "core/state";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
@@ -15,6 +16,9 @@ function Header({ title = "타이틀" }) {
   const [sidebar, setSidebar] = useState(0);
   const user = useRecoilValue(userDetailState);
 
+  const { fundList } = useFund();
+  const { getJoinUserFundList } = useUserFund();
+
   return (
     <>
       <header className="bg-white border-b">
@@ -24,12 +28,9 @@ function Header({ title = "타이틀" }) {
           </button>
           <div className="text-xl font-gong-light">{title}</div>
           <div>
-            <button className="p-2">
-              <i className="fas fa-search"></i>
-            </button>
-            <button className="p-2">
+            <Link to="/invest-detail" className="p-2">
               <i className="fas fa-home"></i>
-            </button>
+            </Link>
           </div>
         </div>
         <nav className="flex w-full overflow-x-auto overscroll-x-auto whitespace-nowrap">
@@ -82,12 +83,12 @@ function Header({ title = "타이틀" }) {
       </header>
       <SidebarHandler sidebar={sidebar}>
         <div
-          className="fixed top-0 left-0 z-40 w-full h-full bg-black/70"
+          className="absolute top-0 left-0 z-40 w-full h-full bg-black/70"
           onClick={() => setSidebar(0)}
         ></div>
       </SidebarHandler>
       <aside
-        className={`fixed top-0 ${sidebar > 0 ? "left-0" : "-left-20"} 
+        className={`absolute top-0 ${sidebar > 0 ? "left-0" : "-left-20"} 
         h-full transition-all duration-300 bg-gradient-to-b from-[#5E00B6] to-[#3000FA] rounded-tr-3xl p-4
         flex flex-col font-gong-light z-50
         `}
@@ -147,33 +148,17 @@ function Header({ title = "타이틀" }) {
             </div>
           </div>
           <ul>
-            <li>
-              <Link
-                to="/"
-                className="flex items-center justify-between w-full p-2 mt-2 bg-white rounded-xl"
-              >
-                공모주펀딩A
-                <img src={img04} alt="img_04" className="h-[20px]" />
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/"
-                className="flex items-center justify-between w-full p-2 mt-2 bg-white rounded-xl"
-              >
-                공모주펀딩B
-                <img src={img04} alt="img_04" className="h-[20px]" />
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/"
-                className="flex items-center justify-between w-full p-2 mt-2 bg-white rounded-xl"
-              >
-                부동산개발펀딩
-                <img src={img04} alt="img_04" className="h-[20px]" />
-              </Link>
-            </li>
+            {getJoinUserFundList({ fundList }).map((fund) => {
+              if (fund.userId === user.id)
+                return (
+                  <li
+                    className="flex items-center justify-between w-full p-2 mt-2 bg-white rounded-xl"
+                    key={fund.id}
+                  >
+                    {fund.fundName}
+                  </li>
+                );
+            })}
           </ul>
 
           <div className="absolute bottom-0 left-0 flex items-center justify-center w-full mb-4">

@@ -210,9 +210,13 @@ function DealForm({ deal, funds, events }) {
               value={form.quantity}
               className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               onChange={(e) => {
-                const totalQuantity = latestDeal ? latestDeal.totalQuantity : 0;
-                if (totalQuantity < e.target.value) {
-                  return window.alert("총 거래잔량보다 많을 수 없습니다.");
+                if (form.type === "sell") {
+                  const totalQuantity = latestDeal
+                    ? latestDeal.totalQuantity
+                    : 0;
+                  if (totalQuantity < e.target.value) {
+                    return window.alert("총 거래잔량보다 많을 수 없습니다.");
+                  }
                 }
                 setForm({
                   ...form,
