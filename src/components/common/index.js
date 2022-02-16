@@ -7,6 +7,7 @@ import Table from "./Table";
 import Pager from "./Pager";
 import Search from "./Search";
 import SidebarHandler, { useSidebar } from "./SidebarHandler";
+import Toast from "./Toast";
 
 export {
   Card,
@@ -20,4 +21,5 @@ export {
   Search,
   SidebarHandler,
   useSidebar,
+  Toast,
 };

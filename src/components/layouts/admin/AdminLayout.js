@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Modal } from "components/common";
+import { Modal, Toast } from "components/common";
 import { auth } from "utils/firebase";
 import "assets/styles/table.css";
 
@@ -75,6 +75,7 @@ function AdminLayout({ children, title = "제목" }) {
           {children}
         </section>
         <Modal />
+        <Toast />
       </main>
     </div>
   );

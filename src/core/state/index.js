@@ -4,6 +4,7 @@ import { dealListInit, dealListState, joinDealListState } from "./deal";
 import { userListInitState, userListState, userDetailState } from "./user";
 import { managerDetailState } from "./manager";
 import modalState from "./modal";
+import toastState from "./toast";
 
 export {
   fundListInitState,
@@ -18,4 +19,5 @@ export {
   userListInitState,
   userDetailState,
   managerDetailState,
+  toastState,
 };

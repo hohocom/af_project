@@ -1,124 +1,170 @@
-import { useForm, useModal, useUser, useValidate } from "core/hooks";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useModal, useUser } from "core/hooks";
+import { useForm } from "react-hook-form";
 
 function UserForm({ user }) {
   const { close } = useModal();
   const { store, edit } = useUser();
-  const { emailCheck } = useValidate();
-  const { form, changeInput, isCompleted } = useForm(
-    user
-      ? user
-      : {
-          email: "",
-          name: "",
-          birthday: "",
-          address: "",
-          phone: "",
-          bankName: "",
-          bankNumber: "",
-        }
-  );
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    !user
+      ? await store({ form: data })
+      : await edit({ form: data, user: user });
+    close();
+  };
+
+  const onError = (error) => console.log(error);
 
   return (
-    <form className="min-w-[350px]">
+    <form className="min-w-[350px]" onSubmit={handleSubmit(onSubmit, onError)}>
       <h2 className="text-xl font-noto-regular">
         회원 {user ? "수정" : "생성"}
       </h2>
       <div className="flex flex-col mt-2">
-        <label>email(회원 ID)</label>
+        <label>
+          email(회원 ID)
+          <span className="ml-1 text-xs text-red-500">
+            {errors.email && errors.email.message}
+          </span>
+        </label>
         <input
-          value={form.email}
-          name="email"
-          placeholder="이메일을 입력해주세요"
+          {...register("email", {
+            required: "이메일은 필수 입력값입니다.",
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: "이메일형식이 아닙니다.",
+            },
+          })}
+          defaultValue={user ? user.email : null}
+          placeholder="이메일 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
-          onBlur={emailCheck}
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label>회원명</label>
+        <label>
+          회원명
+          <span className="ml-1 text-xs text-red-500">
+            {errors.name && errors.name.message}
+          </span>
+        </label>
         <input
-          value={form.name}
-          name="name"
-          placeholder="회원 성명 입력"
+          {...register("name", {
+            required: "이름은 필수 입력값입니다.",
+            pattern: {
+              value: /^[가-힣]{2,4}$/,
+              message: "한글 이름 2~4자 이내만 허용합니다.",
+            },
+          })}
+          defaultValue={user ? user.name : null}
+          placeholder="회원 이름 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label>생년월일</label>
+        <label>
+          생년월일
+          <span className="ml-1 text-xs text-red-500">
+            {errors.birthday && errors.birthday.message}
+          </span>
+        </label>
         <input
-          value={form.birthday}
-          name="birthday"
-          placeholder="생년월일 입력 ex) 950621"
+          {...register("birthday", {
+            required: "생년월일은 필수 입력값입니다.",
+            pattern: {
+              value:
+                /^(19[0-9][0-9]|20\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/,
+              message: "xxxx-xx-xx 형태로 입력해주세요.",
+            },
+          })}
+          defaultValue={user ? user.birthday : null}
+          placeholder="생년월일 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label>주소</label>
+        <label>
+          주소
+          <span className="ml-1 text-xs text-red-500">
+            {errors.address && errors.address.message}
+          </span>
+        </label>
         <input
-          value={form.address}
-          name="address"
+          {...register("address", {
+            required: "주소는 필수 입력값입니다.",
+          })}
+          defaultValue={user ? user.address : null}
           placeholder="주소 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label>휴대전화번호</label>
+        <label>
+          휴대전화번호
+          <span className="ml-1 text-xs text-red-500">
+            {errors.phone && errors.phone.message}
+          </span>
+        </label>
         <input
-          value={form.phone}
-          name="phone"
-          placeholder="전화번호 입력"
+          {...register("phone", {
+            required: "휴대폰번호는 필수 입력값입니다.",
+            pattern: {
+              value: /^01([0|1|6|7|8|9])-([0-9]{3,4})-([0-9]{4})$/,
+              message: "xxx-xxxx-xxxx 형태로 입력해주세요.",
+            },
+          })}
+          defaultValue={user ? user.phone : null}
+          placeholder="휴대폰번호를 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label>거래은행</label>
+        <label>
+          거래은행
+          <span className="ml-1 text-xs text-red-500">
+            {errors.bankName && errors.bankName.message}
+          </span>
+        </label>
         <input
-          value={form.bankName}
-          name="bankName"
-          placeholder="거래은행 입력"
+          {...register("bankName", {
+            required: "거래은행은 필수 입력값입니다.",
+          })}
+          defaultValue={user ? user.bankName : null}
+          placeholder="거래은행 이름 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label>계좌번호</label>
+        <label>
+          계좌번호
+          <span className="ml-1 text-xs text-red-500">
+            {errors.bankNumber && errors.bankNumber.message}
+          </span>
+        </label>
         <input
-          value={form.bankNumber}
-          name="bankNumber"
+          {...register("bankNumber", {
+            required: "계좌번호는 필수 입력값입니다.",
+          })}
+          defaultValue={user ? user.bankNumber : null}
           placeholder="계좌번호 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
         />
       </div>
-      {!user ? (
-        <button
-          type="button"
-          className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          onClick={() => {
-            store({ form });
-            close();
-          }}
-          disabled={!isCompleted}
-        >
-          {isCompleted ? "생성" : "모든 항목을 입력해주세요.."}
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-500 focus:ring-yellow-300 focus:ring-offset-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          onClick={() => {
-            edit({ user, form });
-            close();
-          }}
-          disabled={!isCompleted}
-        >
-          {isCompleted ? "수정" : "모든 항목을 입력해주세요.."}
-        </button>
-      )}
+
+      <button className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2">
+        {!user ? "생성" : "수정"}
+      </button>
     </form>
   );
 }
