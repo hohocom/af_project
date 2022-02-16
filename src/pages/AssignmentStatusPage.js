@@ -147,8 +147,14 @@ function AssignmentStatusPage() {
                   <p>x</p>
                   <p>{currency(modal.data.quantity)}주</p>
                   <p>{currency(modal.data.quantity * modal.data.buyPrice)}원</p>
-                  <p>x</p>
-                  <p>청약수수료 + 배정금액</p>
+                  <p>{currency(modal.data.subscribeFee)}원</p>
+                  <p>
+                    {currency(
+                      Number(modal.data.subscribeFee) +
+                        modal.data.quantity * modal.data.buyPrice
+                    )}
+                    원
+                  </p>
                 </div>
               </div>
             }

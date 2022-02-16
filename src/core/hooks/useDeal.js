@@ -67,6 +67,7 @@ function useDeal() {
               afterFundProfit: deal.afterFundProfit,
               subscribePeriod: `${event.startSubscribePeriod}~${event.endSubscribePeriod}`,
               paymentDate: event.paymentDate,
+              subscribeFee: event.subscribeFee,
             });
           }
         });
