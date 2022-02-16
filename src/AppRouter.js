@@ -9,7 +9,6 @@ import {
   ConclusionPage,
   HoldEventPage,
   InvestDetailPage,
-  LoadingPage,
   LoginPage,
   ProfitOrLossPage,
   UserDetailPage,
