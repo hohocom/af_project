@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 import { useDeal, useForm, useFund, useModal } from "core/hooks";
 import { useEffect, useState } from "react";
@@ -8,9 +9,10 @@ function DealForm({ deal, funds, events }) {
 
   const [fund, setFund] = useState(null);
   const [event, setEvent] = useState(null);
+  const [latestDeal, setLatestDeal] = useState(null);
 
   const { fundList } = useFund();
-  const { buyStore, sellStore } = useDeal();
+  const { buyStore, sellStore, getLatestDealBy } = useDeal();
   const { form, setForm, changeInput, isCompleted, setIsCompletedIgnoreList } =
     useForm(
       deal
@@ -28,20 +30,46 @@ function DealForm({ deal, funds, events }) {
           }
     );
 
-  // 매수, 매도 토글 이벤트
+  // * 매수, 매도 토글 이벤트
   useEffect(() => {
     if (form.type === "buy") {
-      setIsCompletedIgnoreList([
-        "totalQuantity",
-        "salePrice",
-        // "fundProfit",
-        // "transactionFee",
-      ]);
+      setIsCompletedIgnoreList(["totalQuantity", "salePrice"]);
     } else if (form.type === "sell") {
       setIsCompletedIgnoreList(["totalQuantity", "buyPrice"]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.type]);
+
+  // ? 매도할 때 총거래잔량, 최근 거래날짜를 가져오기
+  useEffect(async () => {
+    console.debug(fund);
+    console.debug(event);
+    if (form.type === "sell" && fund && event) {
+      const dealDoc = await getLatestDealBy({
+        fundId: fund.id,
+        eventId: event.id,
+      });
+      console.debug(dealDoc);
+      setLatestDeal(dealDoc);
+    }
+  }, [form.type, fund, event]);
+
+  // * 올바른 거래날짜 채크
+  const isCorrectDate = ({ date = new Date() }) => {
+    let result = false;
+    if (
+      new Date(event.startSubscribePeriod) <= new Date(date) &&
+      new Date(event.endSubscribePeriod) >= new Date(date)
+    ) {
+      result = true;
+    }
+    return result;
+  };
+
+  // * 생성 이벤트
+  const onSubmit = () => {
+    form.type === "buy" ? buyStore({ form }) : sellStore({ form, fundList });
+    close();
+  };
 
   return (
     <form className="min-w-[350px] pt-4">
@@ -147,7 +175,12 @@ function DealForm({ deal, funds, events }) {
             </div>
           ) : (
             <div className="flex flex-col mt-2">
-              <label className="font-noto-regular">매도금액</label>
+              <label className="font-noto-regular">
+                매도금액
+                <span className="ml-1 text-xs text-blue-600">
+                  (최근 매도금액: {latestDeal ? latestDeal.salePrice : "?"})
+                </span>
+              </label>
               <input
                 type="number"
                 name="salePrice"
@@ -162,13 +195,25 @@ function DealForm({ deal, funds, events }) {
           )}
 
           <div className="flex flex-col mt-2">
-            <label className="font-noto-regular">거래수량</label>
+            <label className="font-noto-regular">
+              거래수량
+              {form.type === "sell" && (
+                <span className="ml-1 text-xs text-blue-600">
+                  (현재 총 거래잔량: {latestDeal ? latestDeal.totalQuantity : 0}
+                  )
+                </span>
+              )}
+            </label>
             <input
               type="number"
               name="quantity"
               value={form.quantity}
               className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               onChange={(e) => {
+                const totalQuantity = latestDeal ? latestDeal.totalQuantity : 0;
+                if (totalQuantity < e.target.value) {
+                  return window.alert("총 거래잔량보다 많을 수 없습니다.");
+                }
                 setForm({
                   ...form,
                   quantity: e.target.value,
@@ -227,8 +272,15 @@ function DealForm({ deal, funds, events }) {
             </div>
           )}
           <div className="flex flex-col mt-2">
-            <label className="font-noto-regular">거래날짜</label>
-            {form.type === "buy" && (
+            <label className="font-noto-regular">
+              거래날짜
+              {form.type === "sell" && (
+                <span className="ml-1 text-xs text-blue-600">
+                  (최근 거래날짜: {latestDeal ? latestDeal.dealDate : ""})
+                </span>
+              )}
+            </label>
+            {form.type === "buy" ? (
               <>
                 <div className="text-sm">
                   {event.startSubscribePeriod} ~ {event.endSubscribePeriod}
@@ -236,15 +288,38 @@ function DealForm({ deal, funds, events }) {
                 <div className="text-sm">
                   * 위 청약기간 내에서 거래날짜를 입력해야합니다.
                 </div>
+                <input
+                  type="date"
+                  name="dealDate"
+                  value={form.dealDate}
+                  className="flex-1 w-full px-4 py-2 mt-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  onChange={(e) => {
+                    if (!isCorrectDate({ date: e.target.value })) {
+                      return window.alert("청약기간 내의 날짜를 입력해주세요!");
+                    }
+                    changeInput(e);
+                  }}
+                />
               </>
+            ) : (
+              <input
+                type="date"
+                name="dealDate"
+                value={form.dealDate}
+                className="flex-1 w-full px-4 py-2 mt-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                onChange={(e) => {
+                  const latestDate = latestDeal
+                    ? new Date(latestDeal.dealDate)
+                    : new Date();
+                  if (new Date(e.target.value) <= latestDate) {
+                    return window.alert(
+                      "최근 거래날짜와 같거나 작을 수 없습니다."
+                    );
+                  }
+                  changeInput(e);
+                }}
+              />
             )}
-            <input
-              type="date"
-              name="dealDate"
-              value={form.dealDate}
-              className="flex-1 w-full px-4 py-2 mt-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-              onChange={changeInput}
-            />
           </div>
         </div>
       )}
@@ -252,12 +327,7 @@ function DealForm({ deal, funds, events }) {
       <button
         type="button"
         className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-        onClick={() => {
-          form.type === "buy"
-            ? buyStore({ form })
-            : sellStore({ form, fundList });
-          close();
-        }}
+        onClick={onSubmit}
         disabled={!isCompleted}
       >
         {isCompleted ? "거래 생성" : "모든 항목을 입력해주세요.."}

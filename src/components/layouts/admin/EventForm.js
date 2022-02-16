@@ -96,6 +96,30 @@ function EventForm({ event }) {
 
       <div className="flex flex-col mt-2">
         <label>
+          청약수수료
+          <span className="ml-1 text-xs text-red-500">
+            {errors.subscribeFee && errors.subscribeFee.message}
+          </span>
+        </label>
+        <input
+          type="number"
+          {...register("subscribeFee", {
+            required: "청약수수료는 필수 입력값입니다.",
+          })}
+          defaultValue={event ? event.subscribeFee : null}
+          placeholder="청약수수료 입력"
+          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        />
+        <span className="p-2 text-xs rounded-md">
+          {currency(
+            watchAllFields.subscribeFee ? watchAllFields.subscribeFee : 0
+          )}{" "}
+          원
+        </span>
+      </div>
+
+      <div className="flex flex-col mt-2">
+        <label>
           청약기간
           <span className="ml-1 text-xs text-red-500">
             {errors.startSubscribePeriod && errors.startSubscribePeriod.message}

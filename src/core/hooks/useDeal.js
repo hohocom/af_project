@@ -80,11 +80,11 @@ function useDeal() {
     }
   };
 
-  const getFilterDeal = async ({ form }) => {
+  const getLatestDealBy = async ({ fundId, eventId }) => {
     const dealDocs = await db
       .collection("deals")
-      .where("fundId", "==", form.fundId)
-      .where("eventId", "==", form.eventId)
+      .where("fundId", "==", fundId)
+      .where("eventId", "==", eventId)
       .orderBy("dealDate", "desc")
       .limit(1)
       .get();
@@ -98,6 +98,13 @@ function useDeal() {
   };
 
   const buyStore = async ({ form }) => {
+    const dealDoc = await getLatestDealBy({ fundId: form.fundId });
+    console.debug(dealDoc);
+    if (dealDoc) {
+      window.alert("해당하는 펀드와 종목에대한 매수내역이 이미 존재합니다.");
+      return;
+    }
+
     console.log(`quantity ${form.quantity}`);
     console.log(`buyPrice ${form.buyPrice}`);
     console.log(`transactionFee ${form.transactionFee / 100}`);
@@ -124,7 +131,10 @@ function useDeal() {
   };
 
   const sellStore = async ({ form, fundList }) => {
-    const dealDoc = await getFilterDeal({ form });
+    const dealDoc = await getLatestDealBy({
+      fundId: form.fundId,
+      eventId: form.eventId,
+    });
 
     if (!dealDoc) {
       window.alert("먼저 해당 종목을 매수해야합니다.");
@@ -209,6 +219,7 @@ function useDeal() {
   };
 
   return {
+    getLatestDealBy,
     matchedFundId,
     setMatchedFundId,
     doJoinDealList,
