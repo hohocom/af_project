@@ -20,6 +20,11 @@ function InvestDetail({ fund, user }) {
   }, []);
 
   const sumFundProfitByOption = async () => {
+    console.log(fund.joinDate.substring(0, 7));
+    console.log(
+      `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
+    );
+
     const dealRef = await db
       .collection("deals")
       .where("fundId", "==", fund.fundId)
@@ -44,14 +49,42 @@ function InvestDetail({ fund, user }) {
         });
         date = deal.data().dealDate.substring(0, 7);
       }
-
+      // 가입일자 이후로부터 수익 구하기!
+      // 펀드가입기간 == 이전달(전달수익)
       if (
-        new Date(year, month - 1, 1) <= new Date(deal.data().dealDate) &&
-        new Date(year, month, 0) >= new Date(deal.data().dealDate)
+        fund.joinDate.substring(0, 7) ===
+        `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
       ) {
-        sumFundProfit += deal.data().fundProfit;
-        sumTransactionFee += Number(deal.data().transactionFee);
-        sumAfterFundProfit += deal.data().afterFundProfit;
+        // ex ) 가입일자~ 00월 31일
+        if (
+          new Date(fund.joinDate) <= new Date(deal.data().dealDate) &&
+          new Date(year, month, 0) >= new Date(deal.data().dealDate)
+        ) {
+          sumFundProfit += deal.data().fundProfit;
+          sumTransactionFee += Number(deal.data().transactionFee);
+          sumAfterFundProfit += deal.data().afterFundProfit;
+        }
+      }
+      // 펀드가입기간 > 이전달(전달수익)
+      else if (
+        fund.joinDate.substring(0, 7) >
+        `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
+      ) {
+        sumFundProfit += 0;
+        sumTransactionFee += 0;
+        sumAfterFundProfit += 0;
+      }
+      // 펀드가입기간 <  이전달(전달수익)
+      else {
+        //ex ) 00월 1일 ~ 00월 31일
+        if (
+          new Date(year, month - 1, 1) <= new Date(deal.data().dealDate) &&
+          new Date(year, month, 0) >= new Date(deal.data().dealDate)
+        ) {
+          sumFundProfit += deal.data().fundProfit;
+          sumTransactionFee += Number(deal.data().transactionFee);
+          sumAfterFundProfit += deal.data().afterFundProfit;
+        }
       }
     });
 
@@ -66,6 +99,13 @@ function InvestDetail({ fund, user }) {
   //기본 수수료 구하기
   const getDefaultFee = () => {
     //펀드 가입금액 * 기본수수료  * ((현재날짜 - 가입날짜 % 365) +1)
+    // 펀드가입기간 > 이전달(전달수익)
+    if (
+      fund.joinDate.substring(0, 7) >
+      `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
+    ) {
+      return 0;
+    }
     const minusTimeStamp =
       new Date().getTime() - new Date(fund.joinDate).getTime();
     const result =
@@ -76,15 +116,38 @@ function InvestDetail({ fund, user }) {
   };
   const getIncentive = () => {
     let incentivePrice = 0;
-    let LastMonthFundProfit = 0;
-    let PreviousMonthFundProfitSum = 0;
+    let LastMonthFundProfit = 0; // 바로전달 수익의 합
+    let PreviousMonthFundProfitSum = 0; // 모든 전달 수익의 합
     sumData.allSumFundProfit.forEach((data) => {
       if (
-        new Date(year, month - 1, 0) >
-        new Date(data.date.substring(0, 4), data.date.substring(5, 7) - 1, 1)
+        fund.joinDate.substring(0, 7) ===
+        `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
       ) {
-        PreviousMonthFundProfitSum += data.sumFundProfit;
+        console.log("인센 같아요");
+        if (
+          new Date(fund.joinDate) >
+          new Date(data.date.substring(0, 4), data.date.substring(5, 7) - 1, 1)
+        ) {
+          PreviousMonthFundProfitSum += data.sumFundProfit;
+        }
       }
+      // 펀드가입기간 > 이전달(전달수익)
+      else if (
+        fund.joinDate.substring(0, 7) >
+        `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
+      ) {
+        return 0;
+      } // 펀드가입기간 <  이전달(전달수익)
+      else {
+        //ex ) 00월 1일 ~ 00월 31일
+        if (
+          new Date(year, month - 1, 0) >
+          new Date(data.date.substring(0, 4), data.date.substring(5, 7) - 1, 1)
+        ) {
+          PreviousMonthFundProfitSum += data.sumFundProfit;
+        }
+      }
+
       if (
         new Date(year, month - 1, 1).getTime() ===
         new Date(
@@ -209,11 +272,11 @@ function InvestDetail({ fund, user }) {
                 <p className="w-1/3 mr-4 text-right text-red-500">
                   당월실현손익
                 </p>
-                <p className="w-2/3 text-left font-apple-sb">8,745,600원</p>
+                <p className="w-2/3 text-left font-apple-sb">x원</p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right text-red-500">수익률</p>
-                <p className="w-2/3 text-left font-apple-sb">0.22%</p>
+                <p className="w-2/3 text-left font-apple-sb">x%</p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">인출가능금액</p>
@@ -251,7 +314,7 @@ function InvestDetail({ fund, user }) {
           className="w-1/2 p-2 text-white bg-blue-600 rounded-md"
           onClick={() => changeState(2)}
         >
-          당월수익({month}월)
+          전월수익({month}월)
         </button>
       </div>
     </>

@@ -75,11 +75,12 @@ function HoldEventPage() {
       result.push(e.deal);
     });
     setjoinDealRemainderList(result);
+    console.log(joinDealList);
   };
   useEffect(() => {
     getHoldDealList();
   }, [joinDealList]);
-  let temp = 0;
+
   return (
     <MobileLayout>
       <div className="relative flex flex-col w-full p-4">
@@ -100,42 +101,38 @@ function HoldEventPage() {
               </thead>
               <tbody className="font-apple-sb">
                 {joinDealRemainderList.map((deal) => {
-                  if (temp !== deal.eventId && deal.totalQuantity > 0) {
-                    temp = deal.eventId;
-
-                    return (
-                      <tr
-                        key={deal.id}
-                        className="border-t"
-                        onClick={() =>
-                          setModal({ ...modal, isOpen: true, data: deal })
-                        }
-                      >
-                        <td className="border-r">
-                          <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                            <p>{deal.dealDate}</p>
-                            <nobr>
-                              {deal.fundName}/{deal.eventName}
-                            </nobr>
-                          </div>
-                        </td>
-                        <td className="border-r">
-                          <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                            <p>{currency(deal.salePrice)}원</p>
-                            <nobr>{deal.totalQuantity}주</nobr>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                            <p>
-                              {currency(deal.salePrice * deal.totalQuantity)}원
-                            </p>
-                            <br />
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  }
+                  return (
+                    <tr
+                      key={deal.id}
+                      className="border-t"
+                      onClick={() =>
+                        setModal({ ...modal, isOpen: true, data: deal })
+                      }
+                    >
+                      <td className="border-r">
+                        <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                          <p>{deal.dealDate}</p>
+                          <nobr>
+                            {deal.fundName}/{deal.eventName}
+                          </nobr>
+                        </div>
+                      </td>
+                      <td className="border-r">
+                        <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                          <p>{currency(deal.salePrice)}원</p>
+                          <nobr>{deal.totalQuantity}주</nobr>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                          <p>
+                            {currency(deal.salePrice * deal.totalQuantity)}원
+                          </p>
+                          <br />
+                        </div>
+                      </td>
+                    </tr>
+                  );
                 })}
               </tbody>
             </table>
@@ -155,8 +152,8 @@ function HoldEventPage() {
                     <p>청약기간</p>
                     <p>납입일</p>
                     <p>의무보유</p>
-                    <p>배정주식수</p>
-                    <p>배정금액</p>
+                    <p>보유주식수</p>
+                    <p>금액</p>
                     <p>청약수수료</p>
                     <p>총 납입금액</p>
                   </div>
@@ -164,7 +161,7 @@ function HoldEventPage() {
                     <p>x</p>
                     <p>x</p>
                     <p>{modal.data.eventName}</p>
-                    <p>{currency(modal.data.buyPrice)}원</p>
+                    <p>{currency(modal.data.fixedAmount)}원</p>
                     <p>
                       {modal.data.subscribePeriod
                         ? modal.data.subscribePeriod
@@ -174,9 +171,12 @@ function HoldEventPage() {
                       {modal.data.paymentDate ? modal.data.paymentDate : "없음"}
                     </p>
                     <p>x</p>
-                    <p>{currency(modal.data.quantity)}주</p>
+                    <p>{currency(modal.data.totalQuantity)}주</p>
                     <p>
-                      {currency(modal.data.quantity * modal.data.buyPrice)}원
+                      {currency(
+                        modal.data.totalQuantity * modal.data.fixedAmount
+                      )}
+                      원
                     </p>
                     <p>x</p>
                     <p>청약수수료 + 배정금액</p>

@@ -48,6 +48,8 @@ function useDeal() {
       dealList.forEach((deal, index) => {
         eventList.forEach((event) => {
           let fundName = "";
+
+          //fundname 가져오기
           fundList.forEach((fund) => {
             if (fund.id === deal.fundId) fundName = fund.fundName;
           });
@@ -58,6 +60,7 @@ function useDeal() {
               fundName: fundName,
               eventId: event.id,
               eventName: event.eventName,
+              fixedAmount: event.fixedAmount,
               buyPrice: deal.buyPrice,
               salePrice: deal.salePrice,
               quantity: deal.quantity,
