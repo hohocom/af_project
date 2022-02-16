@@ -7,13 +7,13 @@ function MobileLayout({
   children,
 }) {
   return (
-    <div className="flex items-start justify-center w-full h-screen ">
-      <div className="relative h-full bg-gray-100 w-full max-w-[500px] overflow-y-auto">
+    <div className="flex items-start justify-center w-full h-screen font-gong-light">
+      <div className="relative h-full bg-gray-100 w-full max-w-[500px] overflow-hidden ">
+        {!hideHeader && <Header title="배정현황" />}
         <div
-          className="h-full font-gong-light"
+          className="h-[90%] overflow-y-auto"
           style={{ backgroundColor: themeColor }}
         >
-          {!hideHeader && <Header title="배정현황" />}
           {children}
         </div>
         <Modal />
