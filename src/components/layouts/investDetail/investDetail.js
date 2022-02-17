@@ -36,19 +36,25 @@ function InvestDetail({ fund, user }) {
     let sumAfterFundProfit = 0;
     let allSumFundProfit = [];
     let date = 0;
+
     dealRef.docs.forEach((deal) => {
-      if (date === deal.data().dealDate.substring(0, 7)) {
-        //달별 총 수익 구하기 (실현손익기준)
-        allSumFundProfit[allSumFundProfit.length - 1].sumFundProfit +=
-          deal.data().fundProfit;
-        date = deal.data().dealDate.substring(0, 7);
-      } else {
-        allSumFundProfit.push({
-          date: deal.data().dealDate.substring(0, 7),
-          sumFundProfit: deal.data().fundProfit,
-        });
-        date = deal.data().dealDate.substring(0, 7);
+      if (new Date(fund.joinDate) < new Date(deal.data().dealDate)) {
+        console.log(new Date(fund.joinDate));
+        console.log(new Date(deal.data().dealDate));
+        if (date === deal.data().dealDate.substring(0, 7)) {
+          //달별 총 수익 구하기 (실현손익기준)
+          allSumFundProfit[allSumFundProfit.length - 1].sumFundProfit +=
+            deal.data().fundProfit;
+          date = deal.data().dealDate.substring(0, 7);
+        } else {
+          allSumFundProfit.push({
+            date: deal.data().dealDate.substring(0, 7),
+            sumFundProfit: deal.data().fundProfit,
+          });
+          date = deal.data().dealDate.substring(0, 7);
+        }
       }
+
       // 가입일자 이후로부터 수익 구하기!
       // 펀드가입기간 == 이전달(전달수익)
       if (
@@ -57,7 +63,7 @@ function InvestDetail({ fund, user }) {
       ) {
         // ex ) 가입일자~ 00월 31일
         if (
-          new Date(fund.joinDate) <= new Date(deal.data().dealDate) &&
+          new Date(fund.joinDate) < new Date(deal.data().dealDate) &&
           new Date(year, month, 0) >= new Date(deal.data().dealDate)
         ) {
           sumFundProfit += deal.data().fundProfit;
@@ -78,7 +84,7 @@ function InvestDetail({ fund, user }) {
       else {
         //ex ) 00월 1일 ~ 00월 31일
         if (
-          new Date(year, month - 1, 1) <= new Date(deal.data().dealDate) &&
+          new Date(year, month - 1, 1) < new Date(deal.data().dealDate) &&
           new Date(year, month, 0) >= new Date(deal.data().dealDate)
         ) {
           sumFundProfit += deal.data().fundProfit;
@@ -120,32 +126,10 @@ function InvestDetail({ fund, user }) {
     let PreviousMonthFundProfitSum = 0; // 모든 전달 수익의 합
     sumData.allSumFundProfit.forEach((data) => {
       if (
-        fund.joinDate.substring(0, 7) ===
-        `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
+        new Date(fund.joinDate) >
+        new Date(data.date.substring(0, 4), data.date.substring(5, 7) - 1, 1)
       ) {
-        console.log("인센 같아요");
-        if (
-          new Date(fund.joinDate) >
-          new Date(data.date.substring(0, 4), data.date.substring(5, 7) - 1, 1)
-        ) {
-          PreviousMonthFundProfitSum += data.sumFundProfit;
-        }
-      }
-      // 펀드가입기간 > 이전달(전달수익)
-      else if (
-        fund.joinDate.substring(0, 7) >
-        `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
-      ) {
-        return 0;
-      } // 펀드가입기간 <  이전달(전달수익)
-      else {
-        //ex ) 00월 1일 ~ 00월 31일
-        if (
-          new Date(year, month - 1, 0) >
-          new Date(data.date.substring(0, 4), data.date.substring(5, 7) - 1, 1)
-        ) {
-          PreviousMonthFundProfitSum += data.sumFundProfit;
-        }
+        PreviousMonthFundProfitSum += data.sumFundProfit;
       }
 
       if (
@@ -275,8 +259,11 @@ function InvestDetail({ fund, user }) {
                 <p className="w-2/3 text-left font-apple-sb">x원</p>
               </div>
               <div className="flex">
-                <p className="w-1/3 mr-4 text-right text-red-500">수익률</p>
-                <p className="w-2/3 text-left font-apple-sb">x%</p>
+                <p className="w-1/3 mr-4 text-right">수익률</p>
+                <p className="w-2/3 text-left font-apple-sb">
+                  {" "}
+                  {currency(sumData.sumFundProfit / fund.fundTotalCost) * 100}%
+                </p>
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">인출가능금액</p>

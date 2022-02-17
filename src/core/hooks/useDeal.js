@@ -67,6 +67,7 @@ function useDeal() {
               afterFundProfit: deal.afterFundProfit,
               subscribePeriod: `${event.startSubscribePeriod}~${event.endSubscribePeriod}`,
               paymentDate: event.paymentDate,
+              subscribeFee: event.subscribeFee,
             });
           }
         });
@@ -93,7 +94,10 @@ function useDeal() {
   };
 
   const buyStore = async ({ form }) => {
-    const dealDoc = await getLatestDealBy({ fundId: form.fundId });
+    const dealDoc = await getLatestDealBy({
+      fundId: form.fundId,
+      eventId: form.eventId,
+    });
     console.debug(dealDoc);
     if (dealDoc) {
       window.alert("해당하는 펀드와 종목에대한 매수내역이 이미 존재합니다.");
