@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { eventListInitState, eventListState } from "core/state";
+import { eventListInitState, eventListState, loadingState } from "core/state";
 import { useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
@@ -29,18 +29,24 @@ export function useEventStream() {
 
 function useEvent() {
   const eventList = useRecoilValue(eventListState);
+  const setLoading = useSetRecoilState(loadingState);
 
   const store = async ({ form }) => {
+    setLoading(true);
     await db.collection("events").add(form);
+    setLoading(false);
   };
 
   const edit = async ({ id, form }) => {
+    setLoading(true);
     await db.collection("events").doc(id).set(form);
+    setLoading(false);
   };
 
   const destroy = async ({ id }) => {
     const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
     if (result !== "삭제") return;
+    setLoading(true);
     await db.collection("events").doc(id).delete();
     const dealRef = await db
       .collection("deals")
@@ -52,6 +58,7 @@ function useEvent() {
         await doc.ref.delete();
       });
     }
+    setLoading(false);
   };
 
   return {

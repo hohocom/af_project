@@ -62,7 +62,7 @@ function AdminUserPage() {
           ]}
           itemInit={userListInit}
           itemLength={userList.length}
-          colSpan={6}
+          colSpan={10}
         >
           {getPagerList({ list: getSearchList() }).map((user, index) => {
             if (user.role !== "ADMIN")
