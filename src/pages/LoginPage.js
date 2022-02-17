@@ -5,7 +5,7 @@ import { LoadingType2, withPublic } from "components/common";
 import { MobileLayout } from "components/layouts";
 import { useForm } from "core/hooks";
 import { useState } from "react";
-import { auth, db } from "utils/firebase";
+import { auth } from "utils/firebase";
 
 function LoginPage() {
   const { form, changeInput, isCompleted } = useForm({
@@ -21,47 +21,12 @@ function LoginPage() {
       .then((data) => {
         console.debug(data);
         console.debug("로그인 성공");
+        setLoading(false);
       })
       .catch(async (e) => {
-        // 로그인 실패 -> 관리자 페이지에 등록된 유저 정보가 있는지 확인
-        console.debug(e);
-        console.debug("로그인 실패");
-        const userRef = await db.collection("users").doc(form.email).get();
-
-        // 유저 정보마져 없으면 로그인 실패 알림
-        if (userRef.data() === undefined) {
-          window.alert("이메일 또는 패스워드가 일치하지 않습니다.");
-          setLoading(false);
-          throw new Error("로그인 실패");
-        }
-
-        console.debug(form.password);
-        // 유저 email이 일치하는 문서가 있으면 해당 유저의 생일과 입력한 페스워드가 맞는지 확인
-        // 맞으면 회원가입 처리와 동시에 로그인
-        console.debug(userRef.data().birthday !== form.password);
-        console.debug(userRef.data().isJoined);
-
-        if (!userRef.data().isJoined) {
-          if (userRef.data().birthday !== form.password) {
-            window.alert("이메일 또는 패스워드가 일치하지 않습니다.");
-            setLoading(false);
-            throw new Error("로그인 실패");
-          } else {
-            setLoading(false);
-            console.debug(userRef.data());
-            auth.createUserWithEmailAndPassword(form.email, form.password);
-            db.collection("users")
-              .doc(form.email)
-              .set({
-                ...userRef.data(),
-                isJoined: true,
-              });
-          }
-        } else {
-          window.alert("이메일 또는 패스워드가 일치하지 않습니다.");
-          setLoading(false);
-          throw new Error("로그인 실패");
-        }
+        window.alert("이메일 또는 패스워드가 일치하지 않습니다.");
+        setLoading(false);
+        throw new Error("로그인 실패");
       });
   };
 

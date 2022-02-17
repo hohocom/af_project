@@ -5,6 +5,7 @@ import { userListInitState, userListState, userDetailState } from "./user";
 import { managerDetailState } from "./manager";
 import modalState from "./modal";
 import toastState from "./toast";
+import loadingState from "./laoding";
 
 export {
   fundListInitState,
@@ -20,4 +21,5 @@ export {
   userDetailState,
   managerDetailState,
   toastState,
+  loadingState,
 };

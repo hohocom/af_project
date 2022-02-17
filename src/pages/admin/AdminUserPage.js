@@ -112,7 +112,7 @@ function AdminUserPage() {
                     </button>
                   </td>
                   <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
-                    <button onClick={() => destroy({ userId: user.id })}>
+                    <button onClick={() => destroy({ user })}>
                       <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
                     </button>
                   </td>

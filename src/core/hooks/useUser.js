@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { userListInitState, userListState } from "core/state";
+import { loadingState, userListInitState, userListState } from "core/state";
 import { useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { auth, db } from "utils/firebase";
+import { db } from "utils/firebase";
+import axios from "axios";
 
 export function useUserStream() {
   const setUserList = useSetRecoilState(userListState);
@@ -30,34 +31,66 @@ export function useUserStream() {
 
 function useUser() {
   const userList = useRecoilValue(userListState);
+  const setLoading = useSetRecoilState(loadingState);
 
   const store = async ({ form }) => {
-    await db.collection("users").doc(form.email).set(form);
+    setLoading(true);
+
+    await axios({
+      method: "get",
+      url: `http://localhost:5001/af-project-83d10/asia-northeast3/users/create-user?email=${form.email}&birthday=${form.birthday}`,
+    })
+      .then(async (result) => {
+        console.debug(result.data);
+        await db
+          .collection("users")
+          .doc(form.email)
+          .set({
+            ...form,
+            uid: result.data.uid,
+          });
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.debug(err);
+        console.debug("에러");
+        setLoading(false);
+      });
   };
 
   const edit = async ({ form, user }) => {
     await db.collection("users").doc(user.id).set(form);
   };
 
-  const destroy = async ({ userId }) => {
+  const destroy = async ({ user }) => {
+    setLoading(true);
     const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
     if (result !== "삭제") return;
-    auth.signInWithEmailAndPassword(userId, "").then(() => {
-      auth.currentUser.delete();
-      // 다시 관리자 로그인 진행
-      auth.signInWithEmailAndPassword("", "");
-    });
-    await db.collection("users").doc(userId).delete();
-    const userFundRef = await db
-      .collection("userFunds")
-      .where("userId", "==", userId)
-      .get();
-    if (!userFundRef.empty) {
-      userFundRef.docs.forEach(async (doc) => {
-        console.debug(doc.data());
-        await doc.ref.delete();
+
+    await axios({
+      method: "delete",
+      url: `http://localhost:5001/af-project-83d10/asia-northeast3/users/delete-user?uid=${user.uid}`,
+    })
+      .then(async () => {
+        console.debug("회원 삭제 성공");
+        await db.collection("users").doc(user.id).delete();
+        const userFundRef = await db
+          .collection("userFunds")
+          .where("userId", "==", user.id)
+          .get();
+        if (!userFundRef.empty) {
+          userFundRef.docs.forEach(async (doc) => {
+            console.debug(doc.data());
+            await doc.ref.delete();
+          });
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.debug(err);
+        console.debug("에러");
+        setLoading(false);
       });
-    }
   };
 
   return { userList, store, edit, destroy };
