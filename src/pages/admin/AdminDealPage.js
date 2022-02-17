@@ -112,7 +112,7 @@ function AdminDealPage() {
           ]}
           itemInit={joinDealList}
           itemLength={joinDealList.length}
-          colSpan={7}
+          colSpan={11}
         >
           {getPagerList({
             list: getSearchList(),

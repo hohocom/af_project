@@ -43,6 +43,16 @@ function useUser() {
     const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
     if (result !== "삭제") return;
     await db.collection("users").doc(userId).delete();
+    const userFundRef = await db
+      .collection("userFunds")
+      .where("userId", "==", userId)
+      .get();
+    if (!userFundRef.empty) {
+      userFundRef.docs.forEach(async (doc) => {
+        console.debug(doc.data());
+        await doc.ref.delete();
+      });
+    }
   };
 
   return { userList, store, edit, destroy };

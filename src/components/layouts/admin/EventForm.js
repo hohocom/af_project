@@ -49,7 +49,7 @@ function EventForm({ event }) {
 
       <div className="flex flex-col mt-2">
         <label>
-          확정공모가액
+          확정공모가액(원)
           <span className="ml-1 text-xs text-red-500">
             {errors.fixedAmount && errors.fixedAmount.message}
           </span>
@@ -96,7 +96,7 @@ function EventForm({ event }) {
 
       <div className="flex flex-col mt-2">
         <label>
-          청약수수료
+          청약수수료(원)
           <span className="ml-1 text-xs text-red-500">
             {errors.subscribeFee && errors.subscribeFee.message}
           </span>

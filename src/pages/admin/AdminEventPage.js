@@ -61,7 +61,7 @@ function AdminEventPage() {
           ]}
           itemInit={eventListInit}
           itemLength={eventList.length}
-          colSpan={5}
+          colSpan={8}
         >
           {getPagerList({ list: getSearchList() }).map((event, i) => {
             return (

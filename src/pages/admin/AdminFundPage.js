@@ -61,7 +61,7 @@ function AdminFundPage() {
           ]}
           itemInit={fundListInit}
           itemLength={fundList.length}
-          colSpan={7}
+          colSpan={9}
         >
           {getPagerList({ list: getSearchList() }).map((fund, i) => {
             return (

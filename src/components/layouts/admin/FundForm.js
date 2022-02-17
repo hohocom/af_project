@@ -94,7 +94,7 @@ function FundForm({ fund = null }) {
 
       <div className="flex flex-col mt-2">
         <label>
-          인센티브
+          인센티브(%)
           <span className="ml-1 text-xs text-red-500">
             {errors.incentive && errors.incentive.message}
           </span>
@@ -113,7 +113,7 @@ function FundForm({ fund = null }) {
 
       <div className="flex flex-col mt-2">
         <label>
-          기본수수료
+          기본수수료(%)
           <span className="ml-1 text-xs text-red-500">
             {errors.defaultFee && errors.defaultFee.message}
           </span>

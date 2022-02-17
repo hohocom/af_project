@@ -4,6 +4,7 @@ function Table({
   itemLength = 0,
   colSpan = 5,
   children,
+  emptyMessage = "데이터가 없습니다.",
 }) {
   return (
     <table className="table w-full p-4 bg-white rounded-lg shadow">
@@ -34,7 +35,7 @@ function Table({
             ) : (
               <tr>
                 <td className="p-4" colSpan={colSpan}>
-                  생성된 종목이 없습니다.
+                  {emptyMessage}
                 </td>
               </tr>
             )}
