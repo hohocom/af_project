@@ -69,6 +69,9 @@ function ProfitOrLossPage() {
       ) {
         result.push(deal);
       }
+      if (clickMonth !== 0 && new Date(deal.dealDate) > new Date(endDate)) {
+        result.push(deal);
+      }
     });
 
     return result;

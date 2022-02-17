@@ -69,6 +69,9 @@ function ConclusionPage() {
       ) {
         result.push(deal);
       }
+      if (clickMonth !== 0 && new Date(deal.dealDate) > new Date(endDate)) {
+        result.push(deal);
+      }
     });
 
     return result;
@@ -114,6 +117,8 @@ function ConclusionPage() {
                   clickMonth === m ? `bg-[#1E3A8A] text-white` : `bg-white`
                 }`}
                 onClick={() => {
+                  console.log(new Date(year, month - m, day));
+                  console.log(new Date());
                   setStartDate(new Date(year, month - m, day));
                   setEndDate(new Date());
                   SetclickMonth(m);

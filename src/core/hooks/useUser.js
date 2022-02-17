@@ -2,7 +2,7 @@
 import { userListInitState, userListState } from "core/state";
 import { useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { db } from "utils/firebase";
+import { auth, db } from "utils/firebase";
 
 export function useUserStream() {
   const setUserList = useSetRecoilState(userListState);
@@ -42,6 +42,11 @@ function useUser() {
   const destroy = async ({ userId }) => {
     const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
     if (result !== "삭제") return;
+    auth.signInWithEmailAndPassword(userId, "").then(() => {
+      auth.currentUser.delete();
+      // 다시 관리자 로그인 진행
+      auth.signInWithEmailAndPassword("", "");
+    });
     await db.collection("users").doc(userId).delete();
     const userFundRef = await db
       .collection("userFunds")
