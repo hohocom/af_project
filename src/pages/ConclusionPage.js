@@ -21,7 +21,7 @@ function ConclusionPage() {
   const year = d.getFullYear(); // 년
   const month = d.getMonth(); // 월
   const day = d.getDate(); // 일
-  const monthBtn = [1, 3, 6, 12];
+  const monthBtn = [1, 3, 6, 12, "all"];
   const [clickMonth, SetclickMonth] = useState(0);
 
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
@@ -110,15 +110,27 @@ function ConclusionPage() {
         </div>
         <div className="flex items-center justify-between mt-4 ">
           {monthBtn.map((m) => {
-            return (
+            return m === "all" ? (
+              <button
+                key={m}
+                className={`p-2 w-[80px]   rounded-md   ${
+                  clickMonth === "all" ? `bg-[#1E3A8A] text-white` : `bg-white`
+                }`}
+                onClick={() => {
+                  setStartDate(null);
+                  setEndDate(null);
+                  SetclickMonth("all");
+                }}
+              >
+                전체
+              </button>
+            ) : (
               <button
                 key={m}
                 className={`p-2 w-[80px]   rounded-md   ${
                   clickMonth === m ? `bg-[#1E3A8A] text-white` : `bg-white`
                 }`}
                 onClick={() => {
-                  console.log(new Date(year, month - m, day));
-                  console.log(new Date());
                   setStartDate(new Date(year, month - m, day));
                   setEndDate(new Date());
                   SetclickMonth(m);
