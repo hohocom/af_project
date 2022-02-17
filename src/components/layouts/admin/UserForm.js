@@ -80,12 +80,12 @@ function UserForm({ user }) {
             required: "생년월일은 필수 입력값입니다.",
             pattern: {
               value:
-                /^(19[0-9][0-9]|20\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/,
-              message: "xxxx-xx-xx 형태로 입력해주세요.",
+                /^(19[0-9][0-9]|20\d{2})(0[0-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/,
+              message: "8자리의 형태로 특수문자 없이 입력해주세요.",
             },
           })}
           defaultValue={user ? user.birthday : null}
-          placeholder="생년월일 입력"
+          placeholder="생년월일(8자리) 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
         />
       </div>

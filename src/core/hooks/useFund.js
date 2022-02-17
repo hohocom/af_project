@@ -42,6 +42,26 @@ function useFund() {
     const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
     if (result !== "삭제") return;
     await db.collection("funds").doc(id).delete();
+    const dealRef = await db
+      .collection("deals")
+      .where("fundId", "==", id)
+      .get();
+    if (!dealRef.empty) {
+      dealRef.docs.forEach(async (doc) => {
+        console.debug(doc.data());
+        await doc.ref.delete();
+      });
+    }
+    const userFundRef = await db
+      .collection("userFunds")
+      .where("fundId", "==", id)
+      .get();
+    if (!userFundRef.empty) {
+      userFundRef.docs.forEach(async (doc) => {
+        console.debug(doc.data());
+        await doc.ref.delete();
+      });
+    }
   };
 
   return {

@@ -32,7 +32,7 @@ function EventForm({ event }) {
 
       <div className="flex flex-col mt-2">
         <label>
-          펀드명
+          종목명
           <span className="ml-1 text-xs text-red-500">
             {errors.eventName && errors.eventName.message}
           </span>
