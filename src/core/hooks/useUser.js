@@ -11,15 +11,18 @@ export function useUserStream() {
 
   useEffect(() => {
     console.debug("%c[회원 실시간 감지..]", "color:red");
-    const unsub = db.collection("users").onSnapshot((snapshot) => {
-      const docs = snapshot.docs.map((user) => {
-        return {
-          id: user.id,
-          ...user.data(),
-        };
+    const unsub = db
+      .collection("users")
+      .where("role", "!=", "ADMIN")
+      .onSnapshot((snapshot) => {
+        const docs = snapshot.docs.map((user) => {
+          return {
+            id: user.id,
+            ...user.data(),
+          };
+        });
+        setUserList(docs);
       });
-      setUserList(docs);
-    });
 
     setUserListInit(true);
     return () => {
@@ -38,7 +41,7 @@ function useUser() {
 
     await axios({
       method: "get",
-      url: `http://localhost:5001/af-project-83d10/asia-northeast3/users/create-user?email=${form.email}&birthday=${form.birthday}`,
+      url: `https://asia-northeast3-af-project-83d10.cloudfunctions.net/users/create-user?email=${form.email}&birthday=${form.birthday}`,
     })
       .then(async (result) => {
         console.debug(result.data);
@@ -47,6 +50,7 @@ function useUser() {
           .doc(form.email)
           .set({
             ...form,
+            role: "USER",
             uid: result.data.uid,
           });
         setLoading(false);
@@ -59,7 +63,9 @@ function useUser() {
   };
 
   const edit = async ({ form, user }) => {
+    setLoading(true);
     await db.collection("users").doc(user.id).set(form);
+    setLoading(false);
   };
 
   const destroy = async ({ user }) => {
@@ -69,7 +75,7 @@ function useUser() {
 
     await axios({
       method: "delete",
-      url: `http://localhost:5001/af-project-83d10/asia-northeast3/users/delete-user?uid=${user.uid}`,
+      url: `https://asia-northeast3-af-project-83d10.cloudfunctions.net/users/delete-user?uid=${user.uid}`,
     })
       .then(async () => {
         console.debug("회원 삭제 성공");

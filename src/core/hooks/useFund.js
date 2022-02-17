@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { db } from "utils/firebase";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { fundListInitState, fundListState } from "core/state";
+import { fundListInitState, fundListState, loadingState } from "core/state";
 
 export function useFundStream() {
   const setFundList = useSetRecoilState(fundListState);
@@ -29,18 +29,24 @@ export function useFundStream() {
 
 function useFund() {
   const fundList = useRecoilValue(fundListState);
+  const setLoading = useSetRecoilState(loadingState);
 
   const store = async ({ form }) => {
+    setLoading(true);
     await db.collection("funds").add(form);
+    setLoading(false);
   };
 
   const edit = async ({ id, form }) => {
+    setLoading(true);
     await db.collection("funds").doc(id).set(form);
+    setLoading(false);
   };
 
   const destroy = async ({ id }) => {
     const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
     if (result !== "삭제") return;
+    setLoading(true);
     await db.collection("funds").doc(id).delete();
     const dealRef = await db
       .collection("deals")
@@ -62,6 +68,7 @@ function useFund() {
         await doc.ref.delete();
       });
     }
+    setLoading(false);
   };
 
   return {

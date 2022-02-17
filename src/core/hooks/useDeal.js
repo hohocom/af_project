@@ -2,7 +2,12 @@
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { useEffect, useState } from "react";
 import { db } from "utils/firebase";
-import { dealListInit, dealListState, joinDealListState } from "core/state";
+import {
+  dealListInit,
+  dealListState,
+  joinDealListState,
+  loadingState,
+} from "core/state";
 
 export function useDealStream() {
   const setDealList = useSetRecoilState(dealListState);
@@ -34,6 +39,7 @@ function useDeal() {
   const dealList = useRecoilValue(dealListState);
   const [joinDealList, setJoinDealList] = useRecoilState(joinDealListState);
   const [matchedFundId, setMatchedFundId] = useState(null);
+  const setLoading = useSetRecoilState(loadingState);
 
   const doJoinDealList = ({ fundList, eventList, type = "all" }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
@@ -94,6 +100,7 @@ function useDeal() {
   };
 
   const buyStore = async ({ form }) => {
+    setLoading(true);
     const dealDoc = await getLatestDealBy({
       fundId: form.fundId,
       eventId: form.eventId,
@@ -101,6 +108,7 @@ function useDeal() {
     console.debug(dealDoc);
     if (dealDoc) {
       window.alert("해당하는 펀드와 종목에대한 매수내역이 이미 존재합니다.");
+      setLoading(false);
       return;
     }
 
@@ -127,9 +135,11 @@ function useDeal() {
           Number(form.buyPrice) *
           Number(form.transactionFee / 100),
     });
+    setLoading(false);
   };
 
   const sellStore = async ({ form, fundList }) => {
+    setLoading(true);
     const dealDoc = await getLatestDealBy({
       fundId: form.fundId,
       eventId: form.eventId,
@@ -137,6 +147,7 @@ function useDeal() {
 
     if (!dealDoc) {
       window.alert("먼저 해당 종목을 매수해야합니다.");
+      setLoading(false);
       return;
     }
 
@@ -144,21 +155,9 @@ function useDeal() {
       new Date(form.dealDate).getTime() < new Date(dealDoc.dealDate).getTime()
     ) {
       window.alert("이전 거래날짜 이후로 설정해주세요.");
+      setLoading(false);
       return;
     }
-
-    // 거래 수수료(transitionfee) = (매도금액*매도수량) * 거래수수료(fundList참조)
-    // let transactionFee = 0;
-    // let fundRatio = 0;
-
-    // fundList.forEach((fund) => {
-    //   if (fund.id === form.fundId) {
-    //     fundRatio = fund.transactionFee;
-    //   }
-    // });
-    // transactionFee = form.salePrice * form.quantity * (fundRatio / 100);
-    // console.debug(transactionFee);
-    // 펀드 수익 (fundProfit) = (매도금액*매도수량)-(매수금액*매도수량)-거래수수료
     const dealRef = await db
       .collection("deals")
       .where("fundId", "==", form.fundId)
@@ -167,15 +166,11 @@ function useDeal() {
       .get();
     let fundProfit = 0;
     let buyPrice = 0; // 매수금액
+
     dealRef.docs.forEach((deal) => {
       buyPrice = deal.data().buyPrice;
     });
     fundProfit = form.salePrice * form.quantity - buyPrice * form.quantity;
-    // let afterFundProfit = 0;
-    // afterFundProfit =
-    //   form.salePrice * form.quantity -
-    //   buyPrice * form.quantity -
-    //   transactionFee;
     console.log(dealDoc.totalQuantity);
     console.log(form.quantity);
 
@@ -194,9 +189,11 @@ function useDeal() {
       transactionFee: form.transactionFee,
       afterFundProfit: fundProfit - form.transactionFee,
     });
+    setLoading(false);
   };
 
   const destroy = async ({ dealId, fundId, eventId }) => {
+    setLoading(true);
     const dealRef = await db
       .collection("deals")
       .where("fundId", "==", fundId)
@@ -215,6 +212,7 @@ function useDeal() {
       if (!result) return;
       db.collection("deals").doc(deal.id).delete();
     });
+    setLoading(false);
   };
 
   return {
