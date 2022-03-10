@@ -56,6 +56,8 @@ function AdminFundPage() {
             "인센티브",
             "기본수수료",
             "가입기간",
+            "계좌명",
+            "계좌번호",
             "수정",
             "삭제",
           ]}
@@ -89,6 +91,12 @@ function AdminFundPage() {
                 </td>
                 <td className="p-4 border-r dark:border-dark-5">
                   {fund.startJoinPeriod} ~ {fund.endJoinPeriod}
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {fund.bankName}
+                </td>
+                <td className="p-4 border-r dark:border-dark-5">
+                  {fund.bankNumber}
                 </td>
                 <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                   <button
