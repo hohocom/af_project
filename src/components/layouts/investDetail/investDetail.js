@@ -100,7 +100,6 @@ function InvestDetail({ fund, user }) {
   //기본 수수료 구하기
   const getDefaultFee = () => {
     //펀드 가입금액 * 기본수수료  * ((현재날짜 - 가입날짜 % 365) +1)
-
     const minusTimeStamp =
       new Date().getTime() - new Date(fund.joinDate).getTime();
     const result =

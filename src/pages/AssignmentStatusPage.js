@@ -10,7 +10,6 @@ import { useDeal } from "core/hooks";
 import { db } from "utils/firebase";
 import { currency } from "utils/currency";
 function AssignmentStatusPage() {
-  console.log("AssignmentStatusPage");
   const [modal, setModal] = useState({
     isOpen: false,
     data: {},
@@ -21,12 +20,15 @@ function AssignmentStatusPage() {
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
-  const { joinDealList, doJoinDealList } = useDeal();
+  const { joinDealEventFund, doJoinDealEventFund } = useDeal();
 
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
     getFilterJoinDealList();
   }, []);
+  useEffect(() => {
+    console.log(joinDealEventFund);
+  }, [joinDealEventFund]);
 
   /**
    * @필터링된_JoinDealList
@@ -52,30 +54,27 @@ function AssignmentStatusPage() {
       });
     });
 
-    doJoinDealList({ eventList, fundList: filterFundList });
-    console.log(joinDealList);
+    doJoinDealEventFund({ eventList, fundList: filterFundList });
   };
-
-  return (
-    <MobileLayout>
-      <div className="relative flex flex-col w-full p-4">
+  const getDealEventFund = () => {
+    console.log(joinDealEventFund);
+    const fundList = [];
+    for (let fund in joinDealEventFund) {
+      fundList.push(
         <Card
-          title="공모주펀딩"
+          key={fund}
+          title={fund}
           body={
             <table className="w-full text-xs table-fixed">
               <thead>
                 <tr>
-                  <th className="p-2 border-r">
-                    날짜
-                    <br />
-                    펀드명/종목명
-                  </th>
+                  <th className="p-2 border-r">배정날짜/종목명</th>
                   <th className="p-2 border-r">매수가/매수량</th>
                   <th>금액/비고</th>
                 </tr>
               </thead>
               <tbody className="font-apple-sb">
-                {joinDealList.map((deal) => {
+                {joinDealEventFund[fund].map((deal) => {
                   if (deal.type === "buy")
                     return (
                       <tr
@@ -87,10 +86,8 @@ function AssignmentStatusPage() {
                       >
                         <td className="border-r">
                           <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                            <p>{deal.dealDate}</p>
-                            <nobr>
-                              {deal.fundName}/{deal.eventName}
-                            </nobr>
+                            <p>{deal.assignmentDate ?? "-"}</p>
+                            <nobr>{deal.eventName}</nobr>
                           </div>
                         </td>
                         <td className="border-r">
@@ -112,7 +109,16 @@ function AssignmentStatusPage() {
             </table>
           }
         />
-      </div>{" "}
+      );
+    }
+
+    return fundList;
+  };
+  return (
+    <MobileLayout>
+      <div className="relative flex flex-col w-full p-4">
+        {getDealEventFund()}
+      </div>
       {modal.isOpen && (
         <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full p-4 bg-black/80">
           <Card
@@ -133,10 +139,10 @@ function AssignmentStatusPage() {
                   <p>총 납입금액</p>
                 </div>
                 <div className="flex flex-col items-start w-8/12 p-4 font-apple-sb">
-                  <p>x</p>
-                  <p>x</p>
-                  <p>{modal.data.eventName}</p>
-                  <p>{currency(modal.data.buyPrice)}원</p>
+                  <p>{modal.data.bankName ?? "없음"}</p>
+                  <p>{modal.data.bankNumber ?? "없음"}</p>
+                  <p>{modal.data.eventName ?? "없음"}</p>
+                  <p>{currency(modal.data.buyPrice) ?? "없음"}원</p>
                   <p>
                     {modal.data.subscribePeriod
                       ? modal.data.subscribePeriod
@@ -145,7 +151,7 @@ function AssignmentStatusPage() {
                   <p>
                     {modal.data.paymentDate ? modal.data.paymentDate : "없음"}
                   </p>
-                  <p>x</p>
+                  <p>{modal.data.mandatoryDate ?? "없음"}</p>
                   <p>{currency(modal.data.quantity)}주</p>
                   <p>{currency(modal.data.quantity * modal.data.buyPrice)}원</p>
                   <p>{currency(modal.data.subscribeFee)}원</p>

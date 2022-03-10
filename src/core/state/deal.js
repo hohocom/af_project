@@ -14,3 +14,8 @@ export const joinDealListState = atom({
   key: "joinDealListState",
   default: [],
 });
+
+export const joinDealEventFundState = atom({
+  key: "joinDealEventFundState",
+  default: {},
+});

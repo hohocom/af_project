@@ -8,6 +8,7 @@ import {
   joinDealListState,
   loadingState,
 } from "core/state";
+import { joinDealEventFundState } from "core/state/deal";
 
 export function useDealStream() {
   const setDealList = useSetRecoilState(dealListState);
@@ -38,18 +39,19 @@ export function useDealStream() {
 function useDeal() {
   const dealList = useRecoilValue(dealListState);
   const [joinDealList, setJoinDealList] = useRecoilState(joinDealListState);
+  const [joinDealEventFund, setJoinDealEventFund] = useRecoilState(
+    joinDealEventFundState
+  );
   const [matchedFundId, setMatchedFundId] = useState(null);
   const setLoading = useSetRecoilState(loadingState);
 
   const doJoinDealList = ({ fundList, eventList, type = "all" }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealList = [];
-
       //events 와 deals join
       dealList.forEach((deal, index) => {
         eventList.forEach((event) => {
           let fundName = "";
-
           //fundname 가져오기
           fundList.forEach((fund) => {
             if (fund.id === deal.fundId) fundName = fund.fundName;
@@ -81,7 +83,52 @@ function useDeal() {
       setJoinDealList(joinDealList);
     }
   };
+  //deal 과 event 와 (내가가입한) fund join!!!!
+  const doJoinDealEventFund = ({ fundList, eventList }) => {
+    if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
+      const joinDealEventFund = {};
+      dealList.forEach((deal, index) => {
+        eventList.forEach((event) => {
+          fundList.forEach((fund) => {
+            if (deal.eventId === event.id && deal.fundId === fund.id) {
+              let data = {
+                id: deal.id,
+                fundName: fund.fundName,
+                bankName: fund.bankName,
+                bankNumber: fund.bankNumber,
+                eventId: event.id,
+                eventName: event.eventName,
+                fixedAmount: event.fixedAmount,
+                buyPrice: deal.buyPrice,
+                salePrice: deal.salePrice,
+                quantity: deal.quantity,
+                totalQuantity: deal.totalQuantity,
+                dealDate: deal.dealDate,
+                type: deal.type,
+                fundProfit: deal.fundProfit,
+                transactionFee: deal.transactionFee,
+                afterFundProfit: deal.afterFundProfit,
+                subscribePeriod: `${event.startSubscribePeriod}~${event.endSubscribePeriod}`,
+                paymentDate: event.paymentDate,
+                subscribeFee: event.subscribeFee,
+                assignmentDate: event.assignmentDate,
+                mandatoryDate: event.mandatoryDate,
+              };
+              if (fund.fundName in joinDealEventFund) {
+                joinDealEventFund[fund.fundName].push(data);
+              } else {
+                joinDealEventFund[fund.fundName] = [];
+                joinDealEventFund[fund.fundName].push(data);
+              }
+            }
+          });
+        });
+      });
 
+      console.log(joinDealEventFund);
+      setJoinDealEventFund(joinDealEventFund);
+    }
+  };
   const getLatestDealBy = async ({ fundId, eventId }) => {
     const dealDocs = await db
       .collection("deals")
@@ -220,7 +267,9 @@ function useDeal() {
     matchedFundId,
     setMatchedFundId,
     doJoinDealList,
+    doJoinDealEventFund,
     joinDealList,
+    joinDealEventFund,
     dealList,
     buyStore,
     sellStore,
