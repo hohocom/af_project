@@ -8,7 +8,7 @@ function InvestDetail({ fund, user }) {
   const [sumData, setSumData] = useState({});
   const d = new Date();
   const year = d.getFullYear(); // 년
-  const month = d.getMonth(); // 월
+  const month = d.getMonth() + 1; // 월
 
   const changeState = (s) => {
     if (s === state) setState(0);
@@ -20,11 +20,6 @@ function InvestDetail({ fund, user }) {
   }, []);
 
   const sumFundProfitByOption = async () => {
-    console.log(fund.joinDate.substring(0, 7));
-    console.log(
-      `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
-    );
-
     const dealRef = await db
       .collection("deals")
       .where("fundId", "==", fund.fundId)
@@ -105,13 +100,7 @@ function InvestDetail({ fund, user }) {
   //기본 수수료 구하기
   const getDefaultFee = () => {
     //펀드 가입금액 * 기본수수료  * ((현재날짜 - 가입날짜 % 365) +1)
-    // 펀드가입기간 > 이전달(전달수익)
-    if (
-      fund.joinDate.substring(0, 7) >
-      `${year}-${month.toString.length === 1 ? 0 + month.toString() : month}`
-    ) {
-      return 0;
-    }
+
     const minusTimeStamp =
       new Date().getTime() - new Date(fund.joinDate).getTime();
     const result =
@@ -214,7 +203,7 @@ function InvestDetail({ fund, user }) {
                 </p>
               </div>
               <div className="flex">
-                <p className="w-1/3 mr-4 text-right  ">인센티브</p>
+                <p className="w-1/3 mr-4 text-right ">인센티브</p>
                 <p className="w-2/3 text-left font-apple-sb">
                   {currency(Math.floor(getIncentive()))}원
                 </p>
@@ -301,7 +290,7 @@ function InvestDetail({ fund, user }) {
           className="w-1/2 p-2 text-white bg-blue-600 rounded-md"
           onClick={() => changeState(2)}
         >
-          전월수익({month}월)
+          당월수익({month}월)
         </button>
       </div>
     </>

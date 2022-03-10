@@ -10,6 +10,7 @@ import { useDeal } from "core/hooks";
 import { db } from "utils/firebase";
 import { currency } from "utils/currency";
 function AssignmentStatusPage() {
+  console.log("AssignmentStatusPage");
   const [modal, setModal] = useState({
     isOpen: false,
     data: {},

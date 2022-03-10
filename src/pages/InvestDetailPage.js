@@ -13,7 +13,7 @@ function InvestDetailPage() {
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
   const { getJoinUserFundList } = useUserFund(); //내가 가입한 펀드정보
-
+  console.log("InvestDetailPage");
   return (
     <MobileLayout>
       <div className="flex flex-col w-full p-4">
