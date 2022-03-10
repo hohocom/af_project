@@ -63,9 +63,12 @@ function UserDetailPage() {
             <p className="min-w-[80px]">휴대전화</p>
             <p className="font-apple-sb">{user.phone}</p>
           </div>
-          <button className="rounded-3xl border border-purple-800 px-2 text-sm pt-0.5 text-purple-800">
+          <Link
+            to="/users/me/re-phone"
+            className="rounded-3xl border border-purple-800 px-2 text-sm pt-0.5 text-purple-800 min-w-[50px] max-h-[30px]"
+          >
             변경
-          </button>
+          </Link>
         </div>
       </div>
     </MobileLayout>

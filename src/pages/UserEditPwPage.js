@@ -1,8 +1,9 @@
 import img02 from "assets/images/user-detail/02.svg";
 import { LoadingType2, withPrivate } from "components/common";
 import { MobileLayout } from "components/layouts";
-import { useForm, useLoading } from "core/hooks";
+import { useLoading } from "core/hooks";
 import { userDetailState } from "core/state";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { auth } from "utils/firebase";
@@ -10,13 +11,15 @@ import { auth } from "utils/firebase";
 function UserEditPwPage() {
   const navigate = useNavigate();
   const user = useRecoilValue(userDetailState);
-  const { form, changeInput, isCompleted } = useForm({
-    password: "",
-    newPassword: "",
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
   const { loading, setLoading } = useLoading();
 
-  const changePassword = async () => {
+  const changePassword = async (form) => {
     setLoading(true);
     await auth
       .signInWithEmailAndPassword(user.id, form.password)
@@ -58,32 +61,62 @@ function UserEditPwPage() {
 
           <form
             className="flex flex-col justify-start w-full p-2 mt-6 mb-4 bg-white rounded-md"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              await changePassword();
-            }}
+            onSubmit={handleSubmit(changePassword)}
           >
-            <input
-              type="password"
-              name="password"
-              onChange={changeInput}
-              value={form.password}
-              className="w-full p-2 border rounded-md"
-              placeholder="기존 비밀번호를 입력해주세요."
-            />
-            <input
-              type="password"
-              name="newPassword"
-              onChange={changeInput}
-              value={form.newPassword}
-              className="w-full p-2 border rounded-md"
-              placeholder="변경할 비밀번호를 입력해주세요."
-            />
-            <button
-              className="p-2 mt-2 text-white bg-blue-500 rounded-md"
-              disabled={!isCompleted}
-            >
-              {isCompleted ? "생성" : "내용을 모두 입력해주세요."}
+            <div className="flex flex-col mt-2">
+              <label>
+                기존 비밀번호
+                <span className="ml-1 text-xs text-red-500">
+                  {errors.password && errors.password.message}
+                </span>
+              </label>
+              <input
+                {...register("password", {
+                  required: "현재 비밀번호는 필수 입력값입니다.",
+                  minLength: {
+                    value: 8,
+                    message:
+                      "비밀번호는 최소 8자, 최대 20자까지 입력가능합니다.",
+                  },
+                  maxLength: {
+                    value: 16,
+                    message:
+                      "비밀번호는 최소 8자, 최대 20자까지 입력가능합니다.",
+                  },
+                })}
+                type="password"
+                placeholder="현재 비밀번호를 입력하세요."
+                className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              />
+            </div>
+            <div className="flex flex-col mt-2">
+              <label>
+                기존 비밀번호
+                <span className="ml-1 text-xs text-red-500">
+                  {errors.newPassword && errors.newPassword.message}
+                </span>
+              </label>
+              <input
+                {...register("newPassword", {
+                  required: "변경할 비밀번호는 필수 입력값입니다.",
+                  minLength: {
+                    value: 8,
+                    message:
+                      "비밀번호는 최소 8자, 최대 20자까지 입력가능합니다.",
+                  },
+                  maxLength: {
+                    value: 16,
+                    message:
+                      "비밀번호는 최소 8자, 최대 20자까지 입력가능합니다.",
+                  },
+                })}
+                type="password"
+                placeholder="변경할 비밀번호를 입력하세요."
+                className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              />
+            </div>
+            <button className="p-2 mt-2 text-white bg-blue-500 rounded-md">
+              변경
             </button>
           </form>
         </div>

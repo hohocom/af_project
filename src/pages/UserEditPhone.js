@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { db } from "utils/firebase";
 
-function UserEditAddress() {
+function UserEditPhone() {
   const navigate = useNavigate();
   const [user, setUser] = useRecoilState(userDetailState);
   const {
@@ -19,18 +19,18 @@ function UserEditAddress() {
 
   const { loading, setLoading } = useLoading();
 
-  const changeAddress = async (form) => {
+  const changePhone = async (form) => {
     setLoading(true);
     await db
       .collection("users")
       .doc(user.id)
       .set({
         ...user,
-        address: form.address,
+        phone: form.phone,
       });
     setUser({
       ...user,
-      address: form.address,
+      phone: form.phone,
     });
     setLoading(false);
     navigate("/users/me");
@@ -53,20 +53,24 @@ function UserEditAddress() {
 
           <form
             className="flex flex-col justify-start w-full p-2 mt-6 mb-4 bg-white rounded-md"
-            onSubmit={handleSubmit(changeAddress)}
+            onSubmit={handleSubmit(changePhone)}
           >
             <div className="flex flex-col mt-2">
               <label>
-                주소
+                휴대전화번호
                 <span className="ml-1 text-xs text-red-500">
-                  {errors.address && errors.address.message}
+                  {errors.phone && errors.phone.message}
                 </span>
               </label>
               <input
-                {...register("address", {
-                  required: "주소는 필수 입력값입니다.",
+                {...register("phone", {
+                  required: "휴대폰번호는 필수 입력값입니다.",
+                  pattern: {
+                    value: /^01([0|1|6|7|8|9])-([0-9]{3,4})-([0-9]{4})$/,
+                    message: "xxx-xxxx-xxxx 형태로 입력해주세요.",
+                  },
                 })}
-                placeholder="변경할 주소를 입력하세요."
+                placeholder="변경할 휴대폰 번호를 입력하세요."
                 className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               />
             </div>
@@ -80,4 +84,4 @@ function UserEditAddress() {
   );
 }
 
-export default withPrivate(UserEditAddress);
+export default withPrivate(UserEditPhone);

@@ -8,6 +8,7 @@ import AssignmentStatusPage from "./AssignmentStatusPage";
 import HoldEventPage from "./HoldEventPage";
 import ConclusionPage from "./ConclusionPage";
 import ProfitOrLossPage from "./ProfitOrLossPage";
+import UserEditPhone from "./UserEditPhone";
 
 export {
   LoadingPage,
@@ -20,4 +21,5 @@ export {
   HoldEventPage,
   ConclusionPage,
   ProfitOrLossPage,
+  UserEditPhone,
 };
