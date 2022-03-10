@@ -94,6 +94,47 @@ function EventForm({ event }) {
         </div>
       </div>
 
+      {/**
+       * 2022-03-10
+       * 수정사항 : 의무보유기간, 배정날짜 컬럼 추가
+       */}
+      <div className="flex flex-col mt-2">
+        <label>
+          의무보유기간
+          <span className="ml-1 text-xs text-red-500">
+            {errors.mandatoryDate && errors.mandatoryDate.message}
+          </span>
+        </label>
+        <div className="flex justify-between w-full">
+          <input
+            {...register("mandatoryDate", {
+              required: "의무보유기간은 필수 입력값입니다.",
+            })}
+            defaultValue={event ? event.mandatoryDate : null}
+            type="date"
+            className="flex-1 w-2/5 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+        </div>
+      </div>
+      <div className="flex flex-col mt-2">
+        <label>
+          배정날짜
+          <span className="ml-1 text-xs text-red-500">
+            {errors.assignmentDate && errors.assignmentDate.message}
+          </span>
+        </label>
+        <div className="flex justify-between w-full">
+          <input
+            {...register("assignmentDate", {
+              required: "배정날짜는 필수 입력값입니다.",
+            })}
+            defaultValue={event ? event.assignmentDate : null}
+            type="date"
+            className="flex-1 w-2/5 px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          />
+        </div>
+      </div>
+
       <div className="flex flex-col mt-2">
         <label>
           청약수수료(원)

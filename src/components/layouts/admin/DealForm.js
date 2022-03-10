@@ -32,6 +32,7 @@ function DealForm({ deal, funds, events }) {
 
   // * 매수, 매도 토글 이벤트
   useEffect(() => {
+    console.debug(event);
     if (form.type === "buy") {
       setIsCompletedIgnoreList(["totalQuantity", "salePrice"]);
     } else if (form.type === "sell") {
@@ -41,9 +42,18 @@ function DealForm({ deal, funds, events }) {
 
   // ? 매도할 때 총거래잔량, 최근 거래날짜를 가져오기
   useEffect(async () => {
-    console.debug(fund);
-    console.debug(event);
     if (form.type === "sell" && fund && event) {
+      /**
+       * ! 2022-03-10
+       * ! 수정사항 : 의무보유기간이 지나지 않을 시 매도 못하게하기
+       */
+      if (new Date() < new Date(event.mandatoryDate)) {
+        window.alert(
+          "종목의 의무보유기간이 지나지 않았습니다.\n의무보유기간이 지나야 매도가 가능합니다."
+        );
+        return close();
+      }
+
       const dealDoc = await getLatestDealBy({
         fundId: fund.id,
         eventId: event.id,

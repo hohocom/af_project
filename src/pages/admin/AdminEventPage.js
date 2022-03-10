@@ -55,6 +55,8 @@ function AdminEventPage() {
             "확정공모가액",
             "청약기간",
             "청약수수료",
+            "의무보유기간",
+            "배정날짜",
             "납입일",
             "수정",
             "삭제",
@@ -91,6 +93,12 @@ function AdminEventPage() {
                   {event.subscribeFee
                     ? currency(event.subscribeFee) + "원"
                     : ""}
+                </td>
+                <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+                  {event.mandatoryDate}
+                </td>
+                <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+                  {event.assignmentDate}
                 </td>
                 <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
                   {event.paymentDate}
