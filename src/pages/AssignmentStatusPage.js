@@ -14,9 +14,7 @@ function AssignmentStatusPage() {
     isOpen: false,
     data: {},
   });
-  useEffect(() => {
-    console.log(modal);
-  }, [modal]);
+
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
@@ -25,10 +23,7 @@ function AssignmentStatusPage() {
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
     getFilterJoinDealList();
-  }, []);
-  useEffect(() => {
-    console.log(joinDealEventFund);
-  }, [joinDealEventFund]);
+  }, [eventList]);
 
   /**
    * @필터링된_JoinDealList
@@ -57,7 +52,6 @@ function AssignmentStatusPage() {
     doJoinDealEventFund({ eventList, fundList: filterFundList });
   };
   const getDealEventFund = () => {
-    console.log(joinDealEventFund);
     const fundList = [];
     for (let fund in joinDealEventFund) {
       fundList.push(

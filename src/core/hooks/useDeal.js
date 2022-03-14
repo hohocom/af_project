@@ -92,7 +92,6 @@ function useDeal() {
 
       dealList.map(async (deal, index) => {
         eventList.map(async (event) => {
-          console.log(event);
           fundList.forEach((fund) => {
             if (deal.eventId === event.id && deal.fundId === fund.id) {
               let data = {
@@ -134,9 +133,6 @@ function useDeal() {
     }
   };
 
-  useEffect(() => {
-    console.log(joinDealEventFund);
-  }, [joinDealEventFund]);
   const getLatestDealBy = async ({ fundId, eventId }) => {
     const dealDocs = await db
       .collection("deals")

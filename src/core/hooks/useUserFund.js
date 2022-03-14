@@ -28,7 +28,6 @@ export function useUserFundStream() {
             ...uf.data(),
           };
         });
-        console.log(newUfs);
         setUserFundList(newUfs);
         setUserFundListInit(true);
       });

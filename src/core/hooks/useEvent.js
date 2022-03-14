@@ -22,7 +22,6 @@ export function useEventStream() {
           };
         })
       );
-      console.log(docs);
       setEventList(docs);
       setEventListInit(true);
     });

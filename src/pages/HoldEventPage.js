@@ -122,7 +122,7 @@ function HoldEventPage() {
               <tbody className="font-apple-sb">
                 {joinDealRemainderList[fund].map((deal) => {
                   var deal = deal.deal;
-                  console.log(deal);
+
                   return (
                     <tr
                       key={deal.id}
