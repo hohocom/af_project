@@ -25,7 +25,7 @@ function InvestDetail({ fund, user }) {
       .where("fundId", "==", fund.fundId)
       .orderBy("dealDate", "desc")
       .get();
-    console.log(fund.incentive / 100);
+
     let sumFundProfit = 0;
     let sumTransactionFee = 0;
     let sumAfterFundProfit = 0;
@@ -34,8 +34,6 @@ function InvestDetail({ fund, user }) {
 
     dealRef.docs.forEach((deal) => {
       if (new Date(fund.joinDate) < new Date(deal.data().dealDate)) {
-        console.log(new Date(fund.joinDate));
-        console.log(new Date(deal.data().dealDate));
         if (date === deal.data().dealDate.substring(0, 7)) {
           //달별 총 수익 구하기 (실현손익기준)
           allSumFundProfit[allSumFundProfit.length - 1].sumFundProfit +=
@@ -241,10 +239,10 @@ function InvestDetail({ fund, user }) {
               </div>
 
               <div className="flex">
-                <p className="w-1/3 mr-4 text-right text-red-500">
+                {/* <p className="w-1/3 mr-4 text-right text-red-500">
                   당월실현손익
-                </p>
-                <p className="w-2/3 text-left font-apple-sb">x원</p>
+                </p> */}
+                {/* <p className="w-2/3 text-left font-apple-sb">x원</p> */}
               </div>
               <div className="flex">
                 <p className="w-1/3 mr-4 text-right">수익률</p>

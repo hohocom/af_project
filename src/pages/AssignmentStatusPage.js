@@ -75,7 +75,10 @@ function AssignmentStatusPage() {
               </thead>
               <tbody className="font-apple-sb">
                 {joinDealEventFund[fund].map((deal) => {
-                  if (deal.type === "buy")
+                  if (
+                    deal.type === "buy" &&
+                    new Date() < new Date(deal.assignmentDate)
+                  )
                     return (
                       <tr
                         key={deal.id}

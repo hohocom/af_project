@@ -9,6 +9,7 @@ import {
   loadingState,
 } from "core/state";
 import { joinDealEventFundState } from "core/state/deal";
+import axios from "axios";
 
 export function useDealStream() {
   const setDealList = useSetRecoilState(dealListState);
@@ -83,17 +84,21 @@ function useDeal() {
       setJoinDealList(joinDealList);
     }
   };
+
   //deal 과 event 와 (내가가입한) fund join!!!!
-  const doJoinDealEventFund = ({ fundList, eventList }) => {
+  const doJoinDealEventFund = async ({ fundList, eventList }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealEventFund = {};
-      dealList.forEach((deal, index) => {
-        eventList.forEach((event) => {
+
+      dealList.map(async (deal, index) => {
+        eventList.map(async (event) => {
+          console.log(event);
           fundList.forEach((fund) => {
             if (deal.eventId === event.id && deal.fundId === fund.id) {
               let data = {
                 id: deal.id,
                 fundName: fund.fundName,
+                fundId: fund.fundId,
                 bankName: fund.bankName,
                 bankNumber: fund.bankNumber,
                 eventId: event.id,
@@ -113,6 +118,7 @@ function useDeal() {
                 subscribeFee: event.subscribeFee,
                 assignmentDate: event.assignmentDate,
                 mandatoryDate: event.mandatoryDate,
+                closingPrice: event.closingPrice,
               };
               if (fund.fundName in joinDealEventFund) {
                 joinDealEventFund[fund.fundName].push(data);
@@ -124,11 +130,13 @@ function useDeal() {
           });
         });
       });
-
-      console.log(joinDealEventFund);
       setJoinDealEventFund(joinDealEventFund);
     }
   };
+
+  useEffect(() => {
+    console.log(joinDealEventFund);
+  }, [joinDealEventFund]);
   const getLatestDealBy = async ({ fundId, eventId }) => {
     const dealDocs = await db
       .collection("deals")

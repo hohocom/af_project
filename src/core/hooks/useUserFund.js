@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import axios from "axios";
 import { useEffect } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
@@ -27,9 +28,11 @@ export function useUserFundStream() {
             ...uf.data(),
           };
         });
+        console.log(newUfs);
         setUserFundList(newUfs);
         setUserFundListInit(true);
       });
+
     return () => {
       console.debug("%c[회원별펀드 실시간 감지 종료..]", "color:red");
       unsub();
@@ -66,9 +69,10 @@ function useUserFund() {
         });
       });
     }
-    // console.debug(joinUserFundList);
+
     return joinUserFundList;
   };
+  // 주식 종가 얻어오기
 
   const store = async ({ form }) => {
     console.debug(form);

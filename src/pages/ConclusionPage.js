@@ -9,12 +9,13 @@ import { fundListState } from "core/state";
 import { useDeal } from "core/hooks";
 import { db } from "utils/firebase";
 import { currency } from "utils/currency";
+import axios from "axios";
 
 function ConclusionPage() {
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
-  const { joinDealList, doJoinDealList } = useDeal();
+  const { joinDealEventFund, doJoinDealEventFund } = useDeal();
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
   const d = new Date();
@@ -27,7 +28,7 @@ function ConclusionPage() {
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
     getFilterJoinDealList();
-  }, []);
+  }, [eventList]);
 
   /**
    * @필터링된_JoinDealList
@@ -53,16 +54,26 @@ function ConclusionPage() {
       });
     });
 
-    doJoinDealList({ eventList, fundList: filterFundList });
+    doJoinDealEventFund({ eventList, fundList: filterFundList });
   };
 
   // 기간조회
+  const getDealList = () => {
+    let result = [];
+    for (let fund in joinDealEventFund) {
+      joinDealEventFund[fund].map((deal) => {
+        result.push(deal);
+      });
+    }
+    return result;
+  };
   const getDateFilterList = () => {
     let result = [];
+    let dealList = getDealList();
     if (startDate == null && endDate == null) {
-      return joinDealList;
+      return dealList;
     }
-    joinDealList.forEach((deal) => {
+    dealList.forEach((deal) => {
       if (
         new Date(deal.dealDate) >= new Date(startDate) &&
         new Date(deal.dealDate) <= new Date(endDate)
@@ -170,45 +181,53 @@ function ConclusionPage() {
             </thead>
             <tbody className="font-apple-sb">
               {getDateFilterList().map((deal) => {
-                return (
-                  <tr className="border-t" key={deal.id}>
-                    <td className="border-r">
-                      <div className="p-1">
-                        <p>{deal.dealDate}</p>
-                        <p>
-                          {deal.fundName}/{deal.eventName}
-                        </p>
-                      </div>
-                    </td>
+                // eslint-disable-next-line no-lone-blocks
+                {
+                  if (new Date(deal.assignmentDate) <= new Date()) {
+                    return (
+                      <tr className="border-t" key={deal.id}>
+                        <td className="border-r">
+                          <div className="p-1">
+                            {/* 매수,매도 날짜 */}
+                            <p>{deal.dealDate}</p>
 
-                    <td className="border-r">
-                      {deal.type === "buy" && (
-                        <div className="flex flex-col items-end p-1">
-                          <p>{currency(deal.buyPrice)}원</p>
-                          <nobr>{deal.quantity}주</nobr>
-                        </div>
-                      )}
-                    </td>
-                    <td className="border-r">
-                      {deal.type === "sell" && (
-                        <div className="flex flex-col items-end p-1">
-                          <p>{currency(deal.salePrice)}원</p>
-                          <nobr>{deal.quantity}주</nobr>
-                        </div>
-                      )}
-                    </td>
-                    <td>
-                      <div className="flex flex-col items-end p-1">
-                        {deal.type === "sell" ? (
-                          <p>{currency(deal.salePrice * deal.quantity)}원</p>
-                        ) : (
-                          <p>{currency(deal.buyPrice * deal.quantity)}원</p>
-                        )}
-                        <br />
-                      </div>
-                    </td>
-                  </tr>
-                );
+                            <p>
+                              {deal.fundName}/{deal.eventName}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="border-r">
+                          {deal.type === "buy" && (
+                            <div className="flex flex-col items-end p-1">
+                              <p>{currency(deal.buyPrice)}원</p>
+                              <nobr>{deal.quantity}주</nobr>
+                            </div>
+                          )}
+                        </td>
+                        <td className="border-r">
+                          {deal.type === "sell" && (
+                            <div className="flex flex-col items-end p-1">
+                              <p>{currency(deal.salePrice)}원</p>
+                              <nobr>{deal.quantity}주</nobr>
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <div className="flex flex-col items-end p-1">
+                            {deal.type === "sell" ? (
+                              <p>
+                                {currency(deal.salePrice * deal.quantity)}원
+                              </p>
+                            ) : (
+                              <p>{currency(deal.buyPrice * deal.quantity)}원</p>
+                            )}
+                            <br />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                }
               })}
             </tbody>
           </table>

@@ -16,13 +16,13 @@ function HoldEventPage() {
   const user = useRecoilValue(userDetailState);
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
-  const { joinDealList, doJoinDealList } = useDeal();
+  const { joinDealEventFund, doJoinDealEventFund } = useDeal();
   const [joinDealRemainderList, setjoinDealRemainderList] = useState([]);
-  
+
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
-  useEffect(() => {
+  useEffect(async () => {
     getFilterJoinDealList();
-  }, []);
+  }, [eventList]);
 
   /**
    * @필터링된_JoinDealList
@@ -48,46 +48,51 @@ function HoldEventPage() {
       });
     });
 
-    doJoinDealList({ eventList, fundList: filterFundList });
+    doJoinDealEventFund({ eventList, fundList: filterFundList });
   };
-  const getHoldDealList = () => {
-    let temp = [];
 
-    joinDealList.forEach((deal) => {
-      let vaild = false;
-      if (temp.length === 0) {
-        temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
-      } else {
-        for (let i = 0; i < temp.length; i++) {
-          if (
-            temp[i].eventId === deal.eventId &&
-            temp[i].fundId === deal.fundId
-          ) {
-            vaild = true;
+  const getHoldDealList = () => {
+    let fundHoldList = {};
+    for (let fund in joinDealEventFund) {
+      let temp = [];
+      joinDealEventFund[fund].map((deal) => {
+        let vaild = false;
+        if (temp.length === 0) {
+          temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
+        } else {
+          for (let i = 0; i < temp.length; i++) {
+            if (
+              temp[i].eventId === deal.eventId &&
+              temp[i].fundId === deal.fundId
+            ) {
+              vaild = true;
+            }
+          }
+          if (!vaild) {
+            temp.push({
+              eventId: deal.eventId,
+              fundId: deal.fundId,
+              deal: deal,
+            });
           }
         }
-        if (!vaild) {
-          temp.push({ eventId: deal.eventId, fundId: deal.fundId, deal: deal });
-        }
-      }
-    });
-    let result = [];
+      });
+      fundHoldList[fund] = temp;
+    }
 
-    temp.forEach((e) => {
-      result.push(e.deal);
-    });
-    setjoinDealRemainderList(result);
-    console.log(joinDealList);
+    setjoinDealRemainderList(fundHoldList);
   };
   useEffect(() => {
     getHoldDealList();
-  }, [joinDealList]);
+  }, [joinDealEventFund]);
 
-  return (
-    <MobileLayout>
-      <div className="relative flex flex-col w-full p-4">
+  const getDealEventFund = () => {
+    const fundList = [];
+    for (let fund in joinDealRemainderList) {
+      fundList.push(
         <Card
-          title="공모주펀딩"
+          key={fund}
+          title={fund}
           body={
             <table className="w-full text-xs table-fixed">
               <thead>
@@ -95,14 +100,29 @@ function HoldEventPage() {
                   <th className="p-2 border-r">
                     날짜
                     <br />
-                    펀드명/종목명
+                    종목명
                   </th>
-                  <th className="p-2 border-r">매수가/남은수량</th>
-                  <th>금액/비고</th>
+                  <th className="p-2 border-r">
+                    매수가
+                    <br />
+                    전일종가
+                  </th>
+                  <th className="p-2 border-r">
+                    수량
+                    <br />
+                    확약기간
+                  </th>
+                  <th className="p-2">
+                    매수금액
+                    <br />
+                    평가금액
+                  </th>
                 </tr>
               </thead>
               <tbody className="font-apple-sb">
-                {joinDealRemainderList.map((deal) => {
+                {joinDealRemainderList[fund].map((deal) => {
+                  var deal = deal.deal;
+                  console.log(deal);
                   return (
                     <tr
                       key={deal.id}
@@ -113,24 +133,27 @@ function HoldEventPage() {
                     >
                       <td className="border-r">
                         <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                          <p>{deal.dealDate}</p>
-                          <nobr>
-                            {deal.fundName}/{deal.eventName}
-                          </nobr>
+                          <p>{deal.assignmentDate ?? "-"}</p>
+                          <nobr>{deal.eventName}</nobr>
                         </div>
                       </td>
                       <td className="border-r">
                         <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                          <p>{currency(deal.salePrice)}원</p>
-                          <nobr>{deal.totalQuantity}주</nobr>
+                          <p>{currency(deal.fixedAmount)}원</p>
+                          <p>{currency(Number(deal.closingPrice))}원</p>
                         </div>
                       </td>
-                      <td>
+                      <td className="border-r">
                         <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
-                          <p>
-                            {currency(deal.salePrice * deal.totalQuantity)}원
-                          </p>
-                          <br />
+                          <p>{deal.quantity}주</p>
+                          <p>{deal.mandatoryDate}</p>
+                          {/* <p>{currency(deal.fixedAmount * deal.quantity)}원</p> */}
+                        </div>
+                      </td>
+                      <td className="">
+                        <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+                          <p>{currency(deal.fixedAmount * deal.quantity)}원</p>
+                          <p>{currency(deal.closingPrice * deal.quantity)}원</p>
                         </div>
                       </td>
                     </tr>
@@ -140,6 +163,15 @@ function HoldEventPage() {
             </table>
           }
         />
+      );
+    }
+
+    return fundList;
+  };
+  return (
+    <MobileLayout>
+      <div className="relative flex flex-col w-full p-4">
+        {getDealEventFund()}
       </div>
       {modal.isOpen && (
         <div className="absolute top-0 left-0 z-20 flex items-center justify-center w-full h-full p-4 bg-black/80">
@@ -161,8 +193,8 @@ function HoldEventPage() {
                   <p>총 납입금액</p>
                 </div>
                 <div className="flex flex-col items-start w-8/12 p-4">
-                  <p>x</p>
-                  <p>x</p>
+                  <p>{modal.data.bankName ?? "없음"}</p>
+                  <p>{modal.data.bankNumber ?? "없음"}</p>
                   <p>{modal.data.eventName}</p>
                   <p>{currency(modal.data.fixedAmount)}원</p>
                   <p>
@@ -173,7 +205,7 @@ function HoldEventPage() {
                   <p>
                     {modal.data.paymentDate ? modal.data.paymentDate : "없음"}
                   </p>
-                  <p>x</p>
+                  <p>{modal.data.mandatoryDate ?? "없음"}</p>
                   <p>{currency(modal.data.totalQuantity)}주</p>
                   <p>
                     {currency(
@@ -181,8 +213,14 @@ function HoldEventPage() {
                     )}
                     원
                   </p>
-                  <p>x</p>
-                  <p>청약수수료 + 배정금액</p>
+                  <p>{currency(modal.data.subscribeFee) ?? "없음"}원</p>
+                  <p>
+                    {currency(
+                      Number(modal.data.subscribeFee) +
+                        modal.data.totalQuantity * modal.data.fixedAmount
+                    )}
+                    원
+                  </p>
                 </div>
               </div>
             }

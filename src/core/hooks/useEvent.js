@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import axios from "axios";
 import { eventListInitState, eventListState, loadingState } from "core/state";
 import { useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
+import { getClosingPrice } from "utils/closingPrice";
 import { db } from "utils/firebase";
 
 export function useEventStream() {
@@ -9,13 +11,18 @@ export function useEventStream() {
   const setEventListInit = useSetRecoilState(eventListInitState);
   useEffect(() => {
     console.debug("%c[종목 실시간 감지..]", "color:red");
-    const unsub = db.collection("events").onSnapshot((snapshot) => {
-      const docs = snapshot.docs.map((fund) => {
-        return {
-          id: fund.id,
-          ...fund.data(),
-        };
-      });
+    const unsub = db.collection("events").onSnapshot(async (snapshot) => {
+      const docs = await Promise.all(
+        snapshot.docs.map(async (fund) => {
+          let closingPrice = await getClosingPrice(fund.data().eventName);
+          return {
+            id: fund.id,
+            ...fund.data(),
+            closingPrice: closingPrice,
+          };
+        })
+      );
+      console.log(docs);
       setEventList(docs);
       setEventListInit(true);
     });

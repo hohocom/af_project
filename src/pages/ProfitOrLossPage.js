@@ -27,7 +27,7 @@ function ProfitOrLossPage() {
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
     getFilterJoinDealList();
-  }, []);
+  }, [eventList]);
 
   /**
    * @필터링된_JoinDealList

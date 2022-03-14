@@ -28,6 +28,7 @@ import { Loading } from "components/common";
 import {
   useDealStream,
   useEventStream,
+  useFund,
   useFundStream,
   useSignObserver,
   useUserFundStream,
@@ -35,6 +36,7 @@ import {
 } from "core/hooks";
 import { useRecoilValue } from "recoil";
 import { managerDetailState, userDetailState } from "core/state";
+import { useClosingPriceStream } from "core/hooks/useUserFund";
 
 function App() {
   useUserStream();
