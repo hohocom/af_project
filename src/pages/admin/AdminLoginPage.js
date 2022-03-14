@@ -11,7 +11,12 @@ function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
 
   const login = async () => {
-    await auth.signInWithEmailAndPassword(form.email, form.password);
+    await auth
+      .signInWithEmailAndPassword(form.email, form.password)
+      .catch(() => {
+        window.alert("이메일 또는 패스워드 오류입니다.");
+        return;
+      });
   };
 
   return (
