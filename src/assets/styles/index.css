@@ -701,6 +701,9 @@ video {
 .mb-2 {
 	margin-bottom: 0.5rem;
 }
+.mr-1 {
+	margin-right: 0.25rem;
+}
 .mt-10 {
 	margin-top: 2.5rem;
 }
@@ -745,6 +748,9 @@ video {
 }
 .max-h-\[30px\] {
 	max-height: 30px;
+}
+.max-h-\[800px\] {
+	max-height: 800px;
 }
 .w-full {
 	width: 100%;
@@ -919,6 +925,9 @@ video {
 }
 .overflow-y-auto {
 	overflow-y: auto;
+}
+.overflow-y-scroll {
+	overflow-y: scroll;
 }
 .overscroll-x-auto {
 	overscroll-behavior-x: auto;
@@ -1415,6 +1424,10 @@ video {
 .hover\:text-red-400:hover {
 	--tw-text-opacity: 1;
 	color: rgba(248, 113, 113, var(--tw-text-opacity));
+}
+.hover\:text-white:hover {
+	--tw-text-opacity: 1;
+	color: rgba(255, 255, 255, var(--tw-text-opacity));
 }
 .hover\:text-gray-800:hover {
 	--tw-text-opacity: 1;

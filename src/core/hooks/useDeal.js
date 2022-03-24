@@ -86,49 +86,60 @@ function useDeal() {
   };
 
   //deal 과 event 와 (내가가입한) fund join!!!!
-  const doJoinDealEventFund = async ({ fundList, eventList }) => {
+  const doJoinDealEventFund = async ({ fundList, eventList, userFund }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealEventFund = {};
+      console.log(userFund);
 
       dealList.map(async (deal, index) => {
         eventList.map(async (event) => {
           fundList.forEach((fund) => {
-            if (deal.eventId === event.id && deal.fundId === fund.id) {
-              let data = {
-                id: deal.id,
-                fundName: fund.fundName,
-                fundId: fund.fundId,
-                bankName: fund.bankName,
-                bankNumber: fund.bankNumber,
-                eventId: event.id,
-                eventName: event.eventName,
-                fixedAmount: event.fixedAmount,
-                buyPrice: deal.buyPrice,
-                salePrice: deal.salePrice,
-                quantity: deal.quantity,
-                totalQuantity: deal.totalQuantity,
-                dealDate: deal.dealDate,
-                type: deal.type,
-                fundProfit: deal.fundProfit,
-                transactionFee: deal.transactionFee,
-                afterFundProfit: deal.afterFundProfit,
-                subscribePeriod: `${event.startSubscribePeriod}~${event.endSubscribePeriod}`,
-                paymentDate: event.paymentDate,
-                subscribeFee: event.subscribeFee,
-                assignmentDate: event.assignmentDate,
-                mandatoryDate: event.mandatoryDate,
-                closingPrice: event.closingPrice,
-              };
-              if (fund.fundName in joinDealEventFund) {
-                joinDealEventFund[fund.fundName].push(data);
-              } else {
-                joinDealEventFund[fund.fundName] = [];
-                joinDealEventFund[fund.fundName].push(data);
+            userFund.forEach((userfund) => {
+              if (
+                deal.eventId === event.id &&
+                deal.fundId === fund.id &&
+                userfund.fundId === fund.id
+              ) {
+                console.log(userfund);
+                let data = {
+                  id: deal.id,
+                  fundName: fund.fundName,
+                  fundId: fund.fundId,
+                  bankName: fund.bankName,
+                  bankNumber: fund.bankNumber,
+                  eventId: event.id,
+                  eventName: event.eventName,
+                  fixedAmount: event.fixedAmount,
+                  buyPrice: deal.buyPrice,
+                  salePrice: deal.salePrice,
+                  quantity: deal.quantity,
+                  totalQuantity: deal.totalQuantity,
+                  dealDate: deal.dealDate,
+                  type: deal.type,
+                  fundProfit: deal.fundProfit,
+                  transactionFee: deal.transactionFee,
+                  afterFundProfit: deal.afterFundProfit,
+                  subscribePeriod: `${event.startSubscribePeriod}~${event.endSubscribePeriod}`,
+                  paymentDate: event.paymentDate,
+                  subscribeFee: event.subscribeFee,
+                  assignmentDate: event.assignmentDate,
+                  mandatoryDate: event.mandatoryDate,
+                  closingPrice: event.closingPrice,
+                  shareRatio:
+                    Number(userfund.joinPrice) / Number(fund.fundTotalCost),
+                };
+                if (fund.fundName in joinDealEventFund) {
+                  joinDealEventFund[fund.fundName].push(data);
+                } else {
+                  joinDealEventFund[fund.fundName] = [];
+                  joinDealEventFund[fund.fundName].push(data);
+                }
               }
-            }
+            });
           });
         });
       });
+      console.log(joinDealEventFund);
       setJoinDealEventFund(joinDealEventFund);
     }
   };

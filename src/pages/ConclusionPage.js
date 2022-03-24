@@ -40,7 +40,7 @@ function ConclusionPage() {
    */
   const getFilterJoinDealList = async () => {
     const filterFundList = [];
-
+    const filterUserFundList = [];
     const userFundRef = await db
       .collection("userFunds")
       .where("userId", "==", user.id)
@@ -50,11 +50,16 @@ function ConclusionPage() {
       fundList.forEach((fund, index) => {
         if (userFund.data().fundId === fund.id) {
           filterFundList.push(fund);
+          filterUserFundList.push(userFund.data());
         }
       });
     });
 
-    doJoinDealEventFund({ eventList, fundList: filterFundList });
+    doJoinDealEventFund({
+      eventList,
+      fundList: filterFundList,
+      userFund: filterUserFundList,
+    });
   };
 
   const getDealList = () => {

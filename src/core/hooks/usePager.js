@@ -24,6 +24,7 @@ function usePager({ pageLimit = 10 }) {
         result.push(item);
       }
     }
+
     return result;
   };
 

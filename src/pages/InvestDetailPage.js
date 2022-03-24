@@ -11,12 +11,12 @@ import { useUserFund } from "core/hooks";
 
 function InvestDetailPage() {
   const user = useRecoilValue(userDetailState);
-  const fundList = useRecoilValue(fundListState);
   const { getJoinUserFundList } = useUserFund(); //내가 가입한 펀드정보
+
   return (
     <MobileLayout>
       <div className="flex flex-col w-full p-4">
-        {getJoinUserFundList({ fundList }).map((userFund, index) => {
+        {getJoinUserFundList().map((userFund, index) => {
           if (userFund.userId === user.id)
             return (
               <Card

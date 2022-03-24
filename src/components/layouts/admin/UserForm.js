@@ -1,10 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useModal, useUser } from "core/hooks";
+import { useFund, useModal, useUser, useUserFund } from "core/hooks";
 import { useForm } from "react-hook-form";
+import { useState, useRef } from "react";
 
 function UserForm({ user }) {
+  const [isChecked, setIsChecked] = useState(false); //체크 여부
+  const [checkedItems, setCheckedItems] = useState({}); //체크된 요소들
   const { close } = useModal();
   const { store, edit } = useUser();
+  const { fundList } = useFund();
+  const { fundStore } = useUserFund();
+
+  const checkHandler = ({ target }) => {
+    setIsChecked(!isChecked);
+    checkedItemHandler(target.value, target.checked);
+  };
+
+  const checkedItemHandler = (id, isChecked) => {
+    if (isChecked) {
+      //체크 되었을때
+      checkedItems.add(id);
+      setCheckedItems(checkedItems); //체크 요소 넣어주기
+    } else if (!isChecked && checkedItems.has(id)) {
+      //체크가 안되었고, id가 있을때(클릭 2번시)
+      checkedItems.delete(id); //체크 두번시 삭제
+      setCheckedItems(checkedItems);
+    }
+    return checkedItems;
+  };
 
   const {
     register,
@@ -22,10 +45,33 @@ function UserForm({ user }) {
   const onError = (error) => console.log(error);
 
   return (
-    <form className="min-w-[350px]" onSubmit={handleSubmit(onSubmit, onError)}>
+    <form
+      className="min-w-[350px] max-h-[800px] overflow-hidden overflow-y-scroll"
+      onSubmit={handleSubmit(onSubmit, onError)}
+    >
       <h2 className="text-xl font-noto-regular">
         회원 {user ? "수정" : "생성"}
       </h2>
+      <div className="flex flex-col mt-2">
+        <label>
+          관리자코드
+          <span className="ml-1 text-xs text-red-500">
+            {errors.name && errors.name.message}
+          </span>
+        </label>
+        <input
+          {...register("code", {
+            required: "관리자은 필수 입력값입니다.",
+            pattern: {
+              // value: /{2,4}/,
+              message: "한글 이름 2~4자 이내만 허용합니다.",
+            },
+          })}
+          defaultValue={user ? user.code : null}
+          placeholder="관리자 코드 입력"
+          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        />
+      </div>
       <div className="flex flex-col mt-2">
         <label>
           email(회원 ID)
@@ -162,6 +208,49 @@ function UserForm({ user }) {
         />
       </div>
 
+      <div className="flex flex-col mt-2">
+        <label>
+          가입일자
+          <span className="ml-1 text-xs text-red-500">
+            {errors.birthday && errors.birthday.message}
+          </span>
+        </label>
+        <input
+          {...register("createDate", {
+            required: "가입일자는 필수 입력값입니다.",
+            pattern: {
+              value:
+                /^(19[0-9][0-9]|20\d{2})(0[0-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])$/,
+              message: "8자리의 형태로 특수문자 없이 입력해주세요.",
+            },
+          })}
+          defaultValue={user ? user.createDate : null}
+          placeholder="가입일자(8자리) 입력"
+          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+        />
+      </div>
+      <div className="flex flex-col mt-2">
+        <label>
+          펀드가입
+          {fundList.map((fund, index) => {
+            return (
+              <div key={fund.id} value={fund.id} className="p-2">
+                <input
+                  type="checkbox"
+                  value={fund.id}
+                  onChange={(e) => checkHandler(e)}
+                />
+                {fund.fundName}
+                <input
+                  className="border"
+                  type="text"
+                  onChange={(e) => checkHandler(e)}
+                />
+              </div>
+            );
+          })}
+        </label>
+      </div>
       <button className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2">
         {!user ? "생성" : "수정"}
       </button>

@@ -6,7 +6,7 @@ function useSearch({ list = [] }) {
 
   useEffect(() => {
     setSearchList(list);
-  }, [list]);
+  }, []);
 
   // 검색 버튼 클릭 이벤트
   const searchEvent = ({ list, key, callback }) => {

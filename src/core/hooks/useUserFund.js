@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
+import { fundListState, userDetailState } from "core/state";
 import { useEffect } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
+import useUser from "./useUser";
 
 export const userFundListState = atom({
   key: "userFundListState",
@@ -40,9 +42,118 @@ export function useUserFundStream() {
 }
 
 function useUserFund() {
-  const userFundList = useRecoilValue(userFundListState);
+  const { userList } = useUser();
+  const userFundList = useRecoilValue(userFundListState); //user 가입한 fundList
+  const fundList = useRecoilValue(fundListState); // 전체 fundList
 
-  const getJoinUserFundList = ({ fundList }) => {
+  //joinform -> innerJoin 일때 innerJoin
+  //joinform -> leftOuterJoin 일때 leftOuterJoin
+
+  //user과 userfunds join
+  const getUserJoinUserFundList = ({ joinForm = "innerJoin" }) => {
+    const joinUserFundList = [];
+    let isjoin = false;
+    if (fundList.length > 0) {
+      userList.forEach((user) => {
+        isjoin = false;
+        userFundList.forEach((userFund) => {
+          if (userFund.userId === user.email) {
+            isjoin = true;
+            joinUserFundList.push({
+              id: userFund.id,
+              userName: user.name,
+              userId: user.id,
+              fundId: userFund.fundId,
+              joinDate: userFund.joinDate,
+              joinPrice: userFund.joinPrice,
+            });
+          }
+        });
+        if (isjoin === false && joinForm === "leftOuterJoin") {
+          joinUserFundList.push({
+            id: "",
+            userName: user.name,
+            userId: user.id,
+            fundId: "",
+            joinDate: "",
+            joinPrice: "",
+          });
+        }
+      });
+    }
+
+    return joinUserFundList;
+  };
+
+  //user과 userfunds 와 funds join
+  const getUserJoinUserFundJoinFundList = ({ joinForm = "innerJoin" }) => {
+    const joinUserFundList = [];
+    let isjoin = false;
+    if (fundList.length > 0) {
+      userList.forEach((user) => {
+        isjoin = false;
+        userFundList.forEach((userFund) => {
+          fundList.forEach((fund) => {
+            if (userFund.fundId === fund.id) {
+              if (userFund.userId === user.email) {
+                isjoin = true;
+                joinUserFundList.push({
+                  id: userFund.id,
+                  userName: user.name,
+                  userId: user.id,
+                  address: user.address,
+                  birthday: user.birthday,
+                  phone: user.phone,
+                  bankName: user.bankName,
+                  bankNumber: user.bankNumber,
+                  fundId: userFund.fundId,
+                  fundName: fund.fundName,
+                  incentive: fund.incentive,
+                  joinDate: userFund.joinDate,
+                  fundTotalCost: fund.fundTotalCost,
+                  joinPrice: userFund.joinPrice,
+                  fundDefaultFee: fund.defaultFee,
+                  shareRatio:
+                    Number(userFund.joinPrice) / Number(fund.fundTotalCost),
+                  joinPeriod: `${fund.startJoinPeriod}~${fund.endJoinPeriod}`,
+                  target: fund.target,
+                  // totalFundProfit :
+                });
+              }
+            }
+          });
+        });
+        if (isjoin === false && joinForm === "leftOuterJoin") {
+          joinUserFundList.push({
+            id: "",
+            userName: user.name,
+            userId: user.id,
+            birthday: user.birthday,
+            address: user.address,
+            phone: user.phone,
+            bankName: user.bankName,
+            bankNumber: user.bankNumber,
+            fundId: "",
+            fundName: "",
+            incentive: "",
+            joinDate: "",
+            fundTotalCost: "",
+            joinPrice: "",
+            fundDefaultFee: "",
+            shareRatio: "",
+            joinPeriod: "",
+            target: "",
+            // totalFundProfit :
+          });
+        }
+      });
+    }
+
+    return joinUserFundList;
+  };
+
+  // userfunds 와 funds join
+  const getJoinUserFundList = () => {
     const joinUserFundList = [];
     if (fundList.length > 0) {
       userFundList.forEach((userFund) => {
@@ -71,7 +182,6 @@ function useUserFund() {
 
     return joinUserFundList;
   };
-  // 주식 종가 얻어오기
 
   const store = async ({ form }) => {
     console.debug(form);
@@ -99,11 +209,13 @@ function useUserFund() {
   };
 
   return {
-    getJoinUserFundList,
+    getUserJoinUserFundJoinFundList,
     userFundList,
     store,
     edit,
     destroy,
+    getUserJoinUserFundList,
+    getJoinUserFundList,
   };
 }
 

@@ -9,6 +9,7 @@ import { fundListState } from "core/state";
 import { useDeal } from "core/hooks";
 import { db } from "utils/firebase";
 import { currency } from "utils/currency";
+
 function AssignmentStatusPage() {
   const [modal, setModal] = useState({
     isOpen: false,
@@ -19,7 +20,8 @@ function AssignmentStatusPage() {
   const fundList = useRecoilValue(fundListState);
   const eventList = useRecoilValue(eventListState);
   const { joinDealEventFund, doJoinDealEventFund } = useDeal();
-
+  // const MyUserFundList = useRecoilValue(myUserFundListState);
+  // console.log(MyUserFundList);
   // * 배정현황 페이지 시작시 필터링된 JoinDealList를 받기위함
   useEffect(() => {
     getFilterJoinDealList();
@@ -35,21 +37,27 @@ function AssignmentStatusPage() {
    */
   const getFilterJoinDealList = async () => {
     const filterFundList = [];
-
+    const filterUserFundList = [];
     const userFundRef = await db
       .collection("userFunds")
       .where("userId", "==", user.id)
       .get();
 
     userFundRef.docs.map((userFund) => {
+      console.log(userFund.data());
       fundList.forEach((fund) => {
         if (userFund.data().fundId === fund.id) {
           filterFundList.push(fund);
+          filterUserFundList.push(userFund.data());
         }
       });
     });
 
-    doJoinDealEventFund({ eventList, fundList: filterFundList });
+    doJoinDealEventFund({
+      eventList,
+      fundList: filterFundList,
+      userFund: filterUserFundList,
+    });
   };
   const getDealEventFund = () => {
     const fundList = [];
@@ -64,7 +72,7 @@ function AssignmentStatusPage() {
                 <tr>
                   <th className="p-2 border-r">배정날짜/종목명</th>
                   <th className="p-2 border-r">매수가/매수량</th>
-                  <th>금액/비고</th>
+                  <th>금액/본인지분</th>
                 </tr>
               </thead>
               <tbody className="font-apple-sb">
@@ -84,19 +92,24 @@ function AssignmentStatusPage() {
                         <td className="border-r">
                           <div className="p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
                             <p>{deal.assignmentDate ?? "-"}</p>
-                            <nobr>{deal.eventName}</nobr>
+                            <p>{deal.eventName}</p>
                           </div>
                         </td>
                         <td className="border-r">
                           <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
                             <p>{currency(deal.buyPrice)}원</p>
-                            <nobr>{deal.quantity}주</nobr>
+                            <p>{deal.quantity}주</p>
                           </div>
                         </td>
                         <td>
                           <div className="flex flex-col items-end p-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
                             <p>{currency(deal.buyPrice * deal.quantity)}원</p>
-                            <br />
+                            <p>
+                              {currency(
+                                deal.buyPrice * deal.quantity * deal.shareRatio
+                              )}
+                              원
+                            </p>
                           </div>
                         </td>
                       </tr>

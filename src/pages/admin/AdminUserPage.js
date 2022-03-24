@@ -1,19 +1,37 @@
 /* eslint-disable array-callback-return */
 import { AdminLayout, UserDetail } from "components/layouts/admin";
-import { useModal, usePager, useSearch, useUser } from "core/hooks";
+import {
+  useDeal,
+  useFund,
+  useModal,
+  usePager,
+  useSearch,
+  useUser,
+  useUserFund,
+} from "core/hooks";
 
 import { UserForm } from "components/layouts/admin";
 import { Pager, Search, Table, withPrivate } from "components/common";
 import { useRecoilValue } from "recoil";
 import { userListInitState } from "core/state";
+import { currency } from "utils/currency";
+import { sort } from "utils/sortData";
+import { useEffect, useState } from "react";
 
 function AdminUserPage() {
+  const [sortForm, setSortForm] = useState("");
   const userListInit = useRecoilValue(userListInitState);
   const { userList, destroy } = useUser();
+  const { getUserJoinUserFundJoinFundList } = useUserFund();
+  const { fundList } = useFund();
+  const { matchedFundId, setMatchedFundId } = useDeal();
+  console.log(fundList);
   const { open } = useModal();
 
   const { search, setSearch, searchEvent, setSearchList, getSearchList } =
-    useSearch({ list: userList });
+    useSearch({
+      list: getUserJoinUserFundJoinFundList({ joinForm: "leftOuterJoin" }),
+    });
   const { currentPage, setCurrentPage, getPagerList, getTotalPageLength } =
     usePager({
       pageLimit: 10,
@@ -23,12 +41,58 @@ function AdminUserPage() {
     <AdminLayout title="회원관리">
       <div className="p-4">
         <div className="flex items-center justify-between mt-4 mb-4">
-          <button
-            onClick={() => open({ setView: <UserForm /> })}
-            className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          >
-            회원 생성
-          </button>
+          <div>
+            <button
+              onClick={() => open({ setView: <UserForm /> })}
+              className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              회원 생성
+            </button>
+            <select
+              className="p-2 ml-4 mr-6 bg-white border rounded-md"
+              onChange={(e) => {
+                setMatchedFundId(
+                  e.target.value === "전체" ? null : e.target.value
+                );
+              }}
+            >
+              <option key={null} value={null} className="p-2">
+                전체
+              </option>
+              {fundList.map((fund) => {
+                return (
+                  <option key={fund.id} value={fund.id} className="p-2">
+                    {fund.fundName}
+                  </option>
+                );
+              })}
+            </select>
+            <button
+              onClick={() => {
+                setSortForm("userName");
+              }}
+              className="mr-1   px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in  rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              이름순
+            </button>
+            <button
+              onClick={() => {
+                setSortForm("userId");
+              }}
+              className="mr-1  px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in   rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              email(id)순
+            </button>
+            <button
+              onClick={() => {
+                setSortForm("userId");
+              }}
+              className="  px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in   rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              가입일자 순
+            </button>
+          </div>
+
           <div className="text-end">
             <Search
               text="회원 이름을 입력하세요."
@@ -50,6 +114,7 @@ function AdminUserPage() {
 
         <Table
           titles={[
+            "관리자코드",
             "이름",
             "email(id)",
             "생년월일",
@@ -57,22 +122,36 @@ function AdminUserPage() {
             "전화번호",
             "거래은행",
             "계좌번호",
+            "펀드이름",
+            "펀드 가입 금액 ",
+            "펀드 가입 날짜",
             "수정",
             "삭제",
           ]}
           itemInit={userListInit}
-          itemLength={userList.length}
+          itemLength={
+            getUserJoinUserFundJoinFundList({ joinForm: "leftOuterJoin" })
+              .length
+          }
           colSpan={10}
         >
-          {getPagerList({ list: getSearchList() }).map((user, index) => {
-            if (user.role !== "ADMIN")
+          {getPagerList({
+            list: sort(getSearchList(), { form: sortForm }),
+          }).map((user, index) => {
+            if (
+              user.role !== "ADMIN" &&
+              (matchedFundId == null ? true : user.fundId === matchedFundId)
+            )
               return (
                 <tr
-                  key={user.id}
+                  key={index}
                   className="text-gray-700 border-b hover:bg-gray-100"
                 >
                   <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
                     {index + 1}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {123123}
                   </td>
                   <td
                     className="p-4 font-normal border-r cursor-pointer hover:bg-gray-200 dark:border-dark-5 whitespace-nowrap"
@@ -82,10 +161,10 @@ function AdminUserPage() {
                       })
                     }
                   >
-                    {user.name}
+                    {user.userName}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {user.email}
+                    {user.userId}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {user.birthday}
@@ -101,6 +180,15 @@ function AdminUserPage() {
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {user.bankNumber}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.fundName}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.joinPrice ? currency(user.joinPrice) + "원" : ""}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {user.joinPrice ? currency(user.joinPrice) + "원" : ""}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     <button
@@ -122,7 +210,11 @@ function AdminUserPage() {
         </Table>
 
         <Pager
-          totalPageLength={getTotalPageLength({ list: userList })}
+          totalPageLength={getTotalPageLength({
+            list: getUserJoinUserFundJoinFundList({
+              joinForm: "leftOuterJoin",
+            }),
+          })}
           setCurrentPage={setCurrentPage}
           currentPage={currentPage}
         />
