@@ -53,11 +53,11 @@ function AdminEventPage() {
           titles={[
             "종목명",
             "확정공모가액",
-            "청약기간",
+            "배정수량",
             "청약수수료",
             "의무보유기간",
             "배정날짜",
-            "납입일",
+            "상장일",
             "수정",
             "삭제",
           ]}
@@ -87,7 +87,8 @@ function AdminEventPage() {
                   {currency(event.fixedAmount)} 원
                 </td>
                 <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.startSubscribePeriod}~{event.endSubscribePeriod}
+                  {/* {item.fixedAmount} */}
+                  {20} 주
                 </td>
                 <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                   {event.subscribeFee

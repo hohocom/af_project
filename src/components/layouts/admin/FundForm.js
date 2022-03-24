@@ -132,41 +132,6 @@ function FundForm({ fund = null }) {
 
       <div className="flex flex-col mt-2">
         <label>
-          계좌명
-          <span className="ml-1 text-xs text-red-500">
-            {errors.bankName && errors.bankName.message}
-          </span>
-        </label>
-        <input
-          {...register("bankName", {
-            required: "계좌명은 필수 입력값입니다.",
-          })}
-          type="text"
-          defaultValue={fund ? fund.bankName : null}
-          placeholder="계좌명 입력"
-          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-        />
-      </div>
-      <div className="flex flex-col mt-2">
-        <label>
-          계좌번호
-          <span className="ml-1 text-xs text-red-500">
-            {errors.bankNumber && errors.bankNumber.message}
-          </span>
-        </label>
-        <input
-          {...register("bankNumber", {
-            required: "계좌번호는 필수 입력값입니다.",
-          })}
-          type="text"
-          defaultValue={fund ? fund.bankNumber : null}
-          placeholder="계좌번호 입력"
-          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-        />
-      </div>
-
-      <div className="flex flex-col mt-2">
-        <label>
           가입기간
           <span className="ml-1 text-xs text-red-500">
             {errors.startJoinPeriod && errors.startJoinPeriod.message}
