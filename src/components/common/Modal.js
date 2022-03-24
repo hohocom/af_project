@@ -9,7 +9,7 @@ function Modal() {
         // onClick={close}
       >
         <div
-          className="relative p-4 bg-white rounded-md min-w-[300px] max-w-[500px]"
+          className="relative p-4 bg-white rounded-md min-w-[500px] max-w-[500px]"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="absolute right-4 top-4">

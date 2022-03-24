@@ -25,7 +25,7 @@ function EventForm({ event }) {
   const onError = (error) => console.log(error);
 
   return (
-    <form className="min-w-[350px]" onSubmit={handleSubmit(onSubmit, onError)}>
+    <form className="min-w-[350px] p-2" onSubmit={handleSubmit(onSubmit, onError)}>
       <h2 className="text-xl font-noto-regular">
         종목 {event ? "수정" : "생성"}
       </h2>

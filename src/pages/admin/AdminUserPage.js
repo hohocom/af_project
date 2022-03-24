@@ -189,7 +189,7 @@ function AdminUserPage() {
                     {user.joinPrice ? currency(user.joinPrice) + "원" : ""}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {user.joinPrice ? currency(user.joinPrice) + "원" : ""}
+                    {/* {user.joinDate ? user.joinDate : ""} */}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     <button

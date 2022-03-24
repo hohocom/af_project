@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { db } from "utils/firebase";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export function useUserStream() {
   const setUserList = useSetRecoilState(userListState);
@@ -64,25 +65,25 @@ function useUser() {
 
   const edit = async ({ form, user }) => {
     setLoading(true);
-    await db.collection("users").doc(user.id).set(form);
+    await db.collection("users").doc(user.userId).set(form);
     setLoading(false);
   };
 
   const destroy = async ({ user }) => {
-    setLoading(true);
     const result = window.prompt("데이터를 삭제하려면 '삭제'를 입력해주세요.");
     if (result !== "삭제") return;
 
+    setLoading(true);
     await axios({
       method: "delete",
       url: `https://asia-northeast3-af-project-83d10.cloudfunctions.net/users/delete-user?uid=${user.uid}`,
     })
       .then(async () => {
         console.debug("회원 삭제 성공");
-        await db.collection("users").doc(user.id).delete();
+        await db.collection("users").doc(user.userId).delete();
         const userFundRef = await db
           .collection("userFunds")
-          .where("userId", "==", user.id)
+          .where("userId", "==", user.userId)
           .get();
         if (!userFundRef.empty) {
           userFundRef.docs.forEach(async (doc) => {
