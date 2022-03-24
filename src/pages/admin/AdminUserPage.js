@@ -15,17 +15,15 @@ import { Pager, Search, Table, withPrivate } from "components/common";
 import { useRecoilValue } from "recoil";
 import { userListInitState } from "core/state";
 import { currency } from "utils/currency";
-import { sort } from "utils/sortData";
-import { useEffect, useState } from "react";
+import { useSort } from "core/hooks/sortData";
 
 function AdminUserPage() {
-  const [sortForm, setSortForm] = useState("");
+  const { sort, setSortForm } = useSort();
   const userListInit = useRecoilValue(userListInitState);
   const { userList, destroy } = useUser();
   const { getUserJoinUserFundJoinFundList } = useUserFund();
   const { fundList } = useFund();
   const { matchedFundId, setMatchedFundId } = useDeal();
-  console.log(fundList);
   const { open } = useModal();
 
   const { search, setSearch, searchEvent, setSearchList, getSearchList } =
@@ -136,7 +134,7 @@ function AdminUserPage() {
           colSpan={10}
         >
           {getPagerList({
-            list: sort(getSearchList(), { form: sortForm }),
+            list: sort(getSearchList()),
           }).map((user, index) => {
             if (
               user.role !== "ADMIN" &&

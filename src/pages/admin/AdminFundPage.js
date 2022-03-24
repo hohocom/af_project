@@ -2,12 +2,15 @@ import { Pager, Search, Table, withPrivate } from "components/common";
 import { AdminLayout } from "components/layouts/admin";
 import { FundForm } from "components/layouts/admin";
 import { useFund, useModal, usePager, useSearch } from "core/hooks";
+import { useSort } from "core/hooks/sortData";
 import { fundListInitState } from "core/state";
 import { useRecoilValue } from "recoil";
 import { currency } from "utils/currency";
 
 function AdminFundPage() {
   const fundListInit = useRecoilValue(fundListInitState);
+
+  const { sort, setSortForm } = useSort();
   const { fundList, destroy } = useFund();
   const { open } = useModal();
   const { search, setSearch, searchEvent, setSearchList, getSearchList } =
@@ -21,14 +24,31 @@ function AdminFundPage() {
     <AdminLayout title="펀드관리">
       <div className="p-4">
         <div className="flex items-center justify-between py-4">
-          <button
-            onClick={() => open({ setView: <FundForm /> })}
-            type="button"
-            className="w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-          >
-            펀드 생성
-          </button>
-
+          <div>
+            <button
+              onClick={() => open({ setView: <FundForm /> })}
+              type="button"
+              className="mr-3 w-32 px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              펀드 생성
+            </button>
+            <button
+              onClick={() => {
+                setSortForm("fundName");
+              }}
+              className="mr-1   px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in  rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              이름순
+            </button>
+            <button
+              onClick={() => {
+                setSortForm("fundTotalCost");
+              }}
+              className="mr-1  px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in   rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              전체 금액순
+            </button>
+          </div>
           <div className="text-end">
             <Search
               text="펀드 이름을 입력하세요."
@@ -56,8 +76,6 @@ function AdminFundPage() {
             "인센티브",
             "기본수수료",
             "가입기간",
-            "계좌명",
-            "계좌번호",
             "수정",
             "삭제",
           ]}
@@ -65,7 +83,7 @@ function AdminFundPage() {
           itemLength={fundList.length}
           colSpan={9}
         >
-          {getPagerList({ list: getSearchList() }).map((fund, i) => {
+          {getPagerList({ list: sort(getSearchList()) }).map((fund, i) => {
             return (
               <tr
                 key={fund.id}
@@ -92,12 +110,7 @@ function AdminFundPage() {
                 <td className="p-4 border-r dark:border-dark-5">
                   {fund.startJoinPeriod} ~ {fund.endJoinPeriod}
                 </td>
-                <td className="p-4 border-r dark:border-dark-5">
-                  {fund.bankName}
-                </td>
-                <td className="p-4 border-r dark:border-dark-5">
-                  {fund.bankNumber}
-                </td>
+
                 <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                   <button
                     onClick={() => open({ setView: <FundForm fund={fund} /> })}
