@@ -183,7 +183,7 @@ function useUserFund() {
     return joinUserFundList;
   };
 
-  const store = async ({ form }) => {
+  const fundStore = async ({ form }) => {
     console.debug(form);
     const userFundRef = await db
       .collection("userFunds")
@@ -211,7 +211,7 @@ function useUserFund() {
   return {
     getUserJoinUserFundJoinFundList,
     userFundList,
-    store,
+    fundStore,
     edit,
     destroy,
     getUserJoinUserFundList,

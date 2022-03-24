@@ -24,6 +24,7 @@ function AdminUserPage() {
   const { getUserJoinUserFundJoinFundList } = useUserFund();
   const { fundList } = useFund();
   const { matchedFundId, setMatchedFundId } = useDeal();
+
   const { open } = useModal();
 
   const { search, setSearch, searchEvent, setSearchList, getSearchList } =
@@ -99,8 +100,10 @@ function AdminUserPage() {
               setSearchList={setSearchList}
               searchEvent={() => {
                 searchEvent({
-                  list: userList,
-                  key: "name",
+                  list: getUserJoinUserFundJoinFundList({
+                    joinForm: "leftOuterJoin",
+                  }),
+                  key: "userName",
                   callback: () => {
                     setCurrentPage(1);
                   },
