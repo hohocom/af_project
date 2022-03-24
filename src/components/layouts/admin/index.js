@@ -9,6 +9,7 @@ import EventForm from "./EventForm";
 import EventDetail from "./EventDetail";
 import DealForm from "./DealForm";
 import AdminLayout from "./AdminLayout";
+import FundListSelector from "./FundListSelector";
 
 export {
   AdminLayout,
@@ -22,4 +23,5 @@ export {
   EventForm,
   EventDetail,
   DealForm,
+  FundListSelector,
 };

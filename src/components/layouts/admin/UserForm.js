@@ -1,53 +1,71 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useFund, useModal, useUser, useUserFund } from "core/hooks";
 import { useForm } from "react-hook-form";
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
+import FundListSelector from "./FundListSelector";
 
 function UserForm({ user }) {
-  const [isChecked, setIsChecked] = useState(false); //체크 여부
-  const [checkedItems, setCheckedItems] = useState({}); //체크된 요소들
   const { close } = useModal();
   const { store, edit } = useUser();
   const { fundList } = useFund();
   const { fundStore } = useUserFund();
-
-  const checkHandler = ({ target }) => {
-    setIsChecked(!isChecked);
-    checkedItemHandler(target.value, target.checked);
-  };
-
-  const checkedItemHandler = (id, isChecked) => {
-    if (isChecked) {
-      //체크 되었을때
-      checkedItems.add(id);
-      setCheckedItems(checkedItems); //체크 요소 넣어주기
-    } else if (!isChecked && checkedItems.has(id)) {
-      //체크가 안되었고, id가 있을때(클릭 2번시)
-      checkedItems.delete(id); //체크 두번시 삭제
-      setCheckedItems(checkedItems);
-    }
-    return checkedItems;
-  };
-
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  const [checkFundList, setCheckFundList] = useState([]);
+  const { userFundList } = useUserFund();
+
+  useEffect(() => {
+    const list = [];
+
+    if (userFundList.length && user) {
+      userFundList.forEach((userFund) => {
+        console.debug(userFund);
+      });
+    }
+
+    fundList.forEach((fund) => {
+      list.push({
+        ...fund,
+        checked: true,
+        joinPrice: null,
+      });
+    });
+    setCheckFundList(list);
+  }, [fundList]);
+
+  const userFundStore = async (email) => {
+    const filterList = checkFundList.filter(
+      (fund) => fund.checked === true && fund.joinPrice > 0
+    );
+
+    filterList.forEach(async (fund) => {
+      await fundStore({
+        form: {
+          userId: email,
+          fundId: fund.id,
+          joinDate: new Date(),
+          joinPrice: fund.joinPrice,
+        },
+      });
+    });
+  };
+
   const onSubmit = async (data) => {
     !user
       ? await store({ form: data })
       : await edit({ form: data, user: user });
+    userFundStore(data.email);
     close();
   };
 
-  const onError = (error) => console.log(error);
-
   return (
     <form
-      className="min-w-[350px] max-h-[800px] overflow-hidden overflow-y-scroll"
-      onSubmit={handleSubmit(onSubmit, onError)}
+      className="min-w-[350px] max-h-[800px] overflow-hidden overflow-y-scroll p-2"
+      onSubmit={handleSubmit(onSubmit)}
     >
       <h2 className="text-xl font-noto-regular">
         회원 {user ? "수정" : "생성"}
@@ -232,23 +250,10 @@ function UserForm({ user }) {
       <div className="flex flex-col mt-2">
         <label>
           펀드가입
-          {fundList.map((fund, index) => {
-            return (
-              <div key={fund.id} value={fund.id} className="p-2">
-                <input
-                  type="checkbox"
-                  value={fund.id}
-                  onChange={(e) => checkHandler(e)}
-                />
-                {fund.fundName}
-                <input
-                  className="border"
-                  type="text"
-                  onChange={(e) => checkHandler(e)}
-                />
-              </div>
-            );
-          })}
+          <FundListSelector
+            checkFundList={checkFundList}
+            setCheckFundList={setCheckFundList}
+          />
         </label>
       </div>
       <button className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2">
