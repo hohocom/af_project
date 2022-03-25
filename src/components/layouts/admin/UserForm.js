@@ -253,6 +253,7 @@ function UserForm({ user }) {
           <FundListSelector
             checkFundList={checkFundList}
             setCheckFundList={setCheckFundList}
+            form="insert"
           />
         </label>
       </div>

@@ -38,9 +38,11 @@ function useEvent() {
   const setLoading = useSetRecoilState(loadingState);
 
   const store = async ({ form }) => {
+    console.log(form);
     setLoading(true);
-    await db.collection("events").add(form);
+    const result = await db.collection("events").add(form);
     setLoading(false);
+    return result.id;
   };
 
   const edit = async ({ id, form }) => {

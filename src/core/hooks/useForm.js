@@ -14,6 +14,8 @@ function useForm(formObj) {
 
   // TODO: form을 순회하며 form 객체의 key와 입력값의 name이 같은 곳의 값을 변경
   const changeInput = (e) => {
+    console.log(e.target.name);
+    console.log(e.target.value);
     const name = e.target.name;
     const value = e.target.value;
     // console.debug(name, value);
@@ -44,7 +46,6 @@ function useForm(formObj) {
     // console.debug("폼데이터 감시중..");
     for (let f in form) {
       if (checkIgnore({ key: f })) {
-        // console.debug(f);
       } else if (
         form[f] === null ||
         form[f] === "" ||

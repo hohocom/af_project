@@ -43,9 +43,20 @@ function useDeal() {
   const [joinDealEventFund, setJoinDealEventFund] = useRecoilState(
     joinDealEventFundState
   );
-  const [matchedFundId, setMatchedFundId] = useState(null);
+  const [matchedFundId, setMatchedFundId] = useState("전체");
   const setLoading = useSetRecoilState(loadingState);
 
+  const reverseToBuy = async () => {
+    dealList.forEach(async (deal) => {
+      if (deal.type === "reservation") {
+        console.log(deal);
+        //상장일이 지나면
+        if (new Date() >= new Date(deal.paymentDate)) {
+          await db.collection("deals").doc(deal.id).update({ type: "buy" });
+        }
+      }
+    });
+  };
   const doJoinDealList = ({ fundList, eventList, type = "all" }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealList = [];
@@ -160,8 +171,22 @@ function useDeal() {
     });
     return dealDoc;
   };
-
+  const dealStore = async ({ form }) => {
+    console.debug(form);
+    // const userEventRef = await db
+    //   .collection("events")
+    //   .where("eventName", "==", form.eventName)
+    //   .limit(1)
+    //   .get();
+    // if (!userEventRef.empty) {
+    //   window.alert("존재하는 종목 입니다");
+    //   return;
+    // }
+    await db.collection("deals").add(form);
+  };
   const buyStore = async ({ form }) => {
+    console.log("form");
+    console.log(form);
     setLoading(true);
     const dealDoc = await getLatestDealBy({
       fundId: form.fundId,
@@ -289,6 +314,8 @@ function useDeal() {
     buyStore,
     sellStore,
     destroy,
+    dealStore,
+    reverseToBuy,
   };
 }
 

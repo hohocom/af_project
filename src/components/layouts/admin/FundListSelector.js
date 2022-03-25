@@ -1,7 +1,11 @@
 import { useFund } from "core/hooks";
 import { useEffect, useState } from "react";
 
-export default function FundListSelector({ checkFundList, setCheckFundList }) {
+export default function FundListSelector({
+  checkFundList,
+  setCheckFundList,
+  form,
+}) {
   const clickCheckBox = (f) => {
     const updateList = checkFundList.map((fund) => {
       if (fund.id === f.id) {
@@ -13,7 +17,7 @@ export default function FundListSelector({ checkFundList, setCheckFundList }) {
         return fund;
       }
     });
-    console.debug(updateList);
+
     setCheckFundList(updateList);
   };
 
@@ -47,13 +51,15 @@ export default function FundListSelector({ checkFundList, setCheckFundList }) {
           </button>
           <span>{fund.fundName}</span>
         </div>
-        <input
-          className="border"
-          type="number"
-          step="any"
-          defaultValue={fund.joinPrice}
-          onChange={(e) => changeJoinPrice(fund, e)}
-        />
+        {form === "insert" ?? (
+          <input
+            className="border"
+            type="number"
+            step="any"
+            defaultValue={fund.joinPrice}
+            onChange={(e) => changeJoinPrice(fund, e)}
+          />
+        )}
       </div>
     );
   });

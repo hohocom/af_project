@@ -1,16 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
-import { useDeal, useForm, useFund, useModal } from "core/hooks";
+import { useDeal, useEvent, useForm, useFund, useModal } from "core/hooks";
 import { useEffect, useState } from "react";
 import { currency } from "utils/currency";
+import FundListSelector from "./FundListSelector";
 
 function DealForm({ deal, funds, events }) {
   const { close } = useModal();
-
+  const { store, edit } = useEvent();
   const [fund, setFund] = useState(null);
   const [event, setEvent] = useState(null);
   const [latestDeal, setLatestDeal] = useState(null);
-
+  const [checkFundList, setCheckFundList] = useState([]);
   const { fundList } = useFund();
   const { buyStore, sellStore, getLatestDealBy } = useDeal();
   const { form, setForm, changeInput, isCompleted, setIsCompletedIgnoreList } =
@@ -18,8 +19,7 @@ function DealForm({ deal, funds, events }) {
       deal
         ? deal
         : {
-            fundId: null,
-            eventId: null,
+            eventName: "",
             dealDate: "", // 거래 일자
             buyPrice: 0, // 매수 금액
             salePrice: 0, // 매도 금액
@@ -39,6 +39,36 @@ function DealForm({ deal, funds, events }) {
       setIsCompletedIgnoreList(["totalQuantity", "buyPrice"]);
     }
   }, [form.type]);
+  useEffect(() => {
+    const list = [];
+
+    fundList.forEach((fund) => {
+      list.push({
+        ...fund,
+        checked: false,
+      });
+    });
+
+    setCheckFundList(list);
+  }, [fundList]);
+  const userEventStore = async (form) => {
+    let eventId = await store({
+      form: {
+        eventName: form.eventName,
+        fixedAmount: form.buyPrice,
+      },
+    });
+    userDealStore(eventId);
+  };
+  const userDealStore = async (eventId) => {
+    const filterList = checkFundList.filter((fund) => fund.checked === true);
+    filterList.forEach(async (fund) => {
+      console.log(fund.id);
+      let copyForm = { ...form, eventId: eventId, fundId: fund.id };
+      console.log(copyForm);
+      buyStore({ form: copyForm });
+    });
+  };
 
   // ? 매도할 때 총거래잔량, 최근 거래날짜를 가져오기
   useEffect(async () => {
@@ -63,26 +93,26 @@ function DealForm({ deal, funds, events }) {
     }
   }, [form.type, fund, event]);
 
-  // * 올바른 거래날짜 채크
-  const isCorrectDate = ({ date = new Date() }) => {
-    let result = false;
-    if (
-      new Date(event.startSubscribePeriod) <= new Date(date) &&
-      new Date(event.endSubscribePeriod) >= new Date(date)
-    ) {
-      result = true;
-    }
-    return result;
-  };
+  // // * 올바른 거래날짜 채크
+  // const isCorrectDate = ({ date = new Date() }) => {
+  //   let result = false;
+  //   if (
+  //     new Date(event.startSubscribePeriod) <= new Date(date) &&
+  //     new Date(event.endSubscribePeriod) >= new Date(date)
+  //   ) {
+  //     result = true;
+  //   }
+  //   return result;
+  // };
 
   // * 생성 이벤트
   const onSubmit = () => {
-    form.type === "buy" ? buyStore({ form }) : sellStore({ form, fundList });
+    form.type === "buy" ? userEventStore(form) : sellStore({ form, fundList });
     close();
   };
 
   return (
-    <form className="min-w-[350px] pt-4">
+    <form className="min-w-[350px] max-h-[800px] overflow-hidden overflow-y-scroll p-2">
       <h2 className="text-xl font-noto-regular">거래 생성</h2>
       <div className="flex items-center justify-between w-full my-2">
         <button
@@ -118,6 +148,29 @@ function DealForm({ deal, funds, events }) {
         </button>
       </div>
       <div className="flex flex-col mt-2">
+        <label>
+          펀드선택
+          <FundListSelector
+            checkFundList={checkFundList}
+            setCheckFundList={setCheckFundList}
+            form="select"
+          />
+        </label>
+      </div>
+      <div className="flex flex-col mt-2">
+        <label className="font-noto-regular">
+          종목입력
+          <span className="ml-1 text-xs text-red-500"></span>
+        </label>
+        <input
+          type="text"
+          name="eventName"
+          value={form.eventName}
+          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+          onChange={changeInput}
+        />
+      </div>
+      {/* <div className="flex flex-col mt-2">
         <label className="font-noto-regular">펀드선택</label>
         <select
           className="p-2 border rounded-md"
@@ -141,8 +194,8 @@ function DealForm({ deal, funds, events }) {
             );
           })}
         </select>
-      </div>
-      <div className="flex flex-col mt-2">
+      </div> */}
+      {/* <div className="flex flex-col mt-2">
         <label className="font-noto-regular">종목선택</label>
         <select
           name="eventId"
@@ -172,25 +225,33 @@ function DealForm({ deal, funds, events }) {
             );
           })}
         </select>
-      </div>
+      </div> */}
 
-      {event && fund && (
+      {
         <div>
           {form.type === "buy" ? (
             <div className="flex flex-col mt-2">
               <label className="font-noto-regular">매수금액</label>
-              <div className="p-2 bg-gray-100 rounded-md">
-                {currency(event.fixedAmount)}원
-              </div>
+              <input
+                type="number"
+                name="buyPrice"
+                value={form.buyPrice}
+                className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                onChange={changeInput}
+              />
+              <span className="p-2 text-xs rounded-md">
+                {currency(form.buyPrice)} 원
+              </span>
             </div>
           ) : (
             <div className="flex flex-col mt-2">
               <label className="font-noto-regular">
                 매도금액
-                <span className="ml-1 text-xs text-blue-600">
-                  (최근 매도금액: {latestDeal ? latestDeal.salePrice : "?"})
-                </span>
+                {/* <span className="ml-1 text-xs text-blue-600">
+                (최근 매도금액: {latestDeal ? latestDeal.salePrice : "?"})
+              </span> */}
               </label>
+
               <input
                 type="number"
                 name="salePrice"
@@ -207,12 +268,12 @@ function DealForm({ deal, funds, events }) {
           <div className="flex flex-col mt-2">
             <label className="font-noto-regular">
               거래수량
-              {form.type === "sell" && (
+              {/* {form.type === "sell" && (
                 <span className="ml-1 text-xs text-blue-600">
                   (현재 총 거래잔량: {latestDeal ? latestDeal.totalQuantity : 0}
                   )
                 </span>
-              )}
+              )} */}
             </label>
             <input
               type="number"
@@ -245,62 +306,35 @@ function DealForm({ deal, funds, events }) {
               {currency(form.quantity)}주
             </span>
           </div>
-          {form.type === "buy" ? (
-            <div className="flex flex-col mt-2">
-              <label className="font-noto-regular">거래수수료(%)</label>
-              <input
-                type="number"
-                name="transactionFee"
-                value={form.transactionFee}
-                className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                onChange={(e) => {
-                  setForm({
-                    ...form,
-                    transactionFee: e.target.value,
-                    totalQuantity: form.type === "buy" ? e.target.value : 0,
-                  });
-                }}
-              />
-              <span className="p-2 text-xs rounded-md">
-                {currency(
-                  Number(form.quantity) *
-                    Number(event.fixedAmount) *
-                    Number(form.transactionFee / 100)
-                )}
-                원
-              </span>
-            </div>
-          ) : (
-            <div className="flex flex-col mt-2">
-              <label className="font-noto-regular">거래수수료(원)</label>
-              <input
-                type="number"
-                name="transactionFee"
-                value={form.transactionFee}
-                className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                onChange={(e) => {
-                  setForm({
-                    ...form,
-                    transactionFee: e.target.value,
-                    totalQuantity: form.type === "buy" ? e.target.value : 0,
-                  });
-                }}
-              />
-              <span className="p-2 text-xs rounded-md">
-                {currency(form.transactionFee)}원
-              </span>
-            </div>
-          )}
+          <div className="flex flex-col mt-2">
+            <label className="font-noto-regular">거래수수료(원)</label>
+            <input
+              type="number"
+              name="transactionFee"
+              value={form.transactionFee}
+              className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              onChange={(e) => {
+                setForm({
+                  ...form,
+                  transactionFee: e.target.value,
+                  totalQuantity: form.type === "buy" ? e.target.value : 0,
+                });
+              }}
+            />
+            <span className="p-2 text-xs rounded-md">
+              {currency(form.transactionFee)}원
+            </span>
+          </div>
           <div className="flex flex-col mt-2">
             <label className="font-noto-regular">
               거래날짜
-              {form.type === "sell" && (
+              {/* {form.type === "sell" && (
                 <span className="ml-1 text-xs text-blue-600">
                   (최근 거래날짜: {latestDeal ? latestDeal.dealDate : ""})
                 </span>
-              )}
+              )} */}
             </label>
-            {form.type === "buy" ? (
+            {/* {form.type === "buy" ? (
               <>
                 <div className="text-sm">
                   {event.startSubscribePeriod} ~ {event.endSubscribePeriod}
@@ -339,10 +373,19 @@ function DealForm({ deal, funds, events }) {
                   changeInput(e);
                 }}
               />
-            )}
+            )} */}
+            <input
+              type="date"
+              name="dealDate"
+              value={form.dealDate}
+              className="flex-1 w-full px-4 py-2 mt-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+              onChange={(e) => {
+                changeInput(e);
+              }}
+            />
           </div>
         </div>
-      )}
+      }
 
       <button
         type="button"

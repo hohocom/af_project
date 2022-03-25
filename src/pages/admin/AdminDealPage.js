@@ -23,7 +23,12 @@ function AdminDealPage() {
     doJoinDealList,
     joinDealList,
     destroy,
+    reverseToBuy,
   } = useDeal();
+
+  useEffect(() => {
+    reverseToBuy();
+  }, [dealList]);
 
   const { eventList } = useEvent();
   const { fundList } = useFund();
@@ -64,7 +69,7 @@ function AdminDealPage() {
                 setMatchedFundId(e.target.value);
               }}
             >
-              <option className="p-2">펀드 선택</option>
+              <option className="p-2">전체</option>
               {fundList.map((fund) => {
                 return (
                   <option key={fund.id} value={fund.id} className="p-2">
@@ -117,7 +122,7 @@ function AdminDealPage() {
           {getPagerList({
             list: getSearchList(),
           }).map((deal, i) => {
-            if (deal.fundId === matchedFundId)
+            if (deal.fundId === matchedFundId || matchedFundId === "전체")
               return (
                 <tr
                   key={deal.id}
