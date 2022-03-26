@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 import { Pager, Search, Table, withPrivate } from "components/common";
-import { AdminLayout } from "components/layouts/admin";
-import { DealForm } from "components/layouts/admin";
+import { AdminLayout } from "components/admin";
+import { DealForm } from "components/admin";
 import {
   useDeal,
   useEvent,

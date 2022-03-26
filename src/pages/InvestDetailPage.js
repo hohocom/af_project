@@ -1,12 +1,11 @@
 /* eslint-disable array-callback-return */
 // TODO: 투자내역 페이지
 
-import { MobileLayout } from "components/layouts";
+import { MobileLayout } from "components";
 import { Card, withPrivate } from "components/common";
-import { InvestBody, InvestDetail } from "components/layouts/investDetail";
+import { InvestBody, InvestDetail } from "components/investDetail";
 import { useRecoilValue } from "recoil";
 import { userDetailState } from "core/state";
-import { fundListState } from "core/state";
 import { useUserFund } from "core/hooks";
 
 function InvestDetailPage() {

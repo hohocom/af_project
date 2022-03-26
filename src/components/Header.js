@@ -19,6 +19,28 @@ function Header({ title = "타이틀" }) {
   const { fundList } = useFund();
   const { getJoinUserFundList } = useUserFund();
 
+  const props = {
+    title,
+    fundList,
+    getJoinUserFundList,
+    sidebar,
+    setSidebar,
+    user,
+  };
+
+  return <HeaderView {...props} />;
+}
+
+export default Header;
+
+function HeaderView({
+  title,
+  fundList,
+  getJoinUserFundList,
+  sidebar,
+  setSidebar,
+  user,
+}) {
   return (
     <>
       <header className="bg-white border-b">
@@ -175,5 +197,3 @@ function Header({ title = "타이틀" }) {
     </>
   );
 }
-
-export default Header;

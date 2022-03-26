@@ -4,7 +4,7 @@ import img03 from "assets/images/loading/03.png";
 import img04 from "assets/images/loading/04.png";
 import img05 from "assets/images/loading/05.png";
 import { withPublic } from "components/common";
-import { MobileLayout } from "components/layouts";
+import { MobileLayout } from "components";
 import { Link } from "react-router-dom";
 
 function LoadingPage() {

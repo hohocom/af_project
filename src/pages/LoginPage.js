@@ -1,8 +1,5 @@
 import img01 from "assets/images/login/01.svg";
-import img02 from "assets/images/login/02.svg";
-import img03 from "assets/images/login/03.svg";
 import { LoadingType2, withPublic } from "components/common";
-import { MobileLayout } from "components/layouts";
 import { useForm } from "core/hooks";
 import { useState } from "react";
 import { auth } from "utils/firebase";

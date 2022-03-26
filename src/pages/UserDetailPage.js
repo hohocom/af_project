@@ -1,6 +1,6 @@
 import img02 from "assets/images/user-detail/02.svg";
 import { withPrivate } from "components/common";
-import { MobileLayout } from "components/layouts";
+import { MobileLayout } from "components";
 import { userDetailState } from "core/state";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";

@@ -1,13 +1,7 @@
-import { NavLink } from "react-router-dom";
 import { LoadingType2, Modal, Toast } from "components/common";
-import { auth } from "utils/firebase";
-import "assets/styles/table.css";
-import { useRecoilValue } from "recoil";
-import { loadingState } from "core/state";
+import { NavLink } from "react-router-dom";
 
-function AdminLayout({ children, title = "제목" }) {
-  const loading = useRecoilValue(loadingState);
-
+export default function AdminLayoutView({ loading, children, signOut, title }) {
   return (
     <LoadingType2 isLoading={loading}>
       <div className="fixed flex w-full h-full font-noto-light">
@@ -94,11 +88,7 @@ function AdminLayout({ children, title = "제목" }) {
         >
           <header className="flex items-center justify-between w-full p-4 text-xl bg-white border-b font-noto-bold">
             <h1>{title}</h1>
-            <button
-              onClick={() => {
-                auth.signOut();
-              }}
-            >
+            <button onClick={signOut}>
               <i className="text-gray-600 hover:text-red-400 fas fa-sign-out-alt"></i>
             </button>
           </header>
@@ -112,5 +102,3 @@ function AdminLayout({ children, title = "제목" }) {
     </LoadingType2>
   );
 }
-
-export default AdminLayout;

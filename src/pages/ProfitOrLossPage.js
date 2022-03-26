@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { MobileLayout } from "components/layouts";
+import { MobileLayout } from "components";
 import img01 from "assets/images/conclusion/01.svg";
 import { withPrivate } from "components/common";
 import { useEffect, useState } from "react";

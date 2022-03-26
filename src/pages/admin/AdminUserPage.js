@@ -1,5 +1,5 @@
 /* eslint-disable array-callback-return */
-import { AdminLayout, UserDetail } from "components/layouts/admin";
+import { AdminLayout, UserDetail } from "components/admin";
 import {
   useDeal,
   useFund,
@@ -10,7 +10,7 @@ import {
   useUserFund,
 } from "core/hooks";
 
-import { UserForm } from "components/layouts/admin";
+import { UserForm } from "components/admin";
 import { Pager, Search, Table, withPrivate } from "components/common";
 import { useRecoilValue } from "recoil";
 import { userListInitState } from "core/state";

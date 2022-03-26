@@ -1,6 +1,6 @@
 import { Pager, Search, Table, withPrivate } from "components/common";
-import { AdminLayout } from "components/layouts/admin";
-import { FundForm } from "components/layouts/admin";
+import { AdminLayout } from "components/admin";
+import { FundForm } from "components/admin";
 import { useFund, useModal, usePager, useSearch } from "core/hooks";
 import { useSort } from "core/hooks/sortData";
 import { fundListInitState } from "core/state";

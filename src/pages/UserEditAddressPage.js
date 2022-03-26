@@ -1,6 +1,6 @@
 import img02 from "assets/images/user-detail/02.svg";
 import { LoadingType2, withPrivate } from "components/common";
-import { MobileLayout } from "components/layouts";
+import { MobileLayout } from "components";
 import { useLoading } from "core/hooks";
 import { userDetailState } from "core/state";
 import { useForm } from "react-hook-form";

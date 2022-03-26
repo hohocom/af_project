@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Card, withPrivate } from "components/common";
-import { MobileLayout } from "components/layouts";
+import { MobileLayout } from "components";
 import { useState, useEffect } from "react";
 import { useRecoilValue } from "recoil";
 import { eventListState, userDetailState } from "core/state";

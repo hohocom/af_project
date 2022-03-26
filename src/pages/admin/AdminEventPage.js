@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Pager, Search, Table, withPrivate } from "components/common";
-import { AdminLayout } from "components/layouts/admin";
-import { EventForm } from "components/layouts/admin";
+import { AdminLayout } from "components/admin";
+import { EventForm } from "components/admin";
 import { useEvent, useModal, usePager, useSearch } from "core/hooks";
 import { eventListInitState } from "core/state";
 import { useRecoilValue } from "recoil";
