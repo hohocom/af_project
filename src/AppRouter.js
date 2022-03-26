@@ -15,7 +15,7 @@ import {
   UserEditAddressPage,
   UserEditPhone,
   UserEditPwPage,
-} from "pages";
+} from "pages/client";
 
 import {
   AdminDealPage,
