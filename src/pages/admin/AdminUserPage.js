@@ -141,7 +141,7 @@ function AdminUserPage() {
           }).map((user, index) => {
             if (
               user.role !== "ADMIN" &&
-              (matchedFundId == null ? true : user.fundId === matchedFundId)
+              (matchedFundId === null ? true : user.fundId === matchedFundId)
             )
               return (
                 <tr

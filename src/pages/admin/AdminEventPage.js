@@ -66,10 +66,12 @@ function AdminEventPage() {
           colSpan={8}
         >
           {getPagerList({ list: getSearchList() }).map((event, i) => {
-            if (event.isPublicOffering)
+            if (
+              event.isPublicOffering &&
+              new Date(event.paymentDate) > new Date()
+            )
               return (
                 // 공모주만 보여주기
-
                 <tr
                   key={event.id}
                   // onClick={() =>
