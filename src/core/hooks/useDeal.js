@@ -43,7 +43,7 @@ function useDeal() {
   const [joinDealEventFund, setJoinDealEventFund] = useRecoilState(
     joinDealEventFundState
   );
-  const [matchedFundId, setMatchedFundId] = useState("전체");
+  const [matchedFundId, setMatchedFundId] = useState(null);
   const setLoading = useSetRecoilState(loadingState);
 
   const reverseToBuy = async () => {
