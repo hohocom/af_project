@@ -37,10 +37,11 @@ function useEvent() {
   const eventList = useRecoilValue(eventListState);
   const setLoading = useSetRecoilState(loadingState);
 
-  const store = async ({ form }) => {
-    console.log(form);
+  const store = async ({ form, isPublicOffering }) => {
     setLoading(true);
-    const result = await db.collection("events").add(form);
+    const result = await db
+      .collection("events")
+      .add({ ...form, isPublicOffering: isPublicOffering });
     setLoading(false);
     return result.id;
   };

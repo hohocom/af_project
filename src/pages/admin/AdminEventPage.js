@@ -66,60 +66,63 @@ function AdminEventPage() {
           colSpan={8}
         >
           {getPagerList({ list: getSearchList() }).map((event, i) => {
-            return (
-              <tr
-                key={event.id}
-                // onClick={() =>
-                //   open({
-                //     setView: <EventDetail event={event} />,
-                //   })
-                // }
-                className="text-gray-700 border-b hover:bg-gray-100"
-              >
-                <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
-                  {i + 1}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.eventName}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {/* {item.fixedAmount} */}
-                  {currency(event.fixedAmount)} 원
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {/* {item.fixedAmount} */}
-                  {20} 주
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.subscribeFee
-                    ? currency(event.subscribeFee) + "원"
-                    : ""}
-                </td>
-                <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.mandatoryDate}
-                </td>
-                <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.assignmentDate}
-                </td>
-                <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
-                  {event.paymentDate}
-                </td>
-                <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                  <button
-                    onClick={() =>
-                      open({ setView: <EventForm event={event} /> })
-                    }
-                  >
-                    <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
-                  </button>
-                </td>
-                <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
-                  <button onClick={() => destroy({ id: event.id })}>
-                    <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            );
+            if (event.isPublicOffering)
+              return (
+                // 공모주만 보여주기
+
+                <tr
+                  key={event.id}
+                  // onClick={() =>
+                  //   open({
+                  //     setView: <EventDetail event={event} />,
+                  //   })
+                  // }
+                  className="text-gray-700 border-b hover:bg-gray-100"
+                >
+                  <td className="p-4 font-normal text-center border-r dark:border-dark-5 whitespace-nowrap">
+                    {i + 1}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {event.eventName}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {/* {item.fixedAmount} */}
+                    {currency(event.fixedAmount)} 원
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {/* {item.fixedAmount} */}
+                    {20} 주
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {event.subscribeFee
+                      ? currency(event.subscribeFee) + "원"
+                      : ""}
+                  </td>
+                  <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+                    {event.mandatoryDate}
+                  </td>
+                  <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+                    {event.assignmentDate}
+                  </td>
+                  <td className="p-4 font-normal text-gray-900 border-r dark:border-dark-5 whitespace-nowrap">
+                    {event.paymentDate}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    <button
+                      onClick={() =>
+                        open({ setView: <EventForm event={event} /> })
+                      }
+                    >
+                      <i className="text-gray-500 hover:text-red-400 fas fa-edit"></i>
+                    </button>
+                  </td>
+                  <td className="p-4 font-normal dark:border-dark-5 whitespace-nowrap">
+                    <button onClick={() => destroy({ id: event.id })}>
+                      <i className="text-gray-500 hover:text-red-400 fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              );
           })}
         </Table>
 
