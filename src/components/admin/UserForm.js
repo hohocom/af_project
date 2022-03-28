@@ -35,23 +35,6 @@ export default function UserForm({ user }) {
     setCheckFundList(list);
   }, [fundList]);
 
-  const userFundStore = async (email) => {
-    const filterList = checkFundList.filter(
-      (fund) => fund.checked === true && fund.joinPrice > 0
-    );
-
-    filterList.forEach(async (fund) => {
-      await fundStore({
-        form: {
-          userId: email,
-          fundId: fund.id,
-          joinDate: new Date(),
-          joinPrice: fund.joinPrice,
-        },
-      });
-    });
-  };
-
   const props = {
     checkFundList,
     setCheckFundList,
@@ -62,7 +45,21 @@ export default function UserForm({ user }) {
       !user
         ? await store({ form: data })
         : await edit({ form: data, user: user });
-      userFundStore(data.email);
+
+      const filterList = checkFundList.filter(
+        (fund) => fund.checked === true && fund.joinPrice > 0
+      );
+
+      filterList.forEach(async (fund) => {
+        await fundStore({
+          form: {
+            userId: data.email,
+            fundId: fund.id,
+            joinDate: new Date(),
+            joinPrice: fund.joinPrice,
+          },
+        });
+      });
       close();
     }),
   };
