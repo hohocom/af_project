@@ -1,11 +1,16 @@
-import { useFund } from "core/hooks";
-import { useEffect, useState } from "react";
+export default function FundListSelector({ checkFundList, setCheckFundList }) {
+  return checkFundList.map((fund) => {
+    return (
+      <FundListSelectorView
+        fund={fund}
+        checkFundList={checkFundList}
+        setCheckFundList={setCheckFundList}
+      />
+    );
+  });
+}
 
-export default function FundListSelector({
-  checkFundList,
-  setCheckFundList,
-  form,
-}) {
+function FundListSelectorView({ fund, checkFundList, setCheckFundList }) {
   const clickCheckBox = (f) => {
     const updateList = checkFundList.map((fund) => {
       if (fund.id === f.id) {
@@ -21,10 +26,10 @@ export default function FundListSelector({
     setCheckFundList(updateList);
   };
 
-  const changeJoinPrice = (f, e) => {
+  const changeJoinPrice = (e) => {
     const value = e.target.value;
-    const updateList = checkFundList.map((fund) => {
-      if (fund.id === f.id) {
+    const updateList = checkFundList.map((f) => {
+      if (f.id === fund.id) {
         return {
           ...fund,
           joinPrice: value,
@@ -36,31 +41,28 @@ export default function FundListSelector({
     setCheckFundList(updateList);
   };
 
-  return checkFundList.map((fund, index) => {
-    return (
-      <div key={fund.id} className="p-2 flex justify-between">
-        <div className="flex">
-          <button
-            type="button"
-            onClick={() => clickCheckBox(fund)}
-            style={{
-              color: fund.checked ? "blue" : "gray",
-            }}
-          >
-            <i className="fa-solid fa-circle-check mr-2"></i>
-          </button>
-          <span>{fund.fundName}</span>
-        </div>
-        {form === "insert" ?? (
-          <input
-            className="border"
-            type="number"
-            step="any"
-            defaultValue={fund.joinPrice}
-            onChange={(e) => changeJoinPrice(fund, e)}
-          />
-        )}
+  return (
+    <div key={fund.id} className="flex justify-between p-2">
+      <div className="flex">
+        <button
+          type="button"
+          onClick={clickCheckBox}
+          style={{
+            color: fund.checked ? "blue" : "gray",
+          }}
+        >
+          <i className="mr-2 fa-solid fa-circle-check"></i>
+        </button>
+        <span>{fund.fundName}</span>
       </div>
-    );
-  });
+
+      <input
+        className="border"
+        type="number"
+        step="any"
+        defaultValue={fund.joinPrice}
+        onChange={changeJoinPrice}
+      />
+    </div>
+  );
 }
