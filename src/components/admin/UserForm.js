@@ -8,15 +8,13 @@ export default function UserForm({ user }) {
   const { close } = useModal();
   const { store, edit } = useUser();
   const { fundList } = useFund();
-  const { fundStore } = useUserFund();
+  const { fundStore, userFundList } = useUserFund();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-
   const [checkFundList, setCheckFundList] = useState([]);
-  const { userFundList } = useUserFund();
 
   useEffect(() => {
     const list = [];
@@ -30,7 +28,7 @@ export default function UserForm({ user }) {
     fundList.forEach((fund) => {
       list.push({
         ...fund,
-        checked: true,
+        checked: false,
         joinPrice: null,
       });
     });
@@ -54,22 +52,20 @@ export default function UserForm({ user }) {
     });
   };
 
-  const onSubmit = handleSubmit(async (data) => {
-    !user
-      ? await store({ form: data })
-      : await edit({ form: data, user: user });
-    userFundStore(data.email);
-    close();
-  });
-
   const props = {
-    onSubmit,
     checkFundList,
     setCheckFundList,
     register,
-    errors,
     user,
+    errors,
+    onSubmit: handleSubmit(async (data) => {
+      !user
+        ? await store({ form: data })
+        : await edit({ form: data, user: user });
+      userFundStore(data.email);
+      close();
+    }),
   };
-  
+
   return <UserFormView {...props} />;
 }
