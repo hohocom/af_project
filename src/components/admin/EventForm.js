@@ -3,7 +3,7 @@ import { useEvent } from "core/hooks";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { currency } from "utils/currency";
-import FundListSelector from "./FundListSelector";
+import FundListSelector1 from "./FundListSelector1";
 
 function EventForm({ event }) {
   const { close } = useModal();
@@ -59,7 +59,7 @@ function EventForm({ event }) {
   const onSubmit = async (data) => {
     let eventId = "";
     !event
-      ? (eventId = await store({ form: data }))
+      ? (eventId = await store({ form: data, isPublicOffering: true }))
       : await edit({ form: data, id: event.id });
     userDealStore(data, eventId);
     close();
@@ -250,7 +250,7 @@ function EventForm({ event }) {
       <div className="flex flex-col mt-2">
         <label>
           펀드선택
-          <FundListSelector
+          <FundListSelector1
             checkFundList={checkFundList}
             setCheckFundList={setCheckFundList}
             form="select"

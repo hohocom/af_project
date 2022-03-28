@@ -198,7 +198,7 @@ function useDeal() {
       setLoading(false);
       return;
     }
-
+    console.log(form);
     console.log(`quantity ${form.quantity}`);
     console.log(`buyPrice ${form.buyPrice}`);
     console.log(`transactionFee ${form.transactionFee / 100}`);
@@ -210,10 +210,7 @@ function useDeal() {
       salePrice: 0, // 매도 금액
       quantity: form.quantity, // 매수/매도 수량
       totalQuantity: form.quantity,
-      transactionFee:
-        Number(form.quantity) *
-        Number(form.buyPrice) *
-        Number(form.transactionFee / 100),
+      transactionFee: form.transactionFee,
       type: form.type,
       fundProfit: 0,
       afterFundProfit:

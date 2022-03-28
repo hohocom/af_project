@@ -57,6 +57,7 @@ function DealForm({ deal, funds, events }) {
         eventName: form.eventName,
         fixedAmount: form.buyPrice,
       },
+      isPublicOffering: false,
     });
     userDealStore(eventId);
   };
