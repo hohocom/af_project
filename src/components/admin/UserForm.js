@@ -3,6 +3,7 @@ import { useFund, useModal, useUser, useUserFund } from "core/hooks";
 import { useForm } from "react-hook-form";
 import { useState, useEffect } from "react";
 import UserFormView from "./UserFormView";
+import { dateObjectParser } from "utils/dateObjectParser";
 
 export default function UserForm({ user }) {
   const { close } = useModal();
@@ -19,11 +20,36 @@ export default function UserForm({ user }) {
   useEffect(() => {
     const list = [];
 
-    if (userFundList.length && user) {
-      userFundList.forEach((userFund) => {
-        console.debug(userFund);
-      });
-    }
+    // const currentUfList = userFundList.filter(
+    //   (uf) => uf.userId === user?.userId
+    // );
+
+    // if (currentUfList.length) {
+    //   fundList.forEach((fund) => {
+    //     let result = false;
+    //     currentUfList.forEach((uf) => {
+    //       if (uf.fundId === fund.id) {
+    //         list.push({
+    //           ...fund,
+    //           checked: true,
+    //           joinPrice: uf.joinPrice,
+    //         });
+    //         result = true;
+    //       }
+    //     });
+    //     if (!result) {
+    //       list.push(fund);
+    //     }
+    //   });
+    // } else {
+    //   fundList.forEach((fund) => {
+    //     list.push({
+    //       ...fund,
+    //       checked: false,
+    //       joinPrice: null,
+    //     });
+    //   });
+    // }
 
     fundList.forEach((fund) => {
       list.push({
@@ -32,6 +58,7 @@ export default function UserForm({ user }) {
         joinPrice: null,
       });
     });
+
     setCheckFundList(list);
   }, [fundList]);
 
@@ -55,7 +82,7 @@ export default function UserForm({ user }) {
           form: {
             userId: data.email,
             fundId: fund.id,
-            joinDate: new Date(),
+            joinDate: dateObjectParser(new Date()),
             joinPrice: fund.joinPrice,
           },
         });

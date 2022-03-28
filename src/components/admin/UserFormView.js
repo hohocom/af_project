@@ -31,7 +31,7 @@ export default function UserFormView({
               message: "한글 이름 2~4자 이내만 허용합니다.",
             },
           })}
-          defaultValue={user ? user.code : null}
+          defaultValue={user ? user.userCode : null}
           placeholder="관리자 코드 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
         />
@@ -51,7 +51,7 @@ export default function UserFormView({
               message: "이메일형식이 아닙니다.",
             },
           })}
-          defaultValue={user ? user.email : null}
+          defaultValue={user ? user.userId : null}
           placeholder="이메일 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
         />
@@ -72,7 +72,7 @@ export default function UserFormView({
               message: "한글 이름 2~4자 이내만 허용합니다.",
             },
           })}
-          defaultValue={user ? user.name : null}
+          defaultValue={user ? user.userName : null}
           placeholder="회원 이름 입력"
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
         />
@@ -193,15 +193,17 @@ export default function UserFormView({
           className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
         />
       </div>
+
       <div className="flex flex-col mt-2">
-        <label>
-          펀드가입
-          <FundListSelector
-            checkFundList={checkFundList}
-            setCheckFundList={setCheckFundList}
-            form="insert"
-          />
-        </label>
+        {!user && (
+          <label>
+            펀드가입
+            <FundListSelector
+              checkFundList={checkFundList}
+              setCheckFundList={setCheckFundList}
+            />
+          </label>
+        )}
       </div>
       <button className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2">
         {!user ? "생성" : "수정"}

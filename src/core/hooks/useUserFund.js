@@ -3,6 +3,7 @@ import axios from "axios";
 import { fundListState, userDetailState } from "core/state";
 import { useEffect } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
+import { dateObjectParser } from "utils/dateObjectParser";
 import { db } from "utils/firebase";
 import useUser from "./useUser";
 
@@ -99,6 +100,7 @@ function useUserFund() {
                 isjoin = true;
                 joinUserFundList.push({
                   id: userFund.id,
+                  userCode: user.code,
                   userName: user.name,
                   userId: user.id,
                   uid: user.uid,
@@ -127,6 +129,7 @@ function useUserFund() {
         if (isjoin === false && joinForm === "leftOuterJoin") {
           joinUserFundList.push({
             id: "",
+            userCode: user.code,
             userName: user.name,
             userId: user.id,
             uid: user.uid,

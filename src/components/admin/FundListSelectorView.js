@@ -5,7 +5,7 @@ export default function FundListSelectorView({
 }) {
   return checkFundList.map((fund) => {
     return (
-      <div key={fund.id} className="flex justify-between p-2">
+      <div key={fund.id} className="flex justify-between p-2 mb-1 mb-2 border rounded-md">
         <div className="flex">
           <button
             type="button"
@@ -20,7 +20,7 @@ export default function FundListSelectorView({
         </div>
 
         <input
-          className="border"
+          className="pl-2 bg-gray-500 border"
           type="number"
           step="any"
           defaultValue={fund.joinPrice}

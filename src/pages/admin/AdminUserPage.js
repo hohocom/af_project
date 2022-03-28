@@ -20,7 +20,7 @@ import { useSort } from "core/hooks/sortData";
 function AdminUserPage() {
   const { sort, setSortForm } = useSort();
   const userListInit = useRecoilValue(userListInitState);
-  const { userList, destroy } = useUser();
+  const { destroy } = useUser();
   const { getUserJoinUserFundJoinFundList } = useUserFund();
   const { fundList } = useFund();
   const { matchedFundId, setMatchedFundId } = useDeal();
@@ -70,7 +70,7 @@ function AdminUserPage() {
               onClick={() => {
                 setSortForm("userName");
               }}
-              className="mr-1   px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in  rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+              className="px-4 py-2 mr-1 text-xs font-semibold text-center transition duration-200 ease-in rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
             >
               이름순
             </button>
@@ -78,7 +78,7 @@ function AdminUserPage() {
               onClick={() => {
                 setSortForm("userId");
               }}
-              className="mr-1  px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in   rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+              className="px-4 py-2 mr-1 text-xs font-semibold text-center transition duration-200 ease-in rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
             >
               email(id)순
             </button>
@@ -86,7 +86,7 @@ function AdminUserPage() {
               onClick={() => {
                 setSortForm("userId");
               }}
-              className="  px-4 py-2 text-xs font-semibold text-center   transition duration-200 ease-in   rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+              className="px-4 py-2 text-xs font-semibold text-center transition duration-200 ease-in rounded-lg shadow-md hover:text-white hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
             >
               가입일자 순
             </button>
@@ -189,7 +189,7 @@ function AdminUserPage() {
                     {user.joinPrice ? currency(user.joinPrice) + "원" : ""}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
-                    {/* {user.joinDate ? user.joinDate : ""} */}
+                    {user?.joinDate}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     <button

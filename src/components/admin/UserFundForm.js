@@ -6,13 +6,13 @@ import { currency } from "utils/currency";
 function UserFundForm({ user }) {
   const { close } = useModal();
   const { form, changeInput, setForm, isCompleted } = useForm({
-    userId: user ? user.id : null,
+    userId: user ? user.userId : null,
     fundId: null,
     joinPrice: 0,
     joinDate: "",
   });
   const { fundList } = useFund();
-  const { store } = useUserFund();
+  const { fundStore } = useUserFund();
   const [fund, setFund] = useState(null);
 
   return (
@@ -21,7 +21,7 @@ function UserFundForm({ user }) {
       <div className="flex flex-col mt-2 mb-2">
         <label>가입자 이름</label>
         <div className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-gray-100 border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent">
-          {user.name}
+          {user.userName}
         </div>
       </div>
       <label>펀드 선택</label>
@@ -95,7 +95,7 @@ function UserFundForm({ user }) {
         type="button"
         className="w-full px-4 py-2 mt-4 text-base font-semibold text-center text-white transition duration-200 ease-in bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
         onClick={async () => {
-          await store({ form });
+          await fundStore({ form });
           close();
         }}
         disabled={!isCompleted}
