@@ -15,11 +15,11 @@ function UserDetail({ user }) {
         </div>
         <div className="flex flex-col mt-2">
           <p className="text-sm text-gray-700">ID(email)</p>
-          <p>{user.email}</p>
+          <p>{user.userId}</p>
         </div>
         <div className="flex flex-col mt-2">
           <p className="text-sm text-gray-700">회원명</p>
-          <p>{user.name}</p>
+          <p>{user.userName}</p>
         </div>
         <div className="flex flex-col mt-2">
           <p className="text-sm text-gray-700">생년월일</p>
@@ -68,7 +68,7 @@ function UserDetail({ user }) {
               </tr>
             ) : (
               getJoinUserFundList({ fundList }).map((userFund) => {
-                if (userFund.userId === user.id) {
+                if (userFund.userId === user.userId) {
                   return (
                     <tr className="text-gray-700 border-b" key={userFund.id}>
                       <td className="p-2">{userFund.fundName}</td>
