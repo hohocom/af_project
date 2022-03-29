@@ -9,7 +9,6 @@ import {
   loadingState,
 } from "core/state";
 import { joinDealEventFundState } from "core/state/deal";
-import axios from "axios";
 
 export function useDealStream() {
   const setDealList = useSetRecoilState(dealListState);
