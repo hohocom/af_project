@@ -14,8 +14,6 @@ function useForm(formObj) {
 
   // TODO: form을 순회하며 form 객체의 key와 입력값의 name이 같은 곳의 값을 변경
   const changeInput = (e) => {
-    console.log(e.target.name);
-    console.log(e.target.value);
     const name = e.target.name;
     const value = e.target.value;
     // console.debug(name, value);

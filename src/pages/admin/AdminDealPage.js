@@ -106,7 +106,9 @@ function AdminDealPage() {
         <Table
           titles={[
             "거래날짜",
+
             "종목명",
+            "펀드명",
             "매수가",
             "매도가",
             "수량",
@@ -137,8 +139,12 @@ function AdminDealPage() {
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {deal.dealDate}
                   </td>
+
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {deal.eventName}
+                  </td>
+                  <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
+                    {deal.fundName}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {deal.buyPrice ? currency(deal.buyPrice) + "원" : "-"}
@@ -161,7 +167,7 @@ function AdminDealPage() {
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     {deal.type === "sell"
                       ? currency(deal.afterFundProfit) + "원"
-                      : currency(-deal.transactionFee) + "원"}
+                      : 0 + "원"}
                   </td>
                   <td className="p-4 font-normal border-r dark:border-dark-5 whitespace-nowrap">
                     <button

@@ -7,7 +7,7 @@ import FundListSelector from "./FundListSelector";
 
 function DealForm({ deal, funds, events }) {
   const { close } = useModal();
-  const { store, edit } = useEvent();
+  const { store, exist, edit } = useEvent();
   const [fund, setFund] = useState(null);
   const [event, setEvent] = useState(null);
   const [latestDeal, setLatestDeal] = useState(null);
@@ -32,37 +32,42 @@ function DealForm({ deal, funds, events }) {
 
   // * 매수, 매도 토글 이벤트
   useEffect(() => {
-    console.debug(event);
     if (form.type === "buy") {
       setIsCompletedIgnoreList(["totalQuantity", "salePrice"]);
     } else if (form.type === "sell") {
       setIsCompletedIgnoreList(["totalQuantity", "buyPrice"]);
     }
   }, [form.type]);
+
   useEffect(() => {
     const list = [];
-
     fundList.forEach((fund) => {
       list.push({
         ...fund,
         checked: false,
       });
     });
-
     setCheckFundList(list);
   }, [fundList]);
+
   //매수(일반종목) events에 저장
   const userEventStore = async (form) => {
-    console.log(form);
-    let eventId = await store({
-      form: {
-        eventName: form.eventName,
-        fixedAmount: form.buyPrice,
-        transactionDate: form.dealDate,
-      },
+    console.log(form.eventName);
+    const eventExistId = await exist(form.eventName);
+    console.log(eventExistId);
+    let eventId;
+    if (!eventExistId) {
+      eventId = await store({
+        form: {
+          eventName: form.eventName,
+          fixedAmount: form.buyPrice,
+        },
+        isPublicOffering: false,
+      });
+    } else {
+      eventId = eventExistId;
+    }
 
-      isPublicOffering: false,
-    });
     userDealStore(eventId);
   };
   //매수(deals)
@@ -70,13 +75,12 @@ function DealForm({ deal, funds, events }) {
     const filterList = checkFundList.filter((fund) => fund.checked === true);
     filterList.forEach(async (fund) => {
       let copyForm = { ...form, eventId: eventId, fundId: fund.id };
+      console.log(copyForm);
       buyStore({ form: copyForm });
     });
   };
   //매도(deals)
   const userDealSell = async (form) => {
-    console.log("userDealSell");
-    console.log(checkFundList);
     const filterList = checkFundList.filter((fund) => fund.checked === true);
     filterList.forEach(async (fund) => {
       let copyForm = { ...form, fundId: fund.id };
@@ -86,26 +90,25 @@ function DealForm({ deal, funds, events }) {
 
   // ? 매도할 때 총거래잔량, 최근 거래날짜를 가져오기
   useEffect(async () => {
-    if (form.type === "sell" && fund && event) {
-      /**
-       * ! 2022-03-10
-       * ! 수정사항 : 의무보유기간이 지나지 않을 시 매도 못하게하기
-       */
-      if (new Date() < new Date(event.mandatoryDate)) {
-        window.alert(
-          "종목의 의무보유기간이 지나지 않았습니다.\n의무보유기간이 지나야 매도가 가능합니다."
-        );
-        return close();
-      }
-
+    const filterList = checkFundList.filter((fund) => fund.checked === true);
+    if (form.type === "sell" && filterList[0] && event) {
+      // /**
+      //  * ! 2022-03-10
+      //  * ! 수정사항 : 의무보유기간이 지나지 않을 시 매도 못하게하기
+      //  */
+      // if (new Date() < new Date(event.mandatoryDate)) {
+      //   window.alert(
+      //     "종목의 의무보유기간이 지나지 않았습니다.\n의무보유기간이 지나야 매도가 가능합니다."
+      //   );
+      //   return close();
+      // }
       const dealDoc = await getLatestDealBy({
-        fundId: fund.id,
+        fundId: filterList[0].id,
         eventId: event.id,
       });
-      console.debug(dealDoc);
       setLatestDeal(dealDoc);
     }
-  }, [form.type, fund, event]);
+  }, [form.type, checkFundList, event]);
 
   // // * 올바른 거래날짜 채크
   // const isCorrectDate = ({ date = new Date() }) => {
@@ -121,7 +124,19 @@ function DealForm({ deal, funds, events }) {
 
   // * 생성 이벤트
   const onSubmit = () => {
-    form.type === "buy" ? userEventStore(form) : userDealSell(form, fundList);
+    // 첫 매도시 청약수수료 발생!!!! (latestDeal.totalQuantity === latestDeal.quantity)
+    form.type === "buy"
+      ? userEventStore(form)
+      : userDealSell(
+          {
+            ...form,
+            afterFundProfit:
+              latestDeal.totalQuantity === latestDeal.quantity
+                ? Number(form.transactionFee)
+                : 0,
+          },
+          fundList
+        );
     close();
   };
 
@@ -192,13 +207,12 @@ function DealForm({ deal, funds, events }) {
             name="eventId"
             className="p-2 border rounded-md"
             onChange={(e) => {
-              console.debug(e.target.value);
               if (e.target.value === "0") {
                 setEvent(null);
                 setForm({ ...form, eventId: null });
               } else {
                 const event = e.target.value && JSON.parse(e.target.value);
-                console.log(event);
+
                 setEvent(event);
                 setForm({
                   ...form,
@@ -291,12 +305,12 @@ function DealForm({ deal, funds, events }) {
           <div className="flex flex-col mt-2">
             <label className="font-noto-regular">
               거래수량
-              {/* {form.type === "sell" && (
+              {form.type === "sell" && (
                 <span className="ml-1 text-xs text-blue-600">
                   (현재 총 거래잔량: {latestDeal ? latestDeal.totalQuantity : 0}
                   )
                 </span>
-              )} */}
+              )}
             </label>
             <input
               type="number"
@@ -310,21 +324,19 @@ function DealForm({ deal, funds, events }) {
                   totalQuantity: form.type === "buy" ? e.target.value : 0,
                 });
               }}
-              //   onBlur={(e) => {
-              //     console.debug("빠저나감");
-              //     if (form.type === "sell") {
-              //       const totalQuantity = latestDeal
-              //         ? latestDeal.totalQuantity
-              //         : 0;
-              //       console.debug(totalQuantity, form.quantity);
-              //       if (Number(totalQuantity) < Number(form.quantity)) {
-              //         window.alert("총 거래잔량보다 많을 수 없습니다.");
-              //         setForm({ ...form, quantity: totalQuantity });
-              //         e.target.focus();
-              //       }
-              //     }
-              //   }
-              // }
+              onBlur={(e) => {
+                if (form.type === "sell") {
+                  const totalQuantity = latestDeal
+                    ? latestDeal.totalQuantity
+                    : 0;
+
+                  if (Number(totalQuantity) < Number(form.quantity)) {
+                    window.alert("총 거래잔량보다 많을 수 없습니다.");
+                    setForm({ ...form, quantity: totalQuantity });
+                    e.target.focus();
+                  }
+                }
+              }}
             />
             <span className="p-2 text-xs rounded-md">
               {currency(form.quantity)}주
@@ -354,7 +366,7 @@ function DealForm({ deal, funds, events }) {
               거래날짜
               {form.type === "sell" && (
                 <span className="ml-1 text-xs text-blue-600">
-                  (매수날짜: {event ? event.transactionDate : ""})
+                  (매수날짜: {latestDeal ? latestDeal.dealDate : ""})
                 </span>
               )}
               {/* {form.type === "sell" && (
@@ -409,9 +421,9 @@ function DealForm({ deal, funds, events }) {
               value={form.dealDate}
               className="flex-1 w-full px-4 py-2 mt-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               onChange={(e) => {
-                if (form.type === "sell" && event) {
+                if (form.type === "sell" && latestDeal) {
                   if (
-                    new Date(event.transactionDate) <= new Date(e.target.value)
+                    new Date(latestDeal.dealDate) <= new Date(e.target.value)
                   ) {
                     changeInput(e);
                   }

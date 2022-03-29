@@ -20,7 +20,6 @@ export function useDealStream() {
     const unsub = db
       .collection("deals")
       .where("type", "in", ["sell", "buy"])
-
       .orderBy("dealDate", "desc")
       .orderBy("totalQuantity", "asc")
       .onSnapshot((snapshot) => {
@@ -52,7 +51,6 @@ function useDeal() {
   const reverseToBuy = async () => {
     dealList.forEach(async (deal) => {
       if (deal.type === "reservation") {
-        console.log(deal);
         //상장일이 지나면
         if (new Date() >= new Date(deal.paymentDate)) {
           await db.collection("deals").doc(deal.id).update({ type: "buy" });
@@ -103,7 +101,6 @@ function useDeal() {
   const doJoinDealEventFund = async ({ fundList, eventList, userFund }) => {
     if (dealList.length > 0 && fundList.length > 0 && eventList.length > 0) {
       const joinDealEventFund = {};
-      console.log(userFund);
 
       dealList.map(async (deal, index) => {
         eventList.map(async (event) => {
@@ -114,7 +111,6 @@ function useDeal() {
                 deal.fundId === fund.id &&
                 userfund.fundId === fund.id
               ) {
-                console.log(userfund);
                 let data = {
                   id: deal.id,
                   fundName: fund.fundName,
@@ -153,7 +149,7 @@ function useDeal() {
           });
         });
       });
-      console.log(joinDealEventFund);
+
       setJoinDealEventFund(joinDealEventFund);
     }
   };
@@ -175,7 +171,6 @@ function useDeal() {
     return dealDoc;
   };
   const dealStore = async ({ form }) => {
-    console.debug(form);
     // const userEventRef = await db
     //   .collection("events")
     //   .where("eventName", "==", form.eventName)
@@ -188,23 +183,18 @@ function useDeal() {
     await db.collection("deals").add(form);
   };
   const buyStore = async ({ form }) => {
-    console.log("form");
-    console.log(form);
     setLoading(true);
     const dealDoc = await getLatestDealBy({
       fundId: form.fundId,
       eventId: form.eventId,
     });
-    console.debug(dealDoc);
+
     if (dealDoc) {
       window.alert("해당하는 펀드와 종목에대한 매수내역이 이미 존재합니다.");
       setLoading(false);
       return;
     }
-    console.log(form);
-    console.log(`quantity ${form.quantity}`);
-    console.log(`buyPrice ${form.buyPrice}`);
-    console.log(`transactionFee ${form.transactionFee / 100}`);
+
     await db.collection("deals").add({
       fundId: form.fundId,
       eventId: form.eventId,
@@ -276,7 +266,7 @@ function useDeal() {
       type: form.type, // sell
       fundProfit: fundProfit,
       transactionFee: form.transactionFee,
-      afterFundProfit: fundProfit - form.transactionFee,
+      afterFundProfit: fundProfit - form.transactionFee - form.afterFundProfit,
     });
     setLoading(false);
   };
