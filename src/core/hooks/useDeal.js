@@ -18,7 +18,10 @@ export function useDealStream() {
     console.debug("%c[거래 실시간 감지..]", "color:red");
     const unsub = db
       .collection("deals")
+      .where("type", "in", ["sell", "buy"])
+
       .orderBy("dealDate", "desc")
+      .orderBy("totalQuantity", "asc")
       .onSnapshot((snapshot) => {
         const newDeals = snapshot.docs.map((deal) => {
           return {
@@ -222,6 +225,7 @@ function useDeal() {
   };
 
   const sellStore = async ({ form, fundList }) => {
+    console.log(form);
     setLoading(true);
     const dealDoc = await getLatestDealBy({
       fundId: form.fundId,
@@ -234,13 +238,14 @@ function useDeal() {
       return;
     }
 
-    if (
+    /*if (
       new Date(form.dealDate).getTime() < new Date(dealDoc.dealDate).getTime()
     ) {
       window.alert("이전 거래날짜 이후로 설정해주세요.");
       setLoading(false);
       return;
     }
+    */
     const dealRef = await db
       .collection("deals")
       .where("fundId", "==", form.fundId)

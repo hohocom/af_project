@@ -25,7 +25,7 @@ function DealForm({ deal, funds, events }) {
             salePrice: 0, // 매도 금액
             quantity: 0, // 매수/매도 수량
             transactionFee: 0, // 거래수수료(원)
-            totalQuantity: 0, // 전체 잔량
+            // totalQuantity: 0, // 전체 잔량
             type: "buy", // sell,
           }
     );
@@ -51,23 +51,36 @@ function DealForm({ deal, funds, events }) {
 
     setCheckFundList(list);
   }, [fundList]);
+  //매수(일반종목) events에 저장
   const userEventStore = async (form) => {
+    console.log(form);
     let eventId = await store({
       form: {
         eventName: form.eventName,
         fixedAmount: form.buyPrice,
+        transactionDate: form.dealDate,
       },
+
       isPublicOffering: false,
     });
     userDealStore(eventId);
   };
+  //매수(deals)
   const userDealStore = async (eventId) => {
     const filterList = checkFundList.filter((fund) => fund.checked === true);
     filterList.forEach(async (fund) => {
-      console.log(fund.id);
       let copyForm = { ...form, eventId: eventId, fundId: fund.id };
-      console.log(copyForm);
       buyStore({ form: copyForm });
+    });
+  };
+  //매도(deals)
+  const userDealSell = async (form) => {
+    console.log("userDealSell");
+    console.log(checkFundList);
+    const filterList = checkFundList.filter((fund) => fund.checked === true);
+    filterList.forEach(async (fund) => {
+      let copyForm = { ...form, fundId: fund.id };
+      sellStore({ form: copyForm, fundList: fundList });
     });
   };
 
@@ -108,7 +121,7 @@ function DealForm({ deal, funds, events }) {
 
   // * 생성 이벤트
   const onSubmit = () => {
-    form.type === "buy" ? userEventStore(form) : sellStore({ form, fundList });
+    form.type === "buy" ? userEventStore(form) : userDealSell(form, fundList);
     close();
   };
 
@@ -154,24 +167,64 @@ function DealForm({ deal, funds, events }) {
           <FundListSelector
             checkFundList={checkFundList}
             setCheckFundList={setCheckFundList}
-            form="select"
+            inputHidden={true}
           />
         </label>
       </div>
-      <div className="flex flex-col mt-2">
-        <label className="font-noto-regular">
-          종목입력
-          <span className="ml-1 text-xs text-red-500"></span>
-        </label>
-        <input
-          type="text"
-          name="eventName"
-          value={form.eventName}
-          className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-          onChange={changeInput}
-        />
-      </div>
-      {/* <div className="flex flex-col mt-2">
+      {form.type === "buy" ? (
+        <div className="flex flex-col mt-2">
+          <label className="font-noto-regular">
+            종목입력
+            <span className="ml-1 text-xs text-red-500"></span>
+          </label>
+          <input
+            type="text"
+            name="eventName"
+            value={form.eventName}
+            className="flex-1 w-full px-4 py-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+            onChange={changeInput}
+          />
+        </div>
+      ) : (
+        <div className="flex flex-col mt-2">
+          <label className="font-noto-regular">종목선택</label>
+          <select
+            name="eventId"
+            className="p-2 border rounded-md"
+            onChange={(e) => {
+              console.debug(e.target.value);
+              if (e.target.value === "0") {
+                setEvent(null);
+                setForm({ ...form, eventId: null });
+              } else {
+                const event = e.target.value && JSON.parse(e.target.value);
+                console.log(event);
+                setEvent(event);
+                setForm({
+                  ...form,
+                  eventId: event.id,
+                  buyPrice: event.fixedAmount,
+                  eventName: event.eventName,
+                });
+              }
+            }}
+          >
+            <option value="0">선택</option>
+            {events.map((event) => {
+              if (
+                new Date(event.paymentDate) <= new Date() ||
+                !event.isPublicOffering
+              )
+                return (
+                  <option key={event.id} value={JSON.stringify(event)}>
+                    {event.eventName}
+                  </option>
+                );
+            })}
+          </select>
+        </div>
+      )}
+      {/*<div className="flex flex-col mt-2">
         <label className="font-noto-regular">펀드선택</label>
         <select
           className="p-2 border rounded-md"
@@ -195,38 +248,7 @@ function DealForm({ deal, funds, events }) {
             );
           })}
         </select>
-      </div> */}
-      {/* <div className="flex flex-col mt-2">
-        <label className="font-noto-regular">종목선택</label>
-        <select
-          name="eventId"
-          className="p-2 border rounded-md"
-          onChange={(e) => {
-            console.debug(e.target.value);
-            if (e.target.value === "0") {
-              setEvent(null);
-              setForm({ ...form, eventId: null });
-            } else {
-              const event = e.target.value && JSON.parse(e.target.value);
-              setEvent(event);
-              setForm({
-                ...form,
-                eventId: event.id,
-                buyPrice: event.fixedAmount,
-              });
-            }
-          }}
-        >
-          <option value="0">선택</option>
-          {events.map((event) => {
-            return (
-              <option key={event.id} value={JSON.stringify(event)}>
-                {event.eventName}
-              </option>
-            );
-          })}
-        </select>
-      </div> */}
+      </div>*/}
 
       {
         <div>
@@ -288,20 +310,21 @@ function DealForm({ deal, funds, events }) {
                   totalQuantity: form.type === "buy" ? e.target.value : 0,
                 });
               }}
-              onBlur={(e) => {
-                console.debug("빠저나감");
-                if (form.type === "sell") {
-                  const totalQuantity = latestDeal
-                    ? latestDeal.totalQuantity
-                    : 0;
-                  console.debug(totalQuantity, form.quantity);
-                  if (Number(totalQuantity) < Number(form.quantity)) {
-                    window.alert("총 거래잔량보다 많을 수 없습니다.");
-                    setForm({ ...form, quantity: totalQuantity });
-                    e.target.focus();
-                  }
-                }
-              }}
+              //   onBlur={(e) => {
+              //     console.debug("빠저나감");
+              //     if (form.type === "sell") {
+              //       const totalQuantity = latestDeal
+              //         ? latestDeal.totalQuantity
+              //         : 0;
+              //       console.debug(totalQuantity, form.quantity);
+              //       if (Number(totalQuantity) < Number(form.quantity)) {
+              //         window.alert("총 거래잔량보다 많을 수 없습니다.");
+              //         setForm({ ...form, quantity: totalQuantity });
+              //         e.target.focus();
+              //       }
+              //     }
+              //   }
+              // }
             />
             <span className="p-2 text-xs rounded-md">
               {currency(form.quantity)}주
@@ -329,6 +352,11 @@ function DealForm({ deal, funds, events }) {
           <div className="flex flex-col mt-2">
             <label className="font-noto-regular">
               거래날짜
+              {form.type === "sell" && (
+                <span className="ml-1 text-xs text-blue-600">
+                  (매수날짜: {event ? event.transactionDate : ""})
+                </span>
+              )}
               {/* {form.type === "sell" && (
                 <span className="ml-1 text-xs text-blue-600">
                   (최근 거래날짜: {latestDeal ? latestDeal.dealDate : ""})
@@ -381,7 +409,15 @@ function DealForm({ deal, funds, events }) {
               value={form.dealDate}
               className="flex-1 w-full px-4 py-2 mt-2 text-base text-gray-700 placeholder-gray-400 bg-white border border-transparent border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
               onChange={(e) => {
-                changeInput(e);
+                if (form.type === "sell" && event) {
+                  if (
+                    new Date(event.transactionDate) <= new Date(e.target.value)
+                  ) {
+                    changeInput(e);
+                  }
+                } else {
+                  changeInput(e);
+                }
               }}
             />
           </div>

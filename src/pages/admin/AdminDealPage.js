@@ -65,8 +65,9 @@ function AdminDealPage() {
             <select
               className="p-2 ml-4 mr-6 bg-white border rounded-md"
               onChange={(e) => {
-                console.debug(e.target.value);
-                setMatchedFundId(e.target.value);
+                setMatchedFundId(
+                  e.target.value === "전체" ? null : e.target.value
+                );
               }}
             >
               <option className="p-2">전체</option>
@@ -122,7 +123,7 @@ function AdminDealPage() {
           {getPagerList({
             list: getSearchList(),
           }).map((deal, i) => {
-            if (deal.fundId === matchedFundId || matchedFundId === "전체")
+            if (deal.fundId === matchedFundId || matchedFundId === null)
               return (
                 <tr
                   key={deal.id}

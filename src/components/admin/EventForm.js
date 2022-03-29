@@ -3,7 +3,7 @@ import { useEvent } from "core/hooks";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { currency } from "utils/currency";
-import FundListSelector1 from "./FundListSelector1";
+import FundListSelector from "./FundListSelector";
 
 function EventForm({ event }) {
   const { close } = useModal();
@@ -25,7 +25,7 @@ function EventForm({ event }) {
     fundList.forEach((fund) => {
       list.push({
         ...fund,
-        checked: true,
+        checked: false,
       });
     });
 
@@ -250,10 +250,10 @@ function EventForm({ event }) {
       <div className="flex flex-col mt-2">
         <label>
           펀드선택
-          <FundListSelector1
+          <FundListSelector
             checkFundList={checkFundList}
             setCheckFundList={setCheckFundList}
-            form="select"
+            inputHidden={true}
           />
         </label>
       </div>

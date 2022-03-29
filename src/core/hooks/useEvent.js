@@ -38,10 +38,13 @@ function useEvent() {
   const setLoading = useSetRecoilState(loadingState);
 
   const store = async ({ form, isPublicOffering }) => {
+    //isPublicOffering - 공모주인가 일반매수인가
+    // 공모주일때 true
     setLoading(true);
-    const result = await db
-      .collection("events")
-      .add({ ...form, isPublicOffering: isPublicOffering });
+    const result = await db.collection("events").add({
+      ...form,
+      isPublicOffering: isPublicOffering,
+    });
     setLoading(false);
     return result.id;
   };
