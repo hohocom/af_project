@@ -36,7 +36,15 @@ export function useEventStream() {
 function useEvent() {
   const eventList = useRecoilValue(eventListState);
   const setLoading = useSetRecoilState(loadingState);
+  const exist = async (eventName) => {
+    const result = await db
+      .collection("events")
+      .where("eventName", "==", eventName)
+      .get();
 
+    if (result.size === 0) return false;
+    return result.docs[0].id;
+  };
   const store = async ({ form, isPublicOffering }) => {
     //isPublicOffering - 공모주인가 일반매수인가
     // 공모주일때 true
@@ -78,6 +86,7 @@ function useEvent() {
     store,
     edit,
     destroy,
+    exist,
   };
 }
 
