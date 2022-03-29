@@ -167,7 +167,7 @@ function DealForm({ deal, funds, events }) {
           <FundListSelector
             checkFundList={checkFundList}
             setCheckFundList={setCheckFundList}
-            form="select"
+            inputHidden={true}
           />
         </label>
       </div>

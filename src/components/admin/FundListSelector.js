@@ -1,8 +1,13 @@
 import FundListSelectorView from "./FundListSelectorView";
 
-export default function FundListSelector({ checkFundList, setCheckFundList }) {
+export default function FundListSelector({
+  checkFundList,
+  setCheckFundList,
+  inputHidden = false,
+}) {
   const props = {
     checkFundList,
+    inputHidden,
     changeJoinPrice: (f, e) => {
       const value = e.target.value;
       const updateList = checkFundList.map((fund) => {

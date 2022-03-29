@@ -2,10 +2,14 @@ export default function FundListSelectorView({
   checkFundList,
   clickCheckBox,
   changeJoinPrice,
+  inputHidden,
 }) {
   return checkFundList.map((fund) => {
     return (
-      <div key={fund.id} className="flex justify-between p-2 mb-1 mb-2 border rounded-md">
+      <div
+        key={fund.id}
+        className="flex justify-between p-2 mb-1 mb-2 border rounded-md"
+      >
         <div className="flex">
           <button
             type="button"
@@ -18,15 +22,16 @@ export default function FundListSelectorView({
           </button>
           <span>{fund.fundName}</span>
         </div>
-
-        <input
-          className="pl-2 bg-gray-500 border"
-          type="number"
-          step="any"
-          defaultValue={fund.joinPrice}
-          onChange={(e) => changeJoinPrice(fund, e)}
-          placeholder="가입금액을 입력해주세요."
-        />
+        {!inputHidden && (
+          <input
+            className="pl-2 bg-gray-500 border"
+            type="number"
+            step="any"
+            defaultValue={fund.joinPrice}
+            onChange={(e) => changeJoinPrice(fund, e)}
+            placeholder="가입금액을 입력해주세요."
+          />
+        )}
       </div>
     );
   });
